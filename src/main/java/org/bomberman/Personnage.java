@@ -4,23 +4,21 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 class Personnage extends Group {
-    protected final static double LARGEUR_MOITIE_PERSONNAGE = 10;
-    protected final static double LARGEUR_PERSONNAGE = LARGEUR_MOITIE_PERSONNAGE * 2;
+    final static double LARGEUR_MOITIE_PERSONNAGE = 10;
+    final static double LARGEUR_PERSONNAGE = LARGEUR_MOITIE_PERSONNAGE * 2;
     private final Circle corps;
     private String direction;
+
 
     public Personnage(String direction, Color couleurContour, Color couleurRemplissage) {
         this.direction = direction;
         corps = new Circle(10, 10, LARGEUR_MOITIE_PERSONNAGE, couleurContour);
         corps.setFill(couleurRemplissage);
-        getChildren().add(corps);
+        super.getChildren().add(corps);
     }
 
-    public void deplacerAGauche(ArrayList<Obstacle> obstacles) {
+    public void deplacerAGauche() {
         //    ****
         //   *    *
         //  *---   *
@@ -29,83 +27,95 @@ class Personnage extends Group {
 
         //déplacement <----
         if (getLayoutX() >= LARGEUR_PERSONNAGE) {
+            double posXAvantDeplacement = getLayoutX();
             setLayoutX(getLayoutX() - LARGEUR_PERSONNAGE);
+            //gestion de la collision avec les obstacles
+            if (estEnCollisionAvecLesObstaclesDuJeu()) {
+                setLayoutX(posXAvantDeplacement);
+            }
+
         }
-
-        if (CollisionAvecObstacle(obstacles))
-            setLayoutX(getLayoutX() + LARGEUR_PERSONNAGE);
-
         if (!direction.equals("gauche")) {
             direction = "gauche";
         }
     }
 
-    public void deplacerADroite(double largeurJeu,ArrayList<Obstacle> obstacles) {
+    public void deplacerADroite(double largeurJeu) {
         //    ****
         //   *    *
         //  *   ---*
         //   *    *
         //    ****
-        //déplacement ---->
+        // déplacement ---->
         if (getLayoutX() < largeurJeu - LARGEUR_PERSONNAGE) {
+            double posXAvantDeplacement = getLayoutX();
+
             setLayoutX(getLayoutX() + LARGEUR_PERSONNAGE);
+            //gestion de la collision avec les obstacles
+            if (estEnCollisionAvecLesObstaclesDuJeu()) {
+                setLayoutX(posXAvantDeplacement);
+            }
         }
-
-        if (CollisionAvecObstacle(obstacles))
-            setLayoutX(getLayoutX() - LARGEUR_PERSONNAGE);
-
         if (!direction.equals("droite")) {
             direction = "droite";
         }
     }
 
-    public void deplacerEnBas(double hauteurJeu,ArrayList<Obstacle> obstacles) {
+    public void deplacerEnBas(double hauteurJeu) {
         //    *****
         //   *     *
         //  *   |   *
         //   *  |  *
         //    *****
-        if (getLayoutY() < hauteurJeu - LARGEUR_PERSONNAGE) {
-            setLayoutY(getLayoutY() + LARGEUR_PERSONNAGE);
-        }
-        if (CollisionAvecObstacle(obstacles))
-            setLayoutY(getLayoutY() - LARGEUR_PERSONNAGE);
 
-        if (!direction.equals("Bas")) {
-            direction = "Bas";
+        if (getLayoutY() < hauteurJeu - LARGEUR_PERSONNAGE) {
+            double posYAvantDeplacement = getLayoutY();
+
+            setLayoutY(getLayoutY() + LARGEUR_PERSONNAGE);
+            //gestion de la collision avec les obstacles
+            if (estEnCollisionAvecLesObstaclesDuJeu()) {
+                setLayoutY(posYAvantDeplacement);
+            }
+        }
+        //sens de la bouche
+        if (!direction.equals("bas")) {
+            direction = "bas";
         }
     }
 
-    public void deplacerEnHaut(ArrayList<Obstacle> obstacles) {
+    public void deplacerEnHaut() {
         //    *****
         //   *  |  *
         //  *   |   *
         //   *     *
         //    *****
         if (getLayoutY() >= LARGEUR_PERSONNAGE) {
+            double posYAvantDeplacement = getLayoutY();
             setLayoutY(getLayoutY() - LARGEUR_PERSONNAGE);
+            //gestion de la collision avec les obstacles
+            if (estEnCollisionAvecLesObstaclesDuJeu()) {
+                setLayoutY(posYAvantDeplacement);
+            }
         }
-        if (CollisionAvecObstacle(obstacles))
-            setLayoutY(getLayoutY() + LARGEUR_PERSONNAGE);
-
-        if (!direction.equals("Haut")) {
-            direction = "Haut";
+        //sens de la bouche
+        if (!direction.equals("haut")) {
+            direction = "haut";
         }
     }
 
-    boolean estEnCollision(Personnage autrePersonnage) {
+    public boolean estEnCollision(Personnage autrePersonnage) {
         return getBoundsInParent().contains(autrePersonnage.getBoundsInParent())
                 || autrePersonnage.getBoundsInParent().contains(getBoundsInParent());
     }
 
-    boolean CollisionAvecObstacle(List<Obstacle> obstacles) {
-        for (Obstacle obstacle : obstacles) {
-            if (this.getBoundsInParent().contains(obstacle.getBoundsInParent())
-                    || obstacle.getBoundsInParent().contains(getBoundsInParent())) {
-                return true; // Collision détectée avec un obstacle
+    public boolean estEnCollisionAvecLesObstaclesDuJeu() {
+        for (Obstacle unObstacle : JeuMain.getLesObstacles()) {
+            if (getBoundsInParent().contains(unObstacle.getBoundsInParent())
+                    || unObstacle.getBoundsInParent().contains(getBoundsInParent())) {
+                return true;
             }
         }
-        return false; // Aucune collision
+        return false;
     }
 
 
