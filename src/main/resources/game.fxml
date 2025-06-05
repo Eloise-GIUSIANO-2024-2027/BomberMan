@@ -7,7 +7,7 @@
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bomberman.gameController">
     <!-- Ajouter une bordure autour de la grille -->
-    <Rectangle width="440" height="440" fill="transparent" stroke="black" strokeWidth="3"/>
+    <Rectangle width="1024" height="960" fill="transparent" stroke="green" strokeWidth="3"/>
 
     <!-- Grille du jeu -->
     <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true">
