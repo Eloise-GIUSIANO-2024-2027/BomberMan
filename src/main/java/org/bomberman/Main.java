@@ -9,21 +9,17 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-//        // Charger le fichier FXML
-//        StackPane root = FXMLLoader.load(getClass().getResource("game.fxml"));
-//
-//
-//        // Créer une scène avec la racine chargée depuis FXML
-//        Scene scene = new Scene(root, 600, 600);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("game.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("game.fxml"));
+        Scene scene = new Scene(loader.load(),960 , 1024);
 
-        Scene scene = new Scene(fxmlLoader.load());
-
-        // Configurer et afficher la fenêtre
-        primaryStage.setTitle("Bomberman 90's");
+        primaryStage.setTitle("Bomberman - Multijoueur Local");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
+
+        // Focus sur la scène pour capturer les événements clavier
+        scene.getRoot().requestFocus();
     }
 
     public static void main(String[] args) {
