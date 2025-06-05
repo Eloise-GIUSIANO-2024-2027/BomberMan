@@ -2,8 +2,8 @@ package org.bomberman;
 
 public class Game {
 
-    private static final int WIDTH = 150;   // Largeur de la grille
-    private static final int HEIGHT = 15;  // Hauteur de la grille
+    private static final int WIDTH = 10;   // Largeur de la grille
+    private static final int HEIGHT = 10;  // Hauteur de la grille
     private int[][] grid;  // Grille du jeu (10x10)
 
     public Game() {
@@ -15,7 +15,7 @@ public class Game {
     private void initGrid() {
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
-                if (i % 2 == 0 && j % 2 == 0) {
+                if (i % 2 == 1 && j % 2 == 1 && j!=WIDTH-1 && i!=HEIGHT-1) {
                     grid[i][j] = 1;  // Positionner des murs
                 } else {
                     grid[i][j] = 0;  // Espaces vides
