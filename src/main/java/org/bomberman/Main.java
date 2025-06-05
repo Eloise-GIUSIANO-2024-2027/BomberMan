@@ -11,7 +11,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("game.fxml"));
-        Scene scene = new Scene(loader.load(),960 , 1024);
+        Scene scene = new Scene(loader.load(),900 , 700);
 
         primaryStage.setTitle("Bomberman - Multijoueur Local");
         primaryStage.setScene(scene);
