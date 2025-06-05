@@ -10,7 +10,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 //        // Charger le fichier FXML
-//        StackPane root = FXMLLoader.load(getClass().getResource("game.fxml"));
+//         StackPane root = FXMLLoader.load(getClass().getResource("game.fxml"));
 //
 //
 //        // Créer une scène avec la racine chargée depuis FXML

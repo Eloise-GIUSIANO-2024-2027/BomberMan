@@ -3,18 +3,22 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.control.Button;
+
 
 public class gameController {
 
     @FXML
-    private GridPane gridPane;  // Référence à la GridPane dans FXML
-
-    private Game game;  // L'instance de la logique du jeu
+    private GridPane gridPane;// Référence à la GridPane dans FXML
+    @FXML
+    public Button startButton;
+    private Game game;// L'instance de la logique du jeu
 
     // Méthode appelée pour démarrer le jeu
     public void startGame() {
         game = new Game();
         generateGrid();
+        startButton.setVisible(false);
     }
 
     // Méthode pour générer la grille sur l'interface graphique

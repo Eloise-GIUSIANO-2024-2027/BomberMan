@@ -7,7 +7,7 @@
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bomberman.gameController">
     <!-- Ajouter une bordure autour de la grille -->
-    <Rectangle width="1024" height="960" fill="transparent" stroke="green" strokeWidth="3"/>
+    <Rectangle  width="1024" height="960" fill="transparent" stroke="green" strokeWidth="3"/>
 
     <!-- Grille du jeu -->
     <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true">
@@ -15,5 +15,5 @@
     </GridPane>
 
     <!-- Ajouter un bouton de démarrage du jeu -->
-    <Button text="Démarrer" onAction="#startGame" layoutX="190" layoutY="470"/>
+    <Button  fx:id="startButton" text="Démarrer" onAction="#startGame" layoutX="190" layoutY="470"/>
 </StackPane>
