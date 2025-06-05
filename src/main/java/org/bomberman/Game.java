@@ -2,8 +2,8 @@ package org.bomberman;
 
 public class Game {
 
-    private static final int WIDTH = 10;   // Largeur de la grille
-    private static final int HEIGHT = 10;  // Hauteur de la grille
+    private static final int WIDTH = 150;   // Largeur de la grille
+    private static final int HEIGHT = 15;  // Hauteur de la grille
     private int[][] grid;  // Grille du jeu (10x10)
 
     public Game() {
