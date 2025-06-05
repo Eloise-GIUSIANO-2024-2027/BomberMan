@@ -33,7 +33,7 @@ public class GameGrid extends StackPane {
                 if (grid[i][j] == 1) {
                     rectangle.setFill(Color.GRAY);  // Mur
                 } else {
-                    rectangle.setFill(Color.WHITE);  // Espace vide
+                    rectangle.setFill(Color.GREEN);  // Espace vide
                 }
 
                 // Ajouter le rectangle à la grille à la position (i, j)
