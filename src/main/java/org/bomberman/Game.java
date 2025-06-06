@@ -4,8 +4,8 @@ import org.bomberman.entite.Bombe;
 
 public class Game {
 
-    private static final int WIDTH = 11;   // Largeur de la grille
-    private static final int HEIGHT = 13;  // Hauteur de la grille
+    public static final int WIDTH = 11;   // Largeur de la grille
+    public static final int HEIGHT = 13;  // Hauteur de la grille
     private int[][] grid;  // Grille du jeu (10x10)
 
     public Game() {
@@ -33,12 +33,6 @@ public class Game {
 
     public void setGrid(int[][] grid) {
         this.grid = grid;
-    }
-
-    // Démarrer le jeu (logique de base ici, à étendre)
-    public void startGame() {
-        System.out.println("Le jeu a commencé !");
-        // Logique du jeu à ajouter ici (mouvement, explosions, etc.)
     }
 
 
