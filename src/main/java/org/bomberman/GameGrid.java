@@ -24,8 +24,8 @@ public class GameGrid extends GridPane {
 
         // Configurer le GridPane
         this.setAlignment(Pos.CENTER); // Centrer les éléments à l'intérieur du GridPane
-        this.setHgap(1); // Très petit espace horizontal entre les cellules
-        this.setVgap(1); // Très petit espace vertical entre les cellules
+        this.setHgap(2); // Très petit espace horizontal entre les cellules
+        this.setVgap(2); // Très petit espace vertical entre les cellules
         WritableImage target = new WritableImage(32, 32);
 
         // Créer les cases (rectangles) pour chaque cellule de la grille
