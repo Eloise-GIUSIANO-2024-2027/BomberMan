@@ -1,0 +1,67 @@
+/* Fichier CSS pour la page des règles (regles.css) */
+
+/* 1. Arrière-plan de la page (AnchorPane) */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #3f7de8, #1a4a9c); /* Bleu du ciel vers un bleu plus foncé/grisâtre */
+}
+
+/* 2. Style général des Labels de texte (pour le texte des règles) */
+.label {
+    -fx-font-family: "Press Start 2P", "Consolas", monospace; /* Essai de police pixel, sinon Consolas ou monospace */
+    -fx-font-size: 9px; /* <<< Changé : Légèrement augmenté (anciennement 7px) */
+    -fx-text-fill: #FFFFFF; /* Texte blanc pour contraster avec le fond bleu */
+}
+
+/* Style des Labels de titre (MULTIJOUEUR, SOLO, CAPTURE DE FLAG) */
+.copyright-text { /* C'est la classe que tu utilises pour tes titres de section */
+    -fx-font-family: "Press Start 2P", "Consolas", monospace; /* Police pixel si dispo */
+    -fx-font-size: 14px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */
+    -fx-text-fill: #FF8C00; /* Couleur orange comme le logo Bomberman */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 5, 0, 0, 2); /* Petite ombre portée */
+}
+
+/* Style du titre principal "Les règles et commandes" */
+.label:contains("Les règles et commandes") { /* Ciblage spécifique par le texte si besoin */
+    -fx-font-family: "Press Start 2P", "Consolas", monospace; /* Police pixel si dispo */
+    -fx-font-size: 20px; /* <<< Changé : Légèrement augmenté (anciennement 14px) */
+    -fx-text-fill: #FFFFFF; /* Blanc pur */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 10, 0.5, 0, 5); /* Ombre plus prononcée */
+}
+
+
+/* 3. Style du bouton "RETOUR" (start-button) */
+.start-button {
+    -fx-background-color: #FF4500; /* Rouge-orangé vibrant, comme une bombe ou le feu */
+    -fx-text-fill: white;
+    -fx-font-family: "Press Start 2P", "Consolas", monospace;
+    -fx-font-size: 6px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */
+    -fx-padding: 8px 12px; /* Ajuste le padding pour la nouvelle taille du texte */
+    -fx-border-color: #FFA500; /* Bordure orange plus claire */
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2); /* Ombre légère */
+}
+
+.start-button:hover {
+    -fx-background-color: #FF6347; /* Changement de couleur au survol */
+}
+
+.start-button:pressed {
+    -fx-background-color: #CC3300; /* Couleur quand le bouton est pressé */
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2); /* Effet d'ombre interne */
+}
+
+/* Styles pour les VBox conteneurs */
+.vbox {
+    -fx-background-color: transparent;
+}
+
+/* Bordure autour des sections de texte (si styleClass="vbox-section" est appliqué) */
+.vbox-section {
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+}

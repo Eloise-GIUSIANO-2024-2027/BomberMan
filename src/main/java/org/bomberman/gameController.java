@@ -90,8 +90,6 @@ public class gameController {
         }
     }
 
-
-
     @FXML
     public void regleCommande() {
         // a enoyer sur une autre page avec les regle et les commende
