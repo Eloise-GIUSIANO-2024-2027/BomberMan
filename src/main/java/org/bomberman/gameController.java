@@ -110,18 +110,25 @@ public class gameController {
 
         gameGridDisplay.getScene().setOnKeyPressed((KeyEvent event) -> {
             switch (event.getCode()) {
+                // Joueur 1
                 case T -> j1.deplacerEnHaut();
                 case G -> j1.deplacerEnBas(k.getHeight());
                 case H -> j1.deplacerADroite(k.getWidth());
                 case F -> j1.deplacerAGauche();
+
+                // Joueur 2
                 case Z -> j2.deplacerEnHaut();
                 case S -> j2.deplacerEnBas(k.getHeight());
                 case D -> j2.deplacerADroite(k.getWidth());
                 case Q -> j2.deplacerAGauche();
+
+                // Joueur 3
                 case O -> j3.deplacerEnHaut();
                 case L -> j3.deplacerEnBas(k.getHeight());
                 case M -> j3.deplacerADroite(k.getWidth());
                 case K -> j3.deplacerAGauche();
+
+                // Joueur 4
                 case NUMPAD5 -> j4.deplacerEnHaut();
                 case NUMPAD2 -> j4.deplacerEnBas(k.getHeight());
                 case NUMPAD3 -> j4.deplacerADroite(k.getWidth());

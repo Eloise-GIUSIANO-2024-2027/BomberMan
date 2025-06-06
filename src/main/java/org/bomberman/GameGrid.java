@@ -15,12 +15,13 @@ import java.util.Objects;
 public class GameGrid extends GridPane {
 
     private Game game; // L'instance de la logique du jeu
+    int[][] grid;
 
     public GameGrid(Game game) {
         this.game = game;
 
         // Récupérer la grille du jeu
-        int[][] grid = game.getGrid();
+        grid = game.getGrid();
 
         // Configurer le GridPane
         this.setAlignment(Pos.CENTER); // Centrer les éléments à l'intérieur du GridPane
@@ -28,6 +29,10 @@ public class GameGrid extends GridPane {
         this.setVgap(2); // Très petit espace vertical entre les cellules
         WritableImage target = new WritableImage(32, 32);
 
+        refresh();
+    }
+
+    public void refresh() {
         // Créer les cases (rectangles) pour chaque cellule de la grille
         for (int i = 0; i < grid.length; i++) { // Itère sur les lignes (y)
             for (int j = 0; j < grid[i].length; j++) { // Itère sur les colonnes (x)
