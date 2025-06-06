@@ -14,7 +14,7 @@ class PacMan_Personnage extends Group {
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)
     private int gridY = 0; // Position Y dans la grille (ligne)
-    private static final int CELL_SIZE = 48; // Taille d'une case (48x48 comme dans GameGrid)
+    private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
     private Game game;
 
 
@@ -23,7 +23,7 @@ class PacMan_Personnage extends Group {
         this.gridX = startX;
         this.gridY = startY;
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front.gif")), 32, 64, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front.gif")), 32, 32, false, false)));
         super.getChildren().add(this.rectangle);
 
         // Positionner le personnage selon sa position dans la grille

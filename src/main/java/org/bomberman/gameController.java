@@ -47,13 +47,15 @@ public class gameController {
         gameAreaStackPane.getChildren().add(gameGridDisplay);
         //Acteurs du jeu
         PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        PacMan_Personnage fantome = new PacMan_Fantome(game, 14, 14);
+        PacMan_Personnage fantome = new Pacman(game, 12, 10);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
+        PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
 
 
         // positionnement du fantôme
 
-        gameGridDisplay.getChildren().addAll(pacman, fantome);
-        deplacer(pacman,fantome);
+        gameGridDisplay.getChildren().addAll(pacman, fantome, pacman2, pacman3);
+        deplacer(pacman,fantome,pacman2,pacman3);
     }
         // positionnement du fantôme
 
@@ -104,20 +106,28 @@ public class gameController {
             startButton.setManaged(true);
         }
     }
-    public void deplacer(PacMan_Personnage j1, PacMan_Personnage j2){
+    public void deplacer(PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
         // Appliquer l'événement clavier à la scène entière
         GameGrid k = gameGridDisplay;
 
         gameGridDisplay.getScene().setOnKeyPressed((KeyEvent event) -> {
             switch (event.getCode()) {
-                case UP -> j1.deplacerEnHaut();
-                case DOWN -> j1.deplacerEnBas(k.getHeight());
-                case RIGHT -> j1.deplacerADroite(k.getWidth());
-                case LEFT -> j1.deplacerAGauche();
+                case T -> j1.deplacerEnHaut();
+                case G -> j1.deplacerEnBas(k.getHeight());
+                case H -> j1.deplacerADroite(k.getWidth());
+                case F -> j1.deplacerAGauche();
                 case Z -> j2.deplacerEnHaut();
                 case S -> j2.deplacerEnBas(k.getHeight());
                 case D -> j2.deplacerADroite(k.getWidth());
                 case Q -> j2.deplacerAGauche();
+                case O -> j3.deplacerEnHaut();
+                case L -> j3.deplacerEnBas(k.getHeight());
+                case M -> j3.deplacerADroite(k.getWidth());
+                case K -> j3.deplacerAGauche();
+                case NUMPAD5 -> j4.deplacerEnHaut();
+                case NUMPAD2 -> j4.deplacerEnBas(k.getHeight());
+                case NUMPAD3 -> j4.deplacerADroite(k.getWidth());
+                case NUMPAD1 -> j4.deplacerAGauche();
             }
         });
     }
