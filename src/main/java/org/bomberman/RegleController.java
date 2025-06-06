@@ -17,11 +17,16 @@ public class RegleController {
             // Charger le FXML du menu
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
             Parent menuRoot = loader.load();
-            Scene menuScene = new Scene(menuRoot, 800, 630);
+            Scene menuScene = new Scene(menuRoot, 820, 650);
 //
 //            // Charger le CSS (assure-toi que ton fichier CSS est accessible et partagé)
-//            menuScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
+//            menuScene.getStylesheets().add(getClass().getResource("styleMenu.css").toExternalForm());
+            String cssPath = getClass().getResource("/styleMenu.css").toExternalForm();
+            if (cssPath != null) {
+                menuScene.getStylesheets().add(cssPath);
+            } else {
+                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+            }
 
             //Obtenir le Stage actuel et changer la scène
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

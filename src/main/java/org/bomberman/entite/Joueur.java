@@ -32,8 +32,8 @@ public class Joueur extends Entite {
         return getPos();
     }
 
-    public int[] poseBombe(){
-        new Bombe(getPos()[0], getPos()[1]);
-        return getPos();
-    }
+//    public int[] poseBombe(){
+//        new Bombe(getPos()[0], getPos()[1]);
+//        return getPos();
+//    }
 }

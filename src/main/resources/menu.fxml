@@ -10,13 +10,12 @@
 <?import javafx.geometry.Pos?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.AnchorPane?>
-
 <?import javafx.scene.control.Button?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.bomberman.MenuController"
             prefHeight="500.0" prefWidth="600.0">
-    <ImageView fitHeight="630.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <ImageView fitHeight="650.0" fitWidth="820.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <image>
             <Image url="@menu/Menu.png" /> </image>
     </ImageView>
@@ -28,16 +27,17 @@
 
         <VBox alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
             <padding>
-                <Insets top="200.0" /> </padding>
-            <Button text="MULTIJOUEUR GAME" onAction="#startMultiGame" styleClass="menu-option" />
-            <Button text="SOLO GAME" onAction="#startSoloMode" styleClass="menu-option" />
-            <Button text="THEME" onAction="#changementTheme" styleClass="menu-option" />
-            <Button fx:id="regleCommande" text="Consigne et Commande" onAction="#regleCommande" styleClass="menu-option" />
-            <Button text="EXIT" onAction="#quittertout" styleClass="menu-option" />
+                <Insets top="250.0" /> </padding>
+            <Button text="MULTIJOUEUR GAME" onAction="#startMultiGame"  />
+            <Button text="SOLO GAME" onAction="#startSoloMode"  />
+            <Button text="CAPTURE THE FLAG GAME" onAction="#changementTheme" />
+            <Button text="THEME" onAction="#changementTheme" />
+            <Button fx:id="regleCommande" text="CONSIGNE ET COMMANDE" onAction="#regleCommande" />
+            <Button text="EXIT" onAction="#quittertout" />
         </VBox>
     </VBox>
 
     <HBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-        <Label text="crée par CONTRUCCI Lou, GIUSIANO Éloïse, MAILHE Gustin, MARCUS William" styleClass="copyright-text" style="-fx-text-fill: #FFFFFF;" />
+        <Label text="crée par CONTRUCCI Lou, GIUSIANO Éloïse, MAILHE Gustin, MARCUS William" styleClass="textBas" style="-fx-text-fill: #FFFFFF;" />
     </HBox>
 </AnchorPane>

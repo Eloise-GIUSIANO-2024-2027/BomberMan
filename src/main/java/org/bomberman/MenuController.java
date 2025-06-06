@@ -22,7 +22,14 @@ public class MenuController {
             // Charge le FXML du jeu (game.fxml)
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("game.fxml"));
             Parent gameRoot = loader.load();
-            Scene gameScene = new Scene(gameRoot, 800, 630);
+            Scene gameScene = new Scene(gameRoot, 820, 650);
+
+            String cssPath = getClass().getResource("/styleGame.css").toExternalForm();
+            if (cssPath != null) {
+                gameScene.getStylesheets().add(cssPath);
+            } else {
+                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+            }
 
             // Récupère le stage actuel
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

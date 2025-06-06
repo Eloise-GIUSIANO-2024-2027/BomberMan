@@ -1,0 +1,47 @@
+/* Styles généraux pour le fond de la scène */
+.root {
+    -fx-background-color: #333333; /* Couleur de fond sombre pour le jeu/menu */
+    -fx-font-family: "Press Start 2P Regular"; /* Police par défaut */
+}
+
+
+/* Styles pour les labels des joueurs */
+.player-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #FFD700; /* Jaune doré */
+    -fx-font-family: "Press Start 2P Regular";
+}
+
+.controls {
+    -fx-font-size: 12px;
+    -fx-text-fill: #AAAAAA;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-family: "Press Start 2P Regular";
+}
+
+/* Styles pour les boutons du menu */
+Button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFD700;
+    -fx-font-size: 15px;
+    -fx-padding: 2px 2px;
+    -fx-cursor: hand;
+    -fx-font-family: "Press Start 2P Regular";
+}
+
+Button:hover {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+.textBas {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 10px;
+    -fx-padding: 0 5px; /* Petit espacement entre les deux labels de copyright */
+    -fx-font-family: "Press Start 2P Regular";
+}
+
+/* Styles pour les petites briques de la grille (si tu les gères par CSS) */
+/* .grid-cell-wall { -fx-fill: #3a3a3a; } */
+/* .grid-cell-destructible { -fx-fill: #8B4513; } */
+/* .grid-cell-empty { -fx-fill: #5c5c5c; } */
