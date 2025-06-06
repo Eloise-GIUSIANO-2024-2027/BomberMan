@@ -1,11 +1,11 @@
 // src/main/java/org/bomberman/gameController.java
 package org.bomberman;
 
-import javafx.animation.AnimationTimer;
-import javafx.event.ActionEvent; // Important pour les événements de bouton
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Node; // Pour accéder à la scène depuis l'événement
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class gameController {
+
+
 
     @FXML
     private VBox gameAreaStackPane; // Référence au StackPane dans FXML
@@ -75,10 +77,6 @@ public class gameController {
                 System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
             }
 
-//
-//            // Charger le CSS (assure-toi que ton fichier CSS est accessible et partagé)
-//            menuScene.getStylesheets().add(getClass().getResource("styleMenu.css").toExternalForm());
-
 
             //Obtenir le Stage actuel et changer la scène
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -106,7 +104,7 @@ public class gameController {
             startButton.setManaged(true);
         }
     }
-    public void deplacer(PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
+    public void deplacer(PacMan_Personnage j1, PacMan_Personnage j2,  PacMan_Personnage j3,  PacMan_Personnage j4){
         // Appliquer l'événement clavier à la scène entière
         GameGrid k = gameGridDisplay;
 
@@ -131,7 +129,5 @@ public class gameController {
             }
         });
     }
-
-
 
 }
