@@ -1,7 +1,7 @@
 // src/main/java/org/bomberman/gameController.java
 package org.bomberman;
 
-import com.sun.tools.javac.Main;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -75,4 +75,6 @@ public class gameController {
         });
     }
 
+    public void retourMenu(ActionEvent actionEvent) {
+    }
 }

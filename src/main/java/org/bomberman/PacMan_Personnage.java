@@ -6,7 +6,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import org.w3c.dom.css.Rect;
 
 import java.util.Objects;
 
