@@ -1,11 +1,13 @@
 package org.bomberman;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -48,6 +50,33 @@ public class MenuController {
         System.out.println("Changement du theme !");
         // Implémente les futur theme
     }
+
+    @FXML
+    public void regleCommande(ActionEvent event) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("regle.fxml"));
+                Parent root = loader.load();
+
+                Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.setTitle("Bomberman - Règles du Jeu");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Erreur lors du chargement de la page des règles : " + e.getMessage());
+            }
+
+    }
+
+
+    @FXML
+    public void quittertout() {
+        Platform.exit(); // Fait sortir l'application JavaFX
+        System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
+
+    }
+
 
     // Méthode d'initialisation du contrôleur (optionnel pour ce menu simple)
     @FXML
