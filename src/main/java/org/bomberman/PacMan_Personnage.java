@@ -109,7 +109,7 @@ class PacMan_Personnage extends Group {
     }
 
     public boolean estEnCollisionAvecLesObstaclesDuJeu() {
-        for (Obstacle unObstacle : PacMan_JeuMain.getLesObstacles()) {
+        for (PacMan_Obstacle unObstacle : PacMan_JeuMain.getLesObstacles()) {
             if (getBoundsInParent().contains(unObstacle.getBoundsInParent())
                     || unObstacle.getBoundsInParent().contains(getBoundsInParent())) {
                 return true;

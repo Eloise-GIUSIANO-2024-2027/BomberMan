@@ -6,4 +6,6 @@ module org.bomberman {
 
     opens org.bomberman to javafx.fxml;
     exports org.bomberman;
+    exports org.bomberman.entite;
+    opens org.bomberman.entite to javafx.fxml;
 }
