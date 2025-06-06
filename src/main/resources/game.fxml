@@ -11,8 +11,6 @@
             <children>
                 <HBox alignment="TOP_LEFT" spacing="50.0">
                     <children>
-<!--                        <Button styleClass="petitBouton" fx:id="retourButton" text="RETOUR" onAction="#retourMenu" />-->
-<!--                        <Button styleClass="petitBouton" fx:id="regleCommande" text="CONSIGNE ET COMMANDE" onAction="#regleCommande" />-->
                         <Label styleClass="controls" text="BOMBERMAN - MULTIJOUEUR LOCAL " />
                     </children>
                 </HBox>

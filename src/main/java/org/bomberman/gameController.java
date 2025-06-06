@@ -33,8 +33,6 @@ public class gameController {
     @FXML
     private VBox gameAreaStackPane; // Référence au StackPane dans FXML
     Game game = new Game();
-
-
     // Crée une instance de ta GameGrid personnalisée
     // L'instance de ta classe GameGrid
     GameGrid gameGridDisplay = new GameGrid(game);
@@ -43,10 +41,6 @@ public class gameController {
 
     @FXML
     public void startGame() throws IOException {
-        // Initialise la logique du jeu
-        // L'instance de la logique du jeu
-        game.startGame(); // Appelle la méthode de démarrage de ta logique de jeu
-
         // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
 
@@ -59,11 +53,7 @@ public class gameController {
         PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
         PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
 
-
-        // positionnement du fantôme
-
         gameGridDisplay.getChildren().addAll(pacman, fantome, pacman2, pacman3);
-        //deplacer(pacman,fantome,pacman2,pacman3);
         // Donne le focus à gameGridDisplay pour recevoir les touches
         gameGridDisplay.requestFocus();
 
