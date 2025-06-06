@@ -1,6 +1,6 @@
-package org.bomberman;
+package org.bomberman.entite;
 
-public class Bombe extends Entite{
+public class Bombe extends Entite {
 
 
 

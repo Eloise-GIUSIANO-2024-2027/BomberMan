@@ -1,7 +1,4 @@
-package org.bomberman;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+package org.bomberman.entite;
 
 public abstract class Entite {
     private int x;
