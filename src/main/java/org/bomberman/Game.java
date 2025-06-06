@@ -1,5 +1,7 @@
 package org.bomberman;
 
+import org.bomberman.entite.Bombe;
+
 public class Game {
 
     private static final int WIDTH = 11;   // Largeur de la grille
@@ -27,6 +29,10 @@ public class Game {
     // Récupérer la grille du jeu
     public int[][] getGrid() {
         return grid;
+    }
+
+    public void setGrid(int[][] grid) {
+        this.grid = grid;
     }
 
     // Démarrer le jeu (logique de base ici, à étendre)

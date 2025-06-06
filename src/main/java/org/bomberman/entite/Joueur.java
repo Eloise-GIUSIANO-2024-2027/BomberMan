@@ -1,14 +1,17 @@
 package org.bomberman.entite;
 
+import org.bomberman.Game;
+
 public class Joueur extends Entite {
     public double vitesse = 0.2;
     private int nbBombes = 0;
     private int nbBombesMax = 1;
-    private int[][] map;
+    private Game game;
+    private int tailleBombe = 1;
 
-    public Joueur(int x, int y, String linkSprite, int[][] map){
+    public Joueur(int x, int y, String linkSprite, Game game){
         super(x, y, "character.idle-front");
-        this.map = map;
+        this.game = game;
     }
 
     public int[] haut(){
@@ -32,8 +35,8 @@ public class Joueur extends Entite {
         return getPos();
     }
 
-//    public int[] poseBombe(){
-//        new Bombe(getPos()[0], getPos()[1]);
-//        return getPos();
-//    }
+    public int[] poseBombe(){
+        new Bombe(getPos()[0], getPos()[1], tailleBombe, game);
+        return getPos();
+    }
 }
