@@ -18,7 +18,7 @@ import java.util.Optional;
 public class PacMan_JeuMain extends Application {
 
     private Scene scene;
-    private static final ArrayList<Obstacle> lesObstacles = new ArrayList<>();
+    private static final ArrayList<PacMan_Obstacle> lesObstacles = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) {
@@ -46,7 +46,7 @@ public class PacMan_JeuMain extends Application {
 
         //ajout d'un obstacle au milieu
 
-        Obstacle obstacleCentral = new Obstacle(60, 300, Paint.valueOf("blue"));
+        PacMan_Obstacle obstacleCentral = new PacMan_Obstacle(60, 300, Paint.valueOf("blue"));
         obstacleCentral.setStyle("-fx-fill: brown;");
         obstacleCentral.setLayoutX(300);
         obstacleCentral.setLayoutY(80);
@@ -89,7 +89,7 @@ public class PacMan_JeuMain extends Application {
         });
     }
 
-    public static ArrayList<Obstacle> getLesObstacles(){
+    public static ArrayList<PacMan_Obstacle> getLesObstacles(){
         return lesObstacles;
     }
 
