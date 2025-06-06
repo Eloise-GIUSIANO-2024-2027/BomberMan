@@ -32,6 +32,8 @@
             <Button text="MULTIJOUEUR GAME" onAction="#startMultiGame" styleClass="menu-option" />
             <Button text="SOLO GAME" onAction="#startSoloMode" styleClass="menu-option" />
             <Button text="THEME" onAction="#changementTheme" styleClass="menu-option" />
+            <Button fx:id="regleCommande" text="Consigne et Commande" onAction="#regleCommande" styleClass="menu-option" />
+            <Button text="EXIT" onAction="#quittertout" styleClass="menu-option" />
         </VBox>
     </VBox>
 
