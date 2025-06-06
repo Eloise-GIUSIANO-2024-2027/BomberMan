@@ -4,11 +4,12 @@ package org.bomberman;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 
 public class gameController {
 
     @FXML
-    private StackPane gameAreaStackPane; // Référence au StackPane dans FXML
+    private VBox gameAreaStackPane; // Référence au StackPane dans FXML
 
     @FXML
     private Button startButton; // Référence au bouton démarrer
@@ -28,6 +29,11 @@ public class gameController {
         // Ajoute la GameGrid au StackPane central
         gameAreaStackPane.getChildren().clear(); // Vide le StackPane
         gameAreaStackPane.getChildren().add(gameGridDisplay); // Ajoute la GameGrid
+    }
+
+    @FXML
+    public void regleCommande() {
+        // a enoyer sur une autre page avec les regle et les commende
     }
 
     public void initialize() {

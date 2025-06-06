@@ -31,7 +31,7 @@ public class GameGrid extends GridPane {
         // Créer les cases (rectangles) pour chaque cellule de la grille
         for (int i = 0; i < grid.length; i++) { // Itère sur les lignes (y)
             for (int j = 0; j < grid[i].length; j++) { // Itère sur les colonnes (x)
-                Rectangle rectangle = new Rectangle(40, 40); // Taille des cases
+                Rectangle rectangle = new Rectangle(48, 48); // Taille des cases
 
                 // Appliquer les couleurs en fonction du type de case
                 if (grid[i][j] == 1) {

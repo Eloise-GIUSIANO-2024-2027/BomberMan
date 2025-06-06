@@ -28,23 +28,19 @@
                 </HBox>
             </children>
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
             </padding>
         </VBox>
     </top>
     <center>
-        <StackPane fx:id="gameAreaStackPane" alignment="CENTER">
+        <VBox fx:id="gameAreaStackPane" alignment="CENTER" spacing="5.0">
             <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame" styleClass="start-button"/>
-        </StackPane>
+            <Button fx:id="regleCommande" text="Consigne et Commande" onAction="#regleCommande" styleClass="start-button"/>
+        </VBox>
     </center>
     <bottom>
         <HBox alignment="CENTER" styleClass="footer">
-            <children>
-                <Label styleClass="instructions" text="Détruisez les murs pour trouver des power-ups ! Évitez les explosions !" />
-            </children>
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
+<!--            scores ?-->
         </HBox>
     </bottom>
 </BorderPane>

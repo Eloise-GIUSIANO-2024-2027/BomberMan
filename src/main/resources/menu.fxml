@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Pos?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<?import javafx.scene.control.Button?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.bomberman.MenuController"
+            prefHeight="500.0" prefWidth="600.0">
+    <ImageView fitHeight="630.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <image>
+            <Image url="@menu/Menu.png" /> </image>
+    </ImageView>
+
+    <VBox alignment="TOP_CENTER" AnchorPane.topAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <spacing>30.0</spacing> <padding>
+        <Insets top="20.0" />
+    </padding>
+
+        <VBox alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets top="200.0" /> </padding>
+            <Button text="MULTIJOUEUR GAME" onAction="#startMultiGame" styleClass="menu-option" />
+            <Button text="SOLO GAME" onAction="#startSoloMode" styleClass="menu-option" />
+            <Button text="THEME" onAction="#changementTheme" styleClass="menu-option" />
+        </VBox>
+    </VBox>
+
+    <HBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Label text="crée par CONTRUCCI Lou, GIUSIANO Éloïse, MAILHE Gustin, MARCUS William" styleClass="copyright-text" style="-fx-text-fill: #FFFFFF;" />
+    </HBox>
+</AnchorPane>
