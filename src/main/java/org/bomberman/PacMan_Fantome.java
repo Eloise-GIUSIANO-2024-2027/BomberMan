@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-public class Fantome extends Personnage {
+public class PacMan_Fantome extends PacMan_Personnage {
 
     private final Rectangle basCorps;
 
@@ -15,7 +15,7 @@ public class Fantome extends Personnage {
     private final Circle retineDroite;
 
 
-    public Fantome() {
+    public PacMan_Fantome() {
         super("droite", Color.BLUE, Color.BLUE);
         basCorps = new Rectangle(0, 10, 20, 10);
         basCorps.setFill(Color.BLUE);

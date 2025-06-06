@@ -4,14 +4,14 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-class Personnage extends Group {
+class PacMan_Personnage extends Group {
     final static double LARGEUR_MOITIE_PERSONNAGE = 10;
     final static double LARGEUR_PERSONNAGE = LARGEUR_MOITIE_PERSONNAGE * 2;
     private final Circle corps;
     private String direction;
 
 
-    public Personnage(String direction, Color couleurContour, Color couleurRemplissage) {
+    public PacMan_Personnage(String direction, Color couleurContour, Color couleurRemplissage) {
         this.direction = direction;
         corps = new Circle(10, 10, LARGEUR_MOITIE_PERSONNAGE, couleurContour);
         corps.setFill(couleurRemplissage);
@@ -103,13 +103,13 @@ class Personnage extends Group {
         }
     }
 
-    public boolean estEnCollision(Personnage autrePersonnage) {
+    public boolean estEnCollision(PacMan_Personnage autrePersonnage) {
         return getBoundsInParent().contains(autrePersonnage.getBoundsInParent())
                 || autrePersonnage.getBoundsInParent().contains(getBoundsInParent());
     }
 
     public boolean estEnCollisionAvecLesObstaclesDuJeu() {
-        for (Obstacle unObstacle : JeuMain.getLesObstacles()) {
+        for (Obstacle unObstacle : PacMan_JeuMain.getLesObstacles()) {
             if (getBoundsInParent().contains(unObstacle.getBoundsInParent())
                     || unObstacle.getBoundsInParent().contains(getBoundsInParent())) {
                 return true;

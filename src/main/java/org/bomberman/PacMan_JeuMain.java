@@ -15,7 +15,7 @@ import javafx.stage.StageStyle;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class JeuMain extends Application {
+public class PacMan_JeuMain extends Application {
 
     private Scene scene;
     private static final ArrayList<Obstacle> lesObstacles = new ArrayList<>();
@@ -26,15 +26,15 @@ public class JeuMain extends Application {
         BorderPane root = new BorderPane();
 
         //Acteurs du jeu
-        Personnage pacman = new Pacman();
+        PacMan_Personnage pacman = new Pacman();
         //positionnement du pacman
         pacman.setLayoutX(0);
-        pacman.setLayoutY(12 * Personnage.LARGEUR_PERSONNAGE);
-        Personnage fantome = new Fantome();
+        pacman.setLayoutY(12 * PacMan_Personnage.LARGEUR_PERSONNAGE);
+        PacMan_Personnage fantome = new PacMan_Fantome();
 
         // positionnement du fantôme
-        fantome.setLayoutX(31 * Personnage.LARGEUR_PERSONNAGE);
-        fantome.setLayoutY(12 * Personnage.LARGEUR_PERSONNAGE);
+        fantome.setLayoutX(31 * PacMan_Personnage.LARGEUR_PERSONNAGE);
+        fantome.setLayoutY(12 * PacMan_Personnage.LARGEUR_PERSONNAGE);
 
         //panneau du jeu
         Pane jeu = new Pane();
@@ -71,7 +71,7 @@ public class JeuMain extends Application {
      * @param j1
      * @param j2
      */
-    private void deplacer(Personnage j1, Personnage j2) {
+    private void deplacer(PacMan_Personnage j1, PacMan_Personnage j2) {
 
         scene.setOnKeyPressed((KeyEvent event) -> {
 

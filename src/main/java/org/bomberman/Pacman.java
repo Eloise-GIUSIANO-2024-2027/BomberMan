@@ -3,7 +3,7 @@ package org.bomberman;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
-public class Pacman extends Personnage {
+public class Pacman extends PacMan_Personnage {
 
     private final Line bouche;
 
