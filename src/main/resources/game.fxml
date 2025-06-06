@@ -43,8 +43,19 @@
         </VBox>
     </top>
     <center>
-        <VBox fx:id="gameAreaStackPane" alignment="CENTER" spacing="5.0">
-            <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
-        </VBox>
+        <StackPane fx:id="gameContainer" alignment="CENTER">
+            <!-- Jeu actif -->
+            <VBox fx:id="gameAreaStackPane" alignment="CENTER" spacing="5.0">
+                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
+            </VBox>
+                        <!-- Menu pause transparent -->
+            <VBox fx:id="pauseMenuContainer" alignment="CENTER" spacing="20.0"
+                  styleClass="pause-menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
+                <Label text="~ PAUSE ~" styleClass="pause-title"/>
+                <Button fx:id="resumeGameButton" text="REPRENDRE" onAction="#resumeGame" />
+                <Button fx:id="backToMainMenuButton" text="RETOUR AU MENU" onAction="#retourMenu" />
+                <Button fx:id="exitButton" text="QUITTER LE JEU" onAction="#quittertout"/>
+            </VBox>
+        </StackPane>
     </center>
 </BorderPane>

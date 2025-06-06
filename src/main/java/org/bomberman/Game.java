@@ -40,4 +40,6 @@ public class Game {
         System.out.println("Le jeu a commencé !");
         // Logique du jeu à ajouter ici (mouvement, explosions, etc.)
     }
+
+
 }
