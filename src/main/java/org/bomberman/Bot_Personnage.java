@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
-import java.util.Objects;
+import java.util.*;
 
 public class Bot_Personnage extends Group {
     private Rectangle rectangle = new Rectangle(48, 48);
@@ -32,7 +32,11 @@ public class Bot_Personnage extends Group {
                 {0, -1}   // haut
         };
 
-        for (int[] dir : directions) {
+        // Mélanger les directions aléatoirement
+        List<int[]> directionsAleatoire = new ArrayList<>(Arrays.asList(directions));
+        Collections.shuffle(directionsAleatoire);
+
+        for (int[] dir : directionsAleatoire) {
             int newX = gridX + dir[0];
             int newY = gridY + dir[1];
             if (isValidGridPosition(newX, newY)) {

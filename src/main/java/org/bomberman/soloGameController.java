@@ -1,6 +1,6 @@
 package org.bomberman;
 
-import javafx.animation.AnimationTimer;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,7 +23,6 @@ public class soloGameController {
     private VBox pauseMenuContainer;
 
     private boolean isPaused = false;
-    private AnimationTimer gameLoop;
 
     @FXML
     private VBox gameAreaStackPane; // Référence au StackPane dans FXML
@@ -33,7 +32,7 @@ public class soloGameController {
     private Button startButton; // Référence au bouton démarrer
 
     @FXML
-    public void startGame() throws IOException {
+    public void startGame() {
         // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
 
@@ -121,7 +120,7 @@ public class soloGameController {
     }
 
     @FXML
-    public void resumeGame(ActionEvent event) {
+    public void resumeGame() {
         isPaused = false;
         pauseMenuContainer.setVisible(false);
         pauseMenuContainer.setManaged(false);
