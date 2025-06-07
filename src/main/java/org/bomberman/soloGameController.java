@@ -1,5 +1,6 @@
 package org.bomberman;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,18 +13,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.bomberman.entite.Bot;
 
 import java.io.IOException;
 
 public class soloGameController {
 
-    //bouton et conteneur du menu echap
+
     @FXML
     private VBox pauseMenuContainer;
 
-    private boolean paused = false;
-    private Bot bot1;
+    private boolean isPaused = false;
+    private AnimationTimer gameLoop;
 
     @FXML
     private VBox gameAreaStackPane; // Référence au StackPane dans FXML
@@ -42,9 +42,9 @@ public class soloGameController {
         gameAreaStackPane.getChildren().add(gameGridDisplay);
         //Acteurs du jeu
         PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        bot1 = new Bot(5, 5, game);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10);
 
-        gameGridDisplay.getChildren().add(pacman);
+        gameGridDisplay.getChildren().addAll(pacman, bot1);
         // Donne le focus à gameGridDisplay pour recevoir les touches
         gameGridDisplay.requestFocus();
 
@@ -56,7 +56,7 @@ public class soloGameController {
                     togglePause();
                 }
 
-                if (!paused) {
+                if (!isPaused) {
                     // Appelle ta méthode de déplacement
                     handlePlayerMovement(event, pacman, bot1);
                 }
@@ -65,7 +65,7 @@ public class soloGameController {
 
     }
 
-    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, Bot bot1) {
+    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, Bot_Personnage bot1) {
         GameGrid k = gameGridDisplay;
 
         switch (event.getCode()) {
@@ -75,6 +75,7 @@ public class soloGameController {
             case D -> j1.deplacerADroite(k.getWidth());
             case Q -> j1.deplacerAGauche();
         }
+        bot1.avancerSimplement();
 
     }
 
@@ -87,10 +88,10 @@ public class soloGameController {
     }
 
     private void togglePause() {
-        paused = !paused;
+        isPaused = !isPaused;
 
-        pauseMenuContainer.setVisible(paused);
-        pauseMenuContainer.setManaged(paused);
+        pauseMenuContainer.setVisible(isPaused);
+        pauseMenuContainer.setManaged(isPaused);
     }
 
     @FXML
@@ -121,7 +122,7 @@ public class soloGameController {
 
     @FXML
     public void resumeGame(ActionEvent event) {
-        paused = false;
+        isPaused = false;
         pauseMenuContainer.setVisible(false);
         pauseMenuContainer.setManaged(false);
     }
