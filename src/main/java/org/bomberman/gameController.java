@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
@@ -14,19 +15,19 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import java.io.IOException;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class gameController {
 
     @FXML
     private VBox pauseMenuContainer;
     @FXML
-    private Button resumeGameButton;
-    @FXML
-    private Button restartLevelButton;
-    @FXML
-    private Button backToMainMenuButton;
-    @FXML
-    private Button exitButton;
+    private VBox finMenuContainer;
+
+    private Timeline gameTimer;
+    private int tempsRestant = 120;
 
     private boolean paused = false;
 
@@ -42,10 +43,14 @@ public class gameController {
     private Button startButton; // Référence au bouton démarrer
 
     @FXML
+    private Label timerLabel;
+
+    @FXML
     public void startGame() throws IOException {
         // Initialise la logique du jeu
         // L'instance de la logique du jeu
         game.startGame(); // Appelle la méthode de démarrage de ta logique de jeu
+        lancerTimer(); // debut du timer
 
         // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
@@ -127,8 +132,19 @@ public class gameController {
     private void togglePause() {
         paused = !paused;
 
+
         pauseMenuContainer.setVisible(paused);
         pauseMenuContainer.setManaged(paused);
+
+        if (paused) {
+            if (gameTimer != null) {
+                gameTimer.pause();
+            }
+        } else {
+            if (gameTimer != null) {
+                gameTimer.play();
+            }
+        }
     }
 
     @FXML
@@ -158,16 +174,53 @@ public class gameController {
     }
 
     @FXML
-    public void resumeGame(ActionEvent event) {
+    public void resumeGame() {
         paused = false;
         pauseMenuContainer.setVisible(false);
         pauseMenuContainer.setManaged(false);
+        if (gameTimer != null) {
+            gameTimer.play();
+        }
     }
 
     @FXML
     public void quittertout() {
         Platform.exit(); // Fait sortir l'application JavaFX
         System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
+
+    }
+
+    private void lancerTimer() {
+        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            tempsRestant--;
+            int minutes = tempsRestant / 60;
+            int secondes = tempsRestant % 60;
+            String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
+
+            // Met à jour le texte du Label dans l'interface
+            Platform.runLater(() -> timerLabel.setText(tempsFormate));
+
+
+            if (tempsRestant <= 0) {
+                gameTimer.stop();
+                finDePartie();
+                timerLabel.setText("TIMEUR : 00:00");
+            }
+        }));
+        gameTimer.setCycleCount(Timeline.INDEFINITE);
+        gameTimer.play();
+    }
+
+    private void finDePartie() {
+        System.out.println("Temps écoulé ! Partie terminée.");
+        Platform.runLater(() -> {
+            // afficher un message ou recharger la scène
+            finMenuContainer.setVisible(true);
+            finMenuContainer.setManaged(true);
+        });
+    }
+    @FXML
+    public void replayGame() {
 
     }
 

@@ -31,7 +31,7 @@
                     <children>
                         <Label styleClass="player-label" text="JOUEUR 1 : 000"  />
                         <Label styleClass="player-label" text="JOUEUR 2 : 000" />
-                        <Label styleClass="controls" text="TIMEUR : 00:00" />
+                        <Label fx:id="timerLabel" styleClass="controls" text="TIMEUR : 02:00" />
                         <Label styleClass="player-label" text="JOUEUR 3 : 000" />
                         <Label styleClass="player-label" text="JOUEUR 4 : 000" />
                     </children>
@@ -50,11 +50,20 @@
             </VBox>
                         <!-- Menu pause transparent -->
             <VBox fx:id="pauseMenuContainer" alignment="CENTER" spacing="20.0"
-                  styleClass="pause-menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
-                <Label text="~ PAUSE ~" styleClass="pause-title"/>
-                <Button fx:id="resumeGameButton" text="REPRENDRE" onAction="#resumeGame" />
-                <Button fx:id="backToMainMenuButton" text="RETOUR AU MENU" onAction="#retourMenu" />
-                <Button fx:id="exitButton" text="QUITTER LE JEU" onAction="#quittertout"/>
+                  styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
+                <Label text="~ PAUSE ~" styleClass="title"/>
+                <Button text="REPRENDRE" onAction="#resumeGame" />
+                <Button text="RETOUR AU MENU" onAction="#retourMenu" />
+                <Button text="QUITTER LE JEU" onAction="#quittertout"/>
+            </VBox>
+            <!-- Menu pause fin -->
+            <VBox fx:id="finMenuContainer" alignment="CENTER" spacing="20.0"
+                  styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
+                <Label text="~ FIN ~" styleClass="title"/>
+                <Label text="Le vainqueur est : " styleClass="vainqueur"/>
+                <Button  text="REJOUER" onAction="#replayGame" />
+                <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
+                <Button  text="QUITTER LE JEU" onAction="#quittertout"/>
             </VBox>
         </StackPane>
     </center>
