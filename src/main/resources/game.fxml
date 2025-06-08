@@ -45,7 +45,7 @@
     <center>
         <StackPane fx:id="gameContainer" alignment="CENTER">
             <!-- Jeu actif -->
-            <VBox fx:id="gameAreaStackPane" alignment="CENTER" spacing="5.0">
+            <VBox fx:id="gameArea" alignment="CENTER">
                 <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
             </VBox>
                         <!-- Menu pause transparent -->

@@ -10,65 +10,71 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
+import org.bomberman.entite.Bombe;
+
 import java.io.IOException;
 
 public class gameController {
 
     @FXML
     private VBox pauseMenuContainer;
-    @FXML
-    private Button resumeGameButton;
-    @FXML
-    private Button restartLevelButton;
-    @FXML
-    private Button backToMainMenuButton;
-    @FXML
-    private Button exitButton;
+
 
     private boolean paused = false;
 
     @FXML
-    private VBox gameAreaStackPane; // Référence au StackPane dans FXML
+    private VBox gameArea;
     Game game = new Game();
 
-
-    // Crée une instance de ta GameGrid personnalisée
-    // L'instance de ta classe GameGrid
-    GameGrid gameGridDisplay = new GameGrid(game);
+    private GameGrid gameGridDisplay;
     @FXML
     private Button startButton; // Référence au bouton démarrer
 
+
+    // Partie modifiée de gameController.java
+
+    // Partie modifiée de gameController.java
+
+    // Partie modifiée de gameController.java
+
     @FXML
     public void startGame() throws IOException {
-        // Initialise la logique du jeu
-        // L'instance de la logique du jeu
-        game.startGame(); // Appelle la méthode de démarrage de ta logique de jeu
-
-        // Crée une instance de ta GameGrid personnalisée
+        game.startGame();
         gameGridDisplay = new GameGrid(game);
 
-        // Ajoute la GameGrid au StackPane central
-        gameAreaStackPane.getChildren().clear(); // Vide le StackPane
-        gameAreaStackPane.getChildren().add(gameGridDisplay);
-        //Acteurs du jeu
+        gameArea.getChildren().clear();
+
+        // Créer un conteneur avec couches
+        StackPane gameContainer = new StackPane();
+
+        // Ajouter la grille de terrain
+        gameContainer.getChildren().add(gameGridDisplay);
+
+        // Ajouter la couche pour les entités (personnages + bombes)
+        Pane entityLayer = gameGridDisplay.getEntityLayer();
+        gameContainer.getChildren().add(entityLayer);
+
+        gameArea.getChildren().add(gameContainer);
+
+        // Créer les personnages
         PacMan_Personnage pacman = new Pacman(game, 0, 0);
         PacMan_Personnage fantome = new Pacman(game, 12, 10);
         PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
         PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
 
-
-        // positionnement du fantôme
-
+        // Ajouter les personnages DIRECTEMENT à la grille comme avant
         gameGridDisplay.getChildren().addAll(pacman, fantome, pacman2, pacman3);
-        //deplacer(pacman,fantome,pacman2,pacman3);
-        // Donne le focus à gameGridDisplay pour recevoir les touches
-        gameGridDisplay.requestFocus();
 
-        // Ajoute le gestionnaire de touches sur la scène
-        Scene scene = gameAreaStackPane.getScene();
+        // Focus et événements
+        gameContainer.requestFocus();
+        gameContainer.setFocusTraversable(true);
+
+        Scene scene = gameArea.getScene();
         if (scene != null) {
             scene.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.ESCAPE) {
@@ -76,17 +82,15 @@ public class gameController {
                 }
 
                 if (!paused) {
-                    // Appelle ta méthode de déplacement
                     handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
                 }
             });
         }
-
     }
-        // positionnement du fantôme
 
     private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
         GameGrid k = gameGridDisplay;
+
 
         switch (event.getCode()) {
             //Joueur 1
@@ -94,24 +98,67 @@ public class gameController {
             case G -> j1.deplacerEnBas(k.getHeight());
             case H -> j1.deplacerADroite(k.getWidth());
             case F -> j1.deplacerAGauche();
+            case U -> {
+                int px = j1.getGridX();
+                int py = j1.getGridY();
+
+                if (game.getGrid()[px][py] == 0) {
+                    System.out.println("Bombe");
+                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    gameGridDisplay.refresh();
+                }
+            }
 
             //Joueur 2
             case Z -> j2.deplacerEnHaut();
             case S -> j2.deplacerEnBas(k.getHeight());
             case D -> j2.deplacerADroite(k.getWidth());
             case Q -> j2.deplacerAGauche();
+            case A -> {
+                int px = j2.getGridX();
+                int py = j2.getGridY();
+
+                if (game.getGrid()[py][px] == 0) {
+                    System.out.println("Bombe");
+                    // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
+                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    gameGridDisplay.refresh();
+                }
+            }
 
             //Joueur 3
             case O -> j3.deplacerEnHaut();
             case L -> j3.deplacerEnBas(k.getHeight());
             case M -> j3.deplacerADroite(k.getWidth());
             case K -> j3.deplacerAGauche();
+            case P -> {
+                int px = j3.getGridX();
+                int py = j3.getGridY();
+
+                if (game.getGrid()[py][px] == 0) {
+                    System.out.println("Bombe");
+
+                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    gameGridDisplay.refresh();
+                }
+            }
 
             //Joueur 4
             case NUMPAD5 -> j4.deplacerEnHaut();
             case NUMPAD2 -> j4.deplacerEnBas(k.getHeight());
             case NUMPAD3 -> j4.deplacerADroite(k.getWidth());
             case NUMPAD1 -> j4.deplacerAGauche();
+            case NUMPAD4 -> {
+                int px = j4.getGridX();
+                int py = j4.getGridY();
+
+                if (game.getGrid()[py][px] == 0) {
+                    System.out.println("Bombe");
+
+                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    gameGridDisplay.refresh();
+                }
+            }
         }
     }
 

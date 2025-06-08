@@ -1,93 +1,101 @@
 package org.bomberman.entite;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.application.Platform;
 import org.bomberman.Game;
+import org.bomberman.GameGrid;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Bombe extends Entite {
-    public boolean explose = false;
-    private int taille;
-    int x = getPos()[0];
-    int y = getPos()[1];
-    Game game;
-    int[][] map;
+public class Bombe extends ImageView {
+    private int x, y;
+    private int rayon;
+    private Game game;
+    private GameGrid gameGrid;
 
-    public Bombe(int x, int y, int taille, Game game) {
-        super(x, y, "imgBombe");
-        this.taille = taille;
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid) {
+        this.x = x;
+        this.y = y;
+        this.rayon = rayon;
+        this.game = game;
+        this.gameGrid = gameGrid;
 
-        map = game.getGrid();
-        map[x][y] = 2; // représente la bombe
-        game.setGrid(map); // Met à jour la map
+        // Charger l'image de la bombe
+        try {
+            Image bombeImage = new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/imgBombe.png")), 48, 48, false, false);
+            this.setImage(bombeImage);
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de l'image de la bombe: " + e.getMessage());
+        }
 
+        int[][] grid = game.getGrid();
+        if (x >= 0 && x < grid.length && y >= 0 && y < grid[0].length) {
+            // Marquer la case comme occupée par une bombe
+            grid[y][x] = 3; // 3 = bombe
+            game.setGrid(grid);
 
+            System.out.println("Bombe créée aux coordonnées: " + x + "," + y);
 
+            // Ajouter à la grille
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(this);
+                GridPane.setColumnIndex(this, x); // x est la colonne
+                GridPane.setRowIndex(this, y);
+                this.toFront(); // Assurer que la bombe est visible
+            });
+
+            startTimer();
+        } else {
+            System.err.println("Position invalide pour la bombe: " + x + "," + y);
+        }
+    }
+
+    private void startTimer() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                exploser(); // explosion de la bombe
+                Platform.runLater(() -> explode());
             }
-        }, 2000); // 2000 millisecondes = 2 secondes
+        }, 2000); // 2 secondes
     }
 
-    private void exploser() {
-        if (explose) return; // Éviter les explosions multiples
+    private void explode() {
+        int[][] grid = game.getGrid();
 
-        explose = true;
-        System.out.println("La bombe a explosé à la position (" + x + ", " + y + ")");
+        // Centre - retirer la bombe
+        grid[y][x] = 0;
 
-        // Explosion au centre
-        map[x][y] = 3; // 2 pour explosion
-
-        // Explosion en croix selon la taille
-        // Chaque direction doit être traitée séparément
-
-        // Explosion vers la droite
-        for (int i = 1; i <= taille; i++) {
-            if (x + i >= map.length) break; // Sortie de la map
-            if (map[x + i][y] == '#') break; // Mur indestructible - arrêter
-            if (map[x + i][y] == 'M') { // Mur destructible
-                map[x + i][y] = 'X';
-                break; // Arrêter après avoir détruit le mur
+        // Destruction autour de la bombe
+        // Explosion horizontale (le long de la ligne 'y', en changeant la colonne 'x')
+        for (int dx = -rayon; dx <= rayon; dx++) {
+            int nx = x + dx; // nx est la nouvelle colonne
+            if (nx >= 0 && nx < grid[0].length) { // grid[0].length est la largeur
+                if (grid[y][nx] == 2) grid[y][nx] = 0; // grid[ligne][colonne]
             }
-            map[x + i][y] = 'X';
+        }
+        // Explosion verticale (le long de la colonne 'x', en changeant la ligne 'y')
+        for (int dy = -rayon; dy <= rayon; dy++) {
+            int ny = y + dy; // ny est la nouvelle ligne
+            if (ny >= 0 && ny < grid.length) { // grid.length est la hauteur
+                if (grid[ny][x] == 2) grid[ny][x] = 0; // grid[ligne][colonne]
+            }
         }
 
-        // Explosion vers la gauche
-        for (int i = 1; i <= taille; i++) {
-            if (x - i < 0) break; // Sortie de la map
-            if (map[x - i][y] == '#') break; // Mur indestructible - arrêter
-            if (map[x - i][y] == 'M') { // Mur destructible
-                map[x - i][y] = 'X';
-                break; // Arrêter après avoir détruit le mur
-            }
-            map[x - i][y] = 'X';
-        }
+        game.setGrid(grid);
+        gameGrid.refresh(); // Recréer seulement la grille de terrain
 
-        // Explosion vers le bas
-        for (int i = 1; i <= taille; i++) {
-            if (y + i >= map[0].length) break; // Sortie de la map
-            if (map[x][y + i] == '#') break; // Mur indestructible - arrêter
-            if (map[x][y + i] == 'M') { // Mur destructible
-                map[x][y + i] = 'X';
-                break; // Arrêter après avoir détruit le mur
+        // Supprimer visuellement la bombe
+        Platform.runLater(() -> {
+            if (this.getParent() instanceof Pane pane) {
+                pane.getChildren().remove(this);
             }
-            map[x][y + i] = 'X';
-        }
-
-        // Explosion vers le haut
-        for (int i = 1; i <= taille; i++) {
-            if (y - i < 0) break; // Sortie de la map
-            if (map[x][y - i] == '#') break; // Mur indestructible - arrêter
-            if (map[x][y - i] == 'M') { // Mur destructible
-                map[x][y - i] = 'X';
-                break; // Arrêter après avoir détruit le mur
-            }
-            map[x][y - i] = 'X';
-        }
-
-        game.setGrid(map);
+        });
     }
 }

@@ -5,52 +5,78 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 import java.util.Objects;
 
-// GameGrid hérite maintenant de GridPane directement
 public class GameGrid extends GridPane {
 
-    private Game game; // L'instance de la logique du jeu
+    private Game game;
     int[][] grid;
+    private Pane entityLayer; // Couche pour les entités (personnages, bombes)
 
     public GameGrid(Game game) {
         this.game = game;
-
-        // Récupérer la grille du jeu
         grid = game.getGrid();
 
         // Configurer le GridPane
-        this.setAlignment(Pos.CENTER); // Centrer les éléments à l'intérieur du GridPane
-        this.setHgap(2); // Très petit espace horizontal entre les cellules
-        this.setVgap(2); // Très petit espace vertical entre les cellules
-        WritableImage target = new WritableImage(32, 32);
+        this.setAlignment(Pos.CENTER);
+        this.setHgap(2);
+        this.setVgap(2);
+
+        // Créer une couche pour les entités
+        entityLayer = new Pane();
 
         refresh();
     }
 
     public void refresh() {
-        // Créer les cases (rectangles) pour chaque cellule de la grille
-        for (int i = 0; i < grid.length; i++) { // Itère sur les lignes (y)
-            for (int j = 0; j < grid[i].length; j++) { // Itère sur les colonnes (x)
-                Rectangle rectangle = new Rectangle(48, 48); // Taille des cases
+        // Sauvegarder TOUTES les entités (personnages, bombes, etc.)
+        java.util.List<javafx.scene.Node> entites = new java.util.ArrayList<>();
+        for (javafx.scene.Node node : this.getChildren()) {
+            if (!(node instanceof Rectangle)) {
+                entites.add(node);
+            }
+        }
 
-                // Appliquer les couleurs en fonction du type de case
+        // Vider complètement la grille
+        this.getChildren().clear();
+
+        // D'ABORD recréer le terrain
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                Rectangle rectangle = new Rectangle(48, 48);
+
+                // Appliquer les textures selon le type de case
                 if (grid[i][j] == 1) {
-                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/rock1.png")),32,32,false,false))); // Gris foncé pour les murs
-                    // Ou utiliser une classe CSS si tu veux : rectangle.getStyleClass().add("grid-cell-wall");
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/rock1.png")), 32, 32, false, false)));
+                } else if (grid[i][j] == 2) {
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/wall1.png")), 32, 32, false, false)));
+                } else if (grid[i][j] == 3) {
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grass1.png")), 32, 32, false, false)));
+                } else if (grid[i][j] == 4) {
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxs/explosion.png")), 32, 32, false, false)));
                 } else {
-                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grass1.png")),32,32,false,false))); // Gris foncé pour les murs
-                    // Ou utiliser une classe CSS si tu veux : rectangle.getStyleClass().add("grid-cell-empty");
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grass1.png")), 32, 32, false, false)));
                 }
 
-                // Ajouter le rectangle à la grille à la position (j, i)
-                // Attention, GridPane.add(node, columnIndex, rowIndex)
                 this.add(rectangle, j, i);
             }
         }
+
+        // ENSUITE remettre toutes les entités par-dessus
+        this.getChildren().addAll(entites);
+
+        // Forcer les personnages au premier plan
+        for (javafx.scene.Node entite : entites) {
+            entite.toFront();
+        }
+    }
+
+    // Méthode pour obtenir la couche des entités
+    public Pane getEntityLayer() {
+        return entityLayer;
     }
 }
