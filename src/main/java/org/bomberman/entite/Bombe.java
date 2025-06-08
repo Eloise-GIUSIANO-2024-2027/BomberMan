@@ -7,7 +7,9 @@ import javafx.scene.layout.Pane;
 import javafx.application.Platform;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
-
+import org.bomberman.PacMan_Personnage; // Importez la classe PacMan_Personnage
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,13 +19,15 @@ public class Bombe extends ImageView {
     private int rayon;
     private Game game;
     private GameGrid gameGrid;
+    private List<PacMan_Personnage> joueurs;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
         this.game = game;
         this.gameGrid = gameGrid;
+        this.joueurs = joueurs;
 
         // Charger l'image de la bombe
         try {
@@ -71,20 +75,46 @@ public class Bombe extends ImageView {
 
         // Centre - retirer la bombe
         grid[y][x] = 0;
+        List<int[]> affectedCells = new ArrayList<>();
+        affectedCells.add(new int[]{y, x});
 
-        // Destruction autour de la bombe
-        // Explosion horizontale (le long de la ligne 'y', en changeant la colonne 'x')
+// Horizontal
         for (int dx = -rayon; dx <= rayon; dx++) {
-            int nx = x + dx; // nx est la nouvelle colonne
-            if (nx >= 0 && nx < grid[0].length) { // grid[0].length est la largeur
-                if (grid[y][nx] == 2) grid[y][nx] = 0; // grid[ligne][colonne]
+            int nx = x + dx;
+            if (nx >= 0 && nx < grid[0].length) {
+                if (grid[y][nx] == 2) grid[y][nx] = 0;
+                affectedCells.add(new int[]{y, nx}); // ➕ Ajouter la case à la liste
             }
         }
-        // Explosion verticale (le long de la colonne 'x', en changeant la ligne 'y')
+
+// Vertical
         for (int dy = -rayon; dy <= rayon; dy++) {
-            int ny = y + dy; // ny est la nouvelle ligne
-            if (ny >= 0 && ny < grid.length) { // grid.length est la hauteur
-                if (grid[ny][x] == 2) grid[ny][x] = 0; // grid[ligne][colonne]
+            int ny = y + dy;
+            if (ny >= 0 && ny < grid.length) {
+                if (grid[ny][x] == 2) grid[ny][x] = 0;
+                affectedCells.add(new int[]{ny, x}); // ➕ Ajouter la case à la liste
+            }
+        }
+
+        for (PacMan_Personnage joueur : joueurs) {
+            // Vérifier si le joueur est toujours vivant
+            if (joueur.estVivant()) {
+                int joueurGridX = joueur.getGridX(); // Colonne du joueur
+                int joueurGridY = joueur.getGridY(); // Ligne du joueur
+
+                // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
+                for (int[] cell : affectedCells) {
+                    int affectedRow = cell[0];
+                    int affectedCol = cell[1];
+
+                    if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
+                        // Le joueur est dans la zone d'explosion
+                        joueur.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
+                        gameGrid.getEntityLayer().getChildren().remove(joueur); // Supprimer visuellement le joueur
+                        System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
+                        break; // Un joueur ne peut être tué qu'une fois par explosion, pas besoin de vérifier d'autres cellules
+                    }
+                }
             }
         }
 

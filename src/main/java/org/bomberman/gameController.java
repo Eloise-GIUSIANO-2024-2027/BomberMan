@@ -18,12 +18,15 @@ import javafx.application.Platform;
 import org.bomberman.entite.Bombe;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class gameController {
 
     @FXML
     private VBox pauseMenuContainer;
 
+    private List<PacMan_Personnage> joueurs = new ArrayList<>();
 
     private boolean paused = false;
 
@@ -67,8 +70,13 @@ public class gameController {
         PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
         PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
 
+        joueurs.add(pacman);
+        joueurs.add(fantome);
+        joueurs.add(pacman2);
+        joueurs.add(pacman3);
+
         // Ajouter les personnages DIRECTEMENT à la grille comme avant
-        gameGridDisplay.getChildren().addAll(pacman, fantome, pacman2, pacman3);
+        gameGridDisplay.getChildren().addAll(joueurs);
 
         // Focus et événements
         gameContainer.requestFocus();
@@ -104,7 +112,7 @@ public class gameController {
 
                 if (game.getGrid()[px][py] == 0) {
                     System.out.println("Bombe");
-                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
                     gameGridDisplay.refresh();
                 }
             }
@@ -121,7 +129,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0) {
                     System.out.println("Bombe");
                     // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
-                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
                     gameGridDisplay.refresh();
                 }
             }
@@ -138,7 +146,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
                     gameGridDisplay.refresh();
                 }
             }
@@ -155,7 +163,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
                     gameGridDisplay.refresh();
                 }
             }

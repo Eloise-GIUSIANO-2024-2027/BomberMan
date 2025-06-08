@@ -9,13 +9,14 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Objects;
 
-class PacMan_Personnage extends Group {
+public class PacMan_Personnage extends Group {
     private String direction = "bas";
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)
     private int gridY = 0; // Position Y dans la grille (ligne)
     private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
     private Game game;
+    private boolean estVivant = true; // Initialise le joueur comme vivant par défaut
 
 
     public PacMan_Personnage(Game game, int startX, int startY) {
@@ -106,6 +107,15 @@ class PacMan_Personnage extends Group {
             direction = "haut";
             rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back.gif")), 32, 32, false, false)));
         }
+    }
+
+    public void disparait() {
+        this.estVivant = false;
+        this.setVisible(false);
+    }
+
+    public boolean estVivant() {
+        return this.estVivant;
     }
 
     // Getters pour la position de grille (utiles pour debug)
