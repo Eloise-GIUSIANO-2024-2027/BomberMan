@@ -50,7 +50,7 @@ public class PacMan_Personnage extends Group {
     }
 
     public void deplacerAGauche() {
-
+        if (!estVivant) return;
         int nouvellePositionX = gridX - 1;
 
         if (isValidGridPosition(nouvellePositionX, gridY)) {
@@ -65,7 +65,7 @@ public class PacMan_Personnage extends Group {
     }
 
     public void deplacerADroite(double largeurJeu) {
-
+        if (!estVivant) return;
         int nouvellePositionX = gridX + 1;
 
         if (isValidGridPosition(nouvellePositionX, gridY)) {
@@ -80,7 +80,7 @@ public class PacMan_Personnage extends Group {
     }
 
     public void deplacerEnBas(double hauteurJeu) {
-
+        if (!estVivant) return;
         int nouvellePositionY = gridY + 1;
 
         if (isValidGridPosition(gridX, nouvellePositionY)) {
@@ -94,7 +94,7 @@ public class PacMan_Personnage extends Group {
     }
 
     public void deplacerEnHaut() {
-
+        if (!estVivant) return;
         int nouvellePositionY = gridY - 1;
 
         if (isValidGridPosition(gridX, nouvellePositionY)) {

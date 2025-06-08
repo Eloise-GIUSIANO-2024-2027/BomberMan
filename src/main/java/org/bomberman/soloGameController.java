@@ -13,8 +13,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.bomberman.entite.Bombe;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class soloGameController {
 
@@ -30,6 +33,8 @@ public class soloGameController {
     GameGrid gameGridDisplay = new GameGrid(game);
     @FXML
     private Button startButton; // Référence au bouton démarrer
+    private List<PacMan_Personnage> joueurs = new ArrayList<>();
+    private List<Bot_Personnage> bot = new ArrayList<>();
 
     @FXML
     public void startGame() {
@@ -41,9 +46,14 @@ public class soloGameController {
         gameAreaStackPane.getChildren().add(gameGridDisplay);
         //Acteurs du jeu
         PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3);
+        joueurs.add(pacman);
+
+        bot.add(bot1);
+        bot.add(bot2);
+        bot.add(bot3);
 
         gameGridDisplay.getChildren().addAll(pacman, bot1, bot2, bot3);
         // Donne le focus à gameGridDisplay pour recevoir les touches
@@ -60,9 +70,10 @@ public class soloGameController {
                 if (!isPaused) {
                     // Appelle ta méthode de déplacement
                     handlePlayerMovement(event, pacman);
-                    deplacementVersJoueur(bot1, pacman);
-                    deplacementVersJoueur(bot2, pacman);
-                    deplacementVersJoueur(bot3, pacman);
+                    bot1.agir(pacman, joueurs, gameGridDisplay, bot);
+                    bot2.agir(pacman, joueurs, gameGridDisplay, bot);
+                    bot3.agir(pacman, joueurs, gameGridDisplay, bot);
+
                 }
             });
         }
@@ -78,34 +89,20 @@ public class soloGameController {
             case S -> j1.deplacerEnBas(k.getHeight());
             case D -> j1.deplacerADroite(k.getWidth());
             case Q -> j1.deplacerAGauche();
-        }
+            case A -> {
+                int px = j1.getGridX();
+                int py = j1.getGridY();
 
-    }
-
-    public void deplacementVersJoueur(Bot_Personnage bot, PacMan_Personnage joueur) {
-        int botX = bot.getGridX();     // axe horizontal
-        int botY = bot.getGridY();     // axe vertical
-        int joueurX = joueur.getGridX();
-        int joueurY = joueur.getGridY();
-
-        int dx = joueurX - botX; // horizontal
-        int dy = joueurY - botY; // vertical
-
-        if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx > 0) {
-                bot.deplacerADroite(gameGridDisplay.getWidth());
-            } else if (dx < 0) {
-                bot.deplacerAGauche();
-            }
-        } else {
-            if (dy > 0) {
-                bot.deplacerEnBas(gameGridDisplay.getHeight());
-            } else if (dy < 0) {
-                bot.deplacerEnHaut();
+                if (game.getGrid()[px][py] == 0) {
+                    System.out.println("Bombe");
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
+                    gameGridDisplay.refresh();
+                }
             }
         }
-    }
 
+
+    }
 
     public void initialize() {
         System.out.println("gameController initialisé.");

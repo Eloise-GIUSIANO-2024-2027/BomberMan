@@ -5,6 +5,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.application.Platform;
+import org.bomberman.Bot_Personnage;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
 import org.bomberman.PacMan_Personnage; // Importez la classe PacMan_Personnage
@@ -20,14 +21,16 @@ public class Bombe extends ImageView {
     private Game game;
     private GameGrid gameGrid;
     private List<PacMan_Personnage> joueurs;
+    private List<Bot_Personnage> bot;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
         this.game = game;
         this.gameGrid = gameGrid;
         this.joueurs = joueurs;
+        this.bot = bot;
 
         // Charger l'image de la bombe
         try {
@@ -117,6 +120,30 @@ public class Bombe extends ImageView {
                 }
             }
         }
+
+        for (Bot_Personnage bot : bot) {
+            // Vérifier si le joueur est toujours vivant
+            if (bot.estVivant()) {
+                int joueurGridX = bot.getGridX(); // Colonne du joueur
+                int joueurGridY = bot.getGridY(); // Ligne du joueur
+
+                // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
+                for (int[] cell : affectedCells) {
+                    int affectedRow = cell[0];
+                    int affectedCol = cell[1];
+
+                    if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
+                        // Le joueur est dans la zone d'explosion
+                        bot.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
+                        gameGrid.getEntityLayer().getChildren().remove(bot); // Supprimer visuellement le joueur
+                        System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
+                        break; // Un joueur ne peut être tué qu'une fois par explosion, pas besoin de vérifier d'autres cellules
+                    }
+                }
+            }
+        }
+
+
 
         game.setGrid(grid);
         gameGrid.refresh(); // Recréer seulement la grille de terrain
