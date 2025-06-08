@@ -4,26 +4,41 @@ import org.bomberman.entite.Bombe;
 
 public class Game {
 
-    public static final int WIDTH = 11;   // Largeur de la grille
-    public static final int HEIGHT = 13;  // Hauteur de la grille
+    private static final int WIDTH = 13;   // Largeur de la grille
+    private static final int HEIGHT = 11;  // Hauteur de la grille
     private int[][] grid;  // Grille du jeu (10x10)
 
     public Game() {
-        grid = new int[WIDTH][HEIGHT];
+        grid = new int[HEIGHT][WIDTH];
         initGrid();
     }
 
     // Initialiser la grille avec des valeurs (0 = vide, 1 = mur)
     private void initGrid() {
-        for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
-                if (i % 2 == 1 && j % 2 == 1 && j!=WIDTH-1 && i!=HEIGHT-1) {
-                    grid[i][j] = 1;  // Positionner des murs
+        for (int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                if (isSpawnZone(i, j)) {
+                    grid[i][j] = 0;
+                    continue;
+                }
+
+                if (i % 2 == 1 && j % 2 == 1 && j != WIDTH - 1 && i != HEIGHT - 1) {
+                    grid[i][j] = 1;
+                } else if (Math.random() < 0.5) {
+                    grid[i][j] = 2;
                 } else {
                     grid[i][j] = 0;  // Espaces vides
                 }
             }
         }
+
+    }
+
+    private boolean isSpawnZone(int ligne, int colonne) {
+        return (ligne <= 1 && colonne <= 1) || // coin haut-gauche
+                (ligne <= 1 && colonne >= WIDTH - 2) || // coin haut-droit
+                (ligne >= HEIGHT - 2 && colonne <= 1) || // coin bas-gauche
+                (ligne >= HEIGHT - 2 && colonne >= WIDTH - 2); // coin bas-droit
     }
 
     // Récupérer la grille du jeu

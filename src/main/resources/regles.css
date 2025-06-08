@@ -7,31 +7,36 @@
 
 /* 2. Style général des Labels de texte (pour le texte des règles) */
 .label {
-    -fx-font-family: "Press Start 2P", "Consolas", monospace; /* Essai de police pixel, sinon Consolas ou monospace */
+    -fx-font-family: "Press Start 2P";
     -fx-font-size: 9px; /* <<< Changé : Légèrement augmenté (anciennement 7px) */
     -fx-text-fill: #FFFFFF; /* Texte blanc pour contraster avec le fond bleu */
 }
 
 /* Style des Labels de titre (MULTIJOUEUR, SOLO, CAPTURE DE FLAG) */
-.copyright-text { /* C'est la classe que tu utilises pour tes titres de section */
-    -fx-font-family: "Press Start 2P", "Consolas", monospace; /* Police pixel si dispo */
+.titre { /* C'est la classe que tu utilises pour tes titres de section */
+    -fx-font-family: "Press Start 2P"; /* Police pixel si dispo */
     -fx-font-size: 14px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */
-    -fx-text-fill: #FF8C00; /* Couleur orange comme le logo Bomberman */
+    -fx-text-fill: linear-gradient(to bottom, #FF8C00, #FFD700); /* Couleur orange comme le logo Bomberman */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 5, 0, 0, 2); /* Petite ombre portée */
 }
 
 /* Style du titre principal "Les règles et commandes" */
-.label:contains("Les règles et commandes") { /* Ciblage spécifique par le texte si besoin */
+.bigTitre { /* Ciblage spécifique par le texte si besoin */
     -fx-font-family: "Press Start 2P", "Consolas", monospace; /* Police pixel si dispo */
     -fx-font-size: 20px; /* <<< Changé : Légèrement augmenté (anciennement 14px) */
     -fx-text-fill: #FFFFFF; /* Blanc pur */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 10, 0.5, 0, 5); /* Ombre plus prononcée */
+}
+
+/* Style du titre principal "Les règles et commandes" */
+.bigTitreFond { /* Ciblage spécifique par le texte si besoin */
+    -fx-effect: dropshadow(gaussian,rgba(112,114,110,0.75), 10, 0.2, 2, 5); /* Ombre plus prononcée */
+    -fx-background-color: #1a4a9c;
 }
 
 
 /* 3. Style du bouton "RETOUR" (start-button) */
 .start-button {
-    -fx-background-color: #FF4500; /* Rouge-orangé vibrant, comme une bombe ou le feu */
+    -fx-background-color: #FF7000; /* Rouge-orangé vibrant, comme une bombe ou le feu */
     -fx-text-fill: white;
     -fx-font-family: "Press Start 2P", "Consolas", monospace;
     -fx-font-size: 6px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane prefHeight="630.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bomberman.RegleController" stylesheets="@regles.css">
-    <HBox alignment="CENTER" prefHeight="102.0" prefWidth="800.0" style="-fx-background-color: #0F28FCFF;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <HBox alignment="CENTER" prefHeight="102.0" prefWidth="800.0" styleClass="bigTitreFond" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
             <Insets bottom="10" left="20" right="20" top="10" />
         </padding>
@@ -29,7 +29,7 @@
                 </rowConstraints>
                 <children>
                     <Button fx:id="retourButton" onAction="#retourMenu" styleClass="start-button" text="RETOUR" />
-                    <Label alignment="CENTER" prefHeight="31.0" prefWidth="698.0" style="-fx-text-fill: #ffffff; -fx-font-size: 24px;" styleClass="copyright-text" text="Les règles et commandes" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <Label alignment="CENTER" prefHeight="31.0" prefWidth="698.0" styleClass="bigTitre" text="Les règles et commandes" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 </children>
             </GridPane>
         </children>
@@ -37,49 +37,49 @@
 
     <VBox alignment="TOP_CENTER" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="102.0">
         <padding>
-            <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
         </padding>
 
-        <VBox alignment="TOP_CENTER" spacing="0.0">
+        <VBox alignment="TOP_CENTER" spacing="0.0" styleClass="vbox-section">
             <padding>
-                <Insets top="0.0" bottom="0.0" />
+                <Insets top="50.0" bottom="50.0" />
             </padding>
-            <Label alignment="TOP_LEFT" prefWidth="698.0" style="-fx-text-fill: #0F28FCFF; -fx-font-size: 18px;" styleClass="copyright-text" text="MULTIJOUEUR :" />
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;"> <text>4 joueurs s'affrontent, l’objectif est d'être le dernier suivant et d’avoir le meilleur score. Pour cela, les joueurs pourront placer des bombes leur permettant de casser des murs et de tuer leurs adversaires. Casser un mur fait rapporter 100 points, et tuer un autre joueur fait rapporter 250 points.</text>
+            <Label alignment="TOP_LEFT" prefWidth="698.0" styleClass="titre" text="MULTIJOUEUR :" />
+            <Label wrapText="true" prefWidth="760.0"> <text>4 joueurs s'affrontent, l’objectif est d'être le dernier suivant et d’avoir le meilleur score. Pour cela, les joueurs pourront placer des bombes leur permettant de casser des murs et de tuer leurs adversaires. Casser un mur fait rapporter 100 points, et tuer un autre joueur fait rapporter 250 points.</text>
             </Label>
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;">
+            <Label wrapText="true" prefWidth="760.0" >
                 <text>S’il ne reste qu’un joueur vivant durant le temps imparti, ce joueur gagne peu importe son score.</text>
             </Label>
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;">
+            <Label wrapText="true" prefWidth="760.0" >
                 <text>S'il reste plusieurs joueurs à la fin de la partie, celui avec le plus haut score a gagné.</text>
             </Label>
         </VBox>
 
-        <VBox alignment="TOP_CENTER" spacing="0.0">
+        <VBox alignment="TOP_CENTER" spacing="0.0" styleClass="vbox-section">
             <padding>
                 <Insets top="0.0" bottom="0.0" />
             </padding>
-            <Label alignment="TOP_LEFT" prefWidth="699.0" style="-fx-text-fill: #0F28FCFF; -fx-font-size: 18px;" styleClass="copyright-text" text="SOLO :" />
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;">
+            <Label alignment="TOP_LEFT" prefWidth="699.0"  styleClass="titre" text="SOLO :" />
+            <Label wrapText="true" prefWidth="760.0" >
                 <text>Ici le joueur joue contre l’ordinateur, c’est un duel. L’objectif est de tuer l’autre tout en gagnant le plus de points possible. Pour cela, ils pourront placer des bombes leur permettant de casser des murs et de tuer leurs adversaires. Casser un mur fait rapporter 100 points, et tuer un autre joueur fait rapporter 250 points.</text>
             </Label>
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;">
+            <Label wrapText="true" prefWidth="760.0" >
                 <text>Si le joueur réussit à tuer le bot avant la fin du temps, il gagne.</text>
             </Label>
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;">
+            <Label wrapText="true" prefWidth="760.0" >
                 <text>Si le joueur meurt avant la fin du temps, il perd.</text>
             </Label>
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;">
+            <Label wrapText="true" prefWidth="760.0" >
                 <text>Si le joueur et le bot sont toujours vivants a la fin du timers, celui avec le plus haut score gagne.</text>
             </Label>
         </VBox>
 
-        <VBox alignment="TOP_CENTER" spacing="0.0">
+        <VBox alignment="TOP_CENTER" spacing="0.0" styleClass="vbox-section">
             <padding>
                 <Insets top="0.0" bottom="0.0" />
             </padding>
-            <Label alignment="TOP_LEFT" prefWidth="699.0" style="-fx-text-fill: #0F28FCFF; -fx-font-size: 18px;" styleClass="copyright-text" text="CAPTURE DE FLAG :" />
-            <Label wrapText="true" prefWidth="760.0" style="-fx-padding: 0 0 5 0;">
+            <Label alignment="TOP_LEFT" prefWidth="699.0"  text="CAPTURE DE FLAG :" styleClass="titre" />
+            <Label wrapText="true" prefWidth="760.0" >
                 <text>Chaque joueur aura un "drapeau" qu'il devra protéger. Un joueur gagne s'il récupère en premier le drapeau des autres joueurs (sans se faire tuer). Les joueurs éliminés peuvent continuer à poser des bombes, et donc éliminer d'autres joueurs ayant toujours leur drapeau. La position initiale du drapeau pourra être défini par chaque joueur en début de partie.</text>
             </Label>
         </VBox>
