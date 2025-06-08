@@ -40,9 +40,6 @@ public class gameController {
 
     @FXML
     public void startGame() throws IOException {
-        // Initialise la logique du jeu
-        // L'instance de la logique du jeu
-        game.startGame(); // Appelle la méthode de démarrage de ta logique de jeu
 
         // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
