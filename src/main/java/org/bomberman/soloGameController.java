@@ -42,8 +42,10 @@ public class soloGameController {
         //Acteurs du jeu
         PacMan_Personnage pacman = new Pacman(game, 0, 0);
         Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10);
 
-        gameGridDisplay.getChildren().addAll(pacman, bot1);
+        gameGridDisplay.getChildren().addAll(pacman, bot1, bot2, bot3);
         // Donne le focus à gameGridDisplay pour recevoir les touches
         gameGridDisplay.requestFocus();
 
@@ -57,14 +59,17 @@ public class soloGameController {
 
                 if (!isPaused) {
                     // Appelle ta méthode de déplacement
-                    handlePlayerMovement(event, pacman, bot1);
+                    handlePlayerMovement(event, pacman);
+                    deplacementVersJoueur(bot1, pacman);
+                    deplacementVersJoueur(bot2, pacman);
+                    deplacementVersJoueur(bot3, pacman);
                 }
             });
         }
 
     }
 
-    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, Bot_Personnage bot1) {
+    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1) {
         GameGrid k = gameGridDisplay;
 
         switch (event.getCode()) {
@@ -74,9 +79,33 @@ public class soloGameController {
             case D -> j1.deplacerADroite(k.getWidth());
             case Q -> j1.deplacerAGauche();
         }
-        bot1.avancerSimplement();
 
     }
+
+    public void deplacementVersJoueur(Bot_Personnage bot, PacMan_Personnage joueur) {
+        int botX = bot.getGridX();     // axe horizontal
+        int botY = bot.getGridY();     // axe vertical
+        int joueurX = joueur.getGridX();
+        int joueurY = joueur.getGridY();
+
+        int dx = joueurX - botX; // horizontal
+        int dy = joueurY - botY; // vertical
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 0) {
+                bot.deplacerADroite(gameGridDisplay.getWidth());
+            } else if (dx < 0) {
+                bot.deplacerAGauche();
+            }
+        } else {
+            if (dy > 0) {
+                bot.deplacerEnBas(gameGridDisplay.getHeight());
+            } else if (dy < 0) {
+                bot.deplacerEnHaut();
+            }
+        }
+    }
+
 
     public void initialize() {
         System.out.println("gameController initialisé.");

@@ -8,6 +8,7 @@ import javafx.scene.shape.Rectangle;
 import java.util.*;
 
 public class Bot_Personnage extends Group {
+    private String direction = "bas";
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX;
     private int gridY;
@@ -24,28 +25,87 @@ public class Bot_Personnage extends Group {
         updatePixelPosition();
     }
 
-    public void avancerSimplement() {
-        int[][] directions = {
-                {1, 0},   // droite
-                {-1, 0},  // gauche
-                {0, 1},   // bas
-                {0, -1}   // haut
-        };
+//    public void avancerSimplement() {
+//        int[][] directions = {
+//                {1, 0},   // droite
+//                {-1, 0},  // gauche
+//                {0, 1},   // bas
+//                {0, -1}   // haut
+//        };
+//
+//        // Mélanger les directions aléatoirement
+//        List<int[]> directionsAleatoire = new ArrayList<>(Arrays.asList(directions));
+//        Collections.shuffle(directionsAleatoire);
+//
+//        for (int[] dir : directionsAleatoire) {
+//            int newX = gridX + dir[0];
+//            int newY = gridY + dir[1];
+//            if (isValidGridPosition(newX, newY)) {
+//                gridX = newX;
+//                gridY = newY;
+//                updatePixelPosition();
+//                System.out.println("Bot a bougé vers : " + gridX + "," + gridY);
+//                return;
+//            }
+//        }
+//    }
 
-        // Mélanger les directions aléatoirement
-        List<int[]> directionsAleatoire = new ArrayList<>(Arrays.asList(directions));
-        Collections.shuffle(directionsAleatoire);
+    public void deplacerAGauche() {
 
-        for (int[] dir : directionsAleatoire) {
-            int newX = gridX + dir[0];
-            int newY = gridY + dir[1];
-            if (isValidGridPosition(newX, newY)) {
-                gridX = newX;
-                gridY = newY;
-                updatePixelPosition();
-                System.out.println("Bot a bougé vers : " + gridX + "," + gridY);
-                return;
-            }
+        int nouvellePositionX = gridX - 1;
+
+        if (isValidGridPosition(nouvellePositionX, gridY)) {
+            gridX = nouvellePositionX;
+            updatePixelPosition();
+        }
+
+        if (!direction.equals("gauche")) {
+            direction = "gauche";
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left.gif")), 32, 32, false, false)));
+        }
+    }
+
+    public void deplacerADroite(double largeurJeu) {
+
+        int nouvellePositionX = gridX + 1;
+
+        if (isValidGridPosition(nouvellePositionX, gridY)) {
+            gridX = nouvellePositionX;
+            updatePixelPosition();
+        }
+
+        if (!direction.equals("droite")) {
+            direction = "droite";
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right.gif")), 32, 32, false, false)));
+        }
+    }
+
+    public void deplacerEnBas(double hauteurJeu) {
+
+        int nouvellePositionY = gridY + 1;
+
+        if (isValidGridPosition(gridX, nouvellePositionY)) {
+            gridY = nouvellePositionY;
+            updatePixelPosition();
+        }
+        if (!direction.equals("bas")) {
+            direction = "bas";
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front.gif")), 32, 32, false, false)));
+        }
+    }
+
+    public void deplacerEnHaut() {
+
+        int nouvellePositionY = gridY - 1;
+
+        if (isValidGridPosition(gridX, nouvellePositionY)) {
+            gridY = nouvellePositionY;
+            updatePixelPosition();
+        }
+
+        if (!direction.equals("haut")) {
+            direction = "haut";
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back.gif")), 32, 32, false, false)));
         }
     }
 
