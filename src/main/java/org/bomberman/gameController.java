@@ -118,7 +118,7 @@ public class gameController {
                 int px = j1.getGridX();
                 int py = j1.getGridY();
 
-                if (game.getGrid()[px][py] == 0) {
+                if (game.getGrid()[px][py] == 0 && j1.estVivant()) {
                     System.out.println("Bombe");
                     new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
                     gameGridDisplay.refresh();
@@ -134,7 +134,7 @@ public class gameController {
                 int px = j2.getGridX();
                 int py = j2.getGridY();
 
-                if (game.getGrid()[py][px] == 0) {
+                if (game.getGrid()[py][px] == 0 && j2.estVivant()) {
                     System.out.println("Bombe");
                     // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
                     new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot);
@@ -151,7 +151,7 @@ public class gameController {
                 int px = j3.getGridX();
                 int py = j3.getGridY();
 
-                if (game.getGrid()[py][px] == 0) {
+                if (game.getGrid()[py][px] == 0 && j3.estVivant()) {
                     System.out.println("Bombe");
 
                     new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
@@ -168,7 +168,7 @@ public class gameController {
                 int px = j4.getGridX();
                 int py = j4.getGridY();
 
-                if (game.getGrid()[py][px] == 0) {
+                if (game.getGrid()[py][px] == 0 && j4.estVivant()) {
                     System.out.println("Bombe");
 
                     new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
@@ -176,6 +176,7 @@ public class gameController {
                 }
             }
         }
+        verifierFinDePartie();
     }
 
 
@@ -256,7 +257,7 @@ public class gameController {
 
             // Met à jour le texte du Label dans l'interface
             Platform.runLater(() -> timerLabel.setText(tempsFormate));
-
+            verifierFinDePartie();
 
             if (tempsRestant <= 0) {
                 gameTimer.stop();
@@ -268,6 +269,18 @@ public class gameController {
         gameTimer.play();
     }
 
+    private void verifierFinDePartie() {
+        long joueursEnVie = joueurs.stream().filter(PacMan_Personnage::estVivant).count();
+
+        if (joueursEnVie <= 1) {
+            if (gameTimer != null) {
+                gameTimer.stop();
+            }
+            finDePartie();
+        }
+    }
+
+
     private void finDePartie() {
         System.out.println("Temps écoulé ! Partie terminée.");
         Platform.runLater(() -> {
@@ -278,7 +291,66 @@ public class gameController {
     }
     @FXML
     public void replayGame() {
+        // Réinitialiser les listes de joueurs
+        joueurs.clear();
+        bot.clear(); // Même s'il n'y a pas de bots ici, garde-le pour la cohérence
 
+        // Réinitialiser le timer
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+        tempsRestant = 120;
+        timerLabel.setText("TIMEUR : 02:00");
+
+        // Réinitialiser l'état de fin de partie
+        finMenuContainer.setVisible(false);
+        finMenuContainer.setManaged(false);
+
+        // Recréer le jeu
+        game = new Game(); // recrée la logique de jeu (grille, états, etc.)
+        gameGridDisplay = new GameGrid(game);
+        gameArea.getChildren().clear();
+
+        StackPane gameContainer = new StackPane();
+        gameContainer.getChildren().add(gameGridDisplay);
+        Pane entityLayer = gameGridDisplay.getEntityLayer();
+        gameContainer.getChildren().add(entityLayer);
+        gameArea.getChildren().add(gameContainer);
+
+        // Recréer les joueurs
+        PacMan_Personnage pacman = new Pacman(game, 0, 0);
+        PacMan_Personnage fantome = new Pacman(game, 12, 10);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
+        PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
+
+        joueurs.add(pacman);
+        joueurs.add(fantome);
+        joueurs.add(pacman2);
+        joueurs.add(pacman3);
+
+        gameGridDisplay.getChildren().addAll(joueurs);
+
+        // Focus
+        gameContainer.requestFocus();
+        gameContainer.setFocusTraversable(true);
+
+        // Gérer les touches
+        Scene scene = gameArea.getScene();
+        if (scene != null) {
+            scene.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    togglePause();
+                }
+
+                if (!paused) {
+                    handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
+                }
+            });
+        }
+
+        // Redémarrer le timer
+        lancerTimer();
     }
+
 
 }

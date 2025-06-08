@@ -1,6 +1,8 @@
 package org.bomberman;
 
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,10 +11,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.bomberman.entite.Bombe;
 
 import java.io.IOException;
@@ -31,13 +35,22 @@ public class soloGameController {
     private VBox gameAreaStackPane; // Référence au StackPane dans FXML
     Game game = new Game();
     GameGrid gameGridDisplay = new GameGrid(game);
+
     @FXML
     private Button startButton; // Référence au bouton démarrer
+    @FXML
+    private Label timerLabel;
+    @FXML
+    private VBox finMenuContainer;
+    private Timeline gameTimer;
+    private int tempsRestant = 120;
+
     private List<PacMan_Personnage> joueurs = new ArrayList<>();
     private List<Bot_Personnage> bot = new ArrayList<>();
 
     @FXML
     public void startGame() {
+        lancerTimer(); // debut du timer
         // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
 
@@ -73,7 +86,7 @@ public class soloGameController {
                     bot1.agir(pacman, joueurs, gameGridDisplay, bot);
                     bot2.agir(pacman, joueurs, gameGridDisplay, bot);
                     bot3.agir(pacman, joueurs, gameGridDisplay, bot);
-
+                    verifierFinDePartie();
                 }
             });
         }
@@ -117,6 +130,15 @@ public class soloGameController {
 
         pauseMenuContainer.setVisible(isPaused);
         pauseMenuContainer.setManaged(isPaused);
+        if (isPaused) {
+            if (gameTimer != null) {
+                gameTimer.pause();
+            }
+        } else {
+            if (gameTimer != null) {
+                gameTimer.play();
+            }
+        }
     }
 
     @FXML
@@ -150,6 +172,9 @@ public class soloGameController {
         isPaused = false;
         pauseMenuContainer.setVisible(false);
         pauseMenuContainer.setManaged(false);
+        if (gameTimer != null) {
+            gameTimer.play();
+        }
     }
 
     @FXML
@@ -158,4 +183,111 @@ public class soloGameController {
         System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
 
     }
+
+    private void lancerTimer() {
+        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            tempsRestant--;
+            int minutes = tempsRestant / 60;
+            int secondes = tempsRestant % 60;
+            String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
+
+            // Met à jour le texte du Label dans l'interface
+            Platform.runLater(() -> timerLabel.setText(tempsFormate));
+            verifierFinDePartie();
+
+            if (tempsRestant <= 0) {
+                gameTimer.stop();
+                finDePartie();
+                timerLabel.setText("TIMEUR : 00:00");
+            }
+        }));
+        gameTimer.setCycleCount(Timeline.INDEFINITE);
+        gameTimer.play();
+    }
+
+    private void verifierFinDePartie() {
+        long joueursEnVie = joueurs.stream().filter(PacMan_Personnage::estVivant).count();
+        long botsEnVie = bot.stream().filter(Bot_Personnage::estVivant).count();
+
+        long totalVivant = joueursEnVie + botsEnVie;
+
+        if (totalVivant <= 1) {
+            if (gameTimer != null) {
+                gameTimer.stop();
+            }
+            finDePartie();
+        }
+    }
+
+
+    private void finDePartie() {
+        System.out.println("Temps écoulé ! Partie terminée.");
+
+        Platform.runLater(() -> {
+            // afficher un message ou recharger la scène
+            finMenuContainer.setVisible(true);
+            finMenuContainer.setManaged(true);
+        });
+    }
+
+    @FXML
+    public void replayGame() {
+        // Réinitialiser les listes
+        joueurs.clear();
+        bot.clear();
+
+        // Réinitialiser le timer
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+        tempsRestant = 120;
+        timerLabel.setText("TIMEUR : 02:00");
+
+        // Masquer le menu de fin
+        finMenuContainer.setVisible(false);
+        finMenuContainer.setManaged(false);
+
+        // Réinitialiser le jeu
+        game = new Game();
+        gameGridDisplay = new GameGrid(game);
+
+        // Nettoyer l'affichage
+        gameAreaStackPane.getChildren().clear();
+        gameAreaStackPane.getChildren().add(gameGridDisplay);
+
+        // Créer les entités
+        PacMan_Personnage pacman = new Pacman(game, 0, 0);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3);
+
+        joueurs.add(pacman);
+        bot.add(bot1);
+        bot.add(bot2);
+        bot.add(bot3);
+
+        gameGridDisplay.getChildren().addAll(pacman, bot1, bot2, bot3);
+
+        // Focus et écouteur clavier
+        gameGridDisplay.requestFocus();
+        Scene scene = gameAreaStackPane.getScene();
+        if (scene != null) {
+            scene.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    togglePause();
+                }
+
+                if (!isPaused) {
+                    handlePlayerMovement(event, pacman);
+                    bot1.agir(pacman, joueurs, gameGridDisplay, bot);
+                    bot2.agir(pacman, joueurs, gameGridDisplay, bot);
+                    bot3.agir(pacman, joueurs, gameGridDisplay, bot);
+                }
+            });
+        }
+
+        // Relancer le timer
+        lancerTimer();
+    }
+
 }
