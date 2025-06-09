@@ -58,9 +58,9 @@ public class soloGameController {
         gameAreaStackPane.getChildren().clear(); // Vide le StackPane
         gameAreaStackPane.getChildren().add(gameGridDisplay);
         //Acteurs du jeu
-        PacMan_Personnage pacman = new Pacman(game, 0, 0);
+        PacMan_Personnage pacman = new Pacman(game, 12, 0);
         Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2);
         Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3);
         joueurs.add(pacman);
 
@@ -103,12 +103,13 @@ public class soloGameController {
             case D -> j1.deplacerADroite(k.getWidth());
             case Q -> j1.deplacerAGauche();
             case A -> {
-                int px = j1.getGridX();
-                int py = j1.getGridY();
+                int px = j1.getGridX(); // px is the column
+                int py = j1.getGridY(); // py is the row
 
-                if (game.getGrid()[px][py] == 0) {
+                if (game.getGrid()[py][px] == 0 && j1.estVivant()) { // This access is correct: [row][column]
                     System.out.println("Bombe");
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
+                    // THE FIX IS HERE: Pass px (column) first, then py (row)
+                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot);
                     gameGridDisplay.refresh();
                 }
             }

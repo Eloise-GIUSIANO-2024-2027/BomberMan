@@ -35,7 +35,7 @@ public class Bombe extends ImageView {
         // Charger l'image de la bombe
         try {
             Image bombeImage = new Image(Objects.requireNonNull(
-                    getClass().getResourceAsStream("/fxs/imgBombe.png")), 48, 48, false, false);
+                    getClass().getResourceAsStream("/fxs/imgBombe.gif")), 48, 48, false, false);
             this.setImage(bombeImage);
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement de l'image de la bombe: " + e.getMessage());
@@ -111,7 +111,6 @@ public class Bombe extends ImageView {
                     int affectedCol = cell[1];
 
                     if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
-                        // Le joueur est dans la zone d'explosion
                         joueur.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
                         gameGrid.getEntityLayer().getChildren().remove(joueur); // Supprimer visuellement le joueur
                         System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
@@ -122,10 +121,9 @@ public class Bombe extends ImageView {
         }
 
         for (Bot_Personnage bot : bot) {
-            // Vérifier si le joueur est toujours vivant
             if (bot.estVivant()) {
-                int joueurGridX = bot.getGridX(); // Colonne du joueur
-                int joueurGridY = bot.getGridY(); // Ligne du joueur
+                int joueurGridX = bot.getGridX();
+                int joueurGridY = bot.getGridY();
 
                 // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
                 for (int[] cell : affectedCells) {
