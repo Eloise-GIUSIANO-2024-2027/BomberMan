@@ -42,7 +42,7 @@ public class Bombe extends ImageView {
         }
 
         int[][] grid = game.getGrid();
-        if (x >= 0 && x < grid.length && y >= 0 && y < grid[0].length) {
+        if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
             // Marquer la case comme occupée par une bombe
             grid[y][x] = 3; // 3 = bombe
             game.setGrid(grid);
