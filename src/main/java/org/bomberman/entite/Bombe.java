@@ -21,7 +21,7 @@ public class Bombe extends ImageView {
     private GameGrid gameGrid;
     private List<PacMan_Personnage> joueurs;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, String quelPerso) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;

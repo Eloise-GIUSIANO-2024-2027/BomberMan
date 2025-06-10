@@ -7,6 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
@@ -18,6 +20,11 @@ import javafx.application.Platform;
 import org.bomberman.entite.Bombe;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +46,44 @@ public class gameController {
     private Button startButton; // Référence au bouton démarrer
 
 
+    // affichge des scores :
+    @FXML
+    private Label labelJ1;
+    @FXML
+    private Label labelJ2;
+    @FXML
+    private Label labelJ3;
+    @FXML
+    private Label labelJ4;
+
+
+    // Zone de saisi des pseudo
+    @FXML
+    private TextField saisiJ1;
+    private String nomJ1;
+    private int ligneJ1;
+    private int scoreJ1 = 0;
+    @FXML
+    private TextField saisiJ2;
+    private String nomJ2;
+    private int ligneJ2;
+    private int scoreJ2 = 0;
+    @FXML
+    private TextField saisiJ3;
+    private String nomJ3;
+    private int ligneJ3;
+    private int scoreJ3 = 0;
+    @FXML
+    private TextField saisiJ4;
+    private String nomJ4;
+    private int ligneJ4;
+    private int scoreJ4 = 0;
+
+    // Obtention des scores.txt
+    private List<String> scores;
+    private int derID;
+
+
     // Partie modifiée de gameController.java
 
     // Partie modifiée de gameController.java
@@ -46,7 +91,7 @@ public class gameController {
     // Partie modifiée de gameController.java
 
     @FXML
-    public void startGame() throws IOException {
+    public void startGame() throws IOException, URISyntaxException {
         game.startGame();
         gameGridDisplay = new GameGrid(game);
 
@@ -94,6 +139,62 @@ public class gameController {
                 }
             });
         }
+
+        // ----- Traitement des pseudos ------
+        // Chargement du fichier des scores
+        URL resource = getClass().getResource("/scores.txt");
+        if (resource != null) {
+            scores = Files.readAllLines(Paths.get(resource.toURI()));
+        }
+        derID = Integer.parseInt(scores.get(1));
+
+
+
+        if (saisiJ1.getLength() != 0) {
+            nomJ1 = saisiJ1.getText();
+            ligneJ1 = getLigneNom(nomJ1);
+        } else {
+            nomJ1 = "Joueur " + derID;
+            ligneJ1 = getLigneNom(nomJ1);
+
+        }
+        if (saisiJ2.getLength() != 0) {
+            nomJ2 = saisiJ2.getText();
+            ligneJ2 = getLigneNom(nomJ2);
+            scoreJ1 = getScoreLigne(ligneJ2);
+            for (String ligne : scores) System.out.println(ligne);
+            ajouterScore(nomJ2, 0, ligneJ2);
+            for (String ligne : scores) System.out.println(ligne);
+            updateFile(resource, scores);
+        } else {
+            nomJ2 = "Joueur " + derID;
+            ligneJ2 = getLigneNom(nomJ2);
+        }
+        if (saisiJ3.getLength() != 0) {
+            nomJ3 = saisiJ3.getText();
+            ligneJ2 = getLigneNom(nomJ3);
+        } else {
+            nomJ3 = "Joueur " + derID;
+            ligneJ2 = getLigneNom(nomJ3);
+        }
+        if (saisiJ4.getLength() != 0) {
+            nomJ4 = saisiJ4.getText();
+            ligneJ2 = getLigneNom(nomJ4);
+        } else {
+            nomJ4 = "Joueur " + derID;
+            ligneJ2 = getLigneNom(nomJ4);
+        }
+
+
+        // Maj des pseudos
+        labelJ1.setText(nomJ1 + " : " + scoreJ1);
+        labelJ2.setText(nomJ2 + " : " + scoreJ2);
+        labelJ3.setText(nomJ3 + " : " + scoreJ3);
+        labelJ4.setText(nomJ4 + " : " + scoreJ4);
+
+
+        System.out.println("Nom de j1 : " + nomJ1 + ", " + getScoreLigne(ligneJ1) + ", " + ligneJ1);
+        System.out.println("Nom de j2 : " + nomJ2 + ", " + ligneJ2);
     }
 
     private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
@@ -112,7 +213,7 @@ public class gameController {
 
                 if (game.getGrid()[px][py] == 0) {
                     System.out.println("Bombe");
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, "J1");
                     gameGridDisplay.refresh();
                 }
             }
@@ -129,7 +230,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0) {
                     System.out.println("Bombe");
                     // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, "J2");
                     gameGridDisplay.refresh();
                 }
             }
@@ -146,7 +247,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, "J3");
                     gameGridDisplay.refresh();
                 }
             }
@@ -163,7 +264,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, "J4");
                     gameGridDisplay.refresh();
                 }
             }
@@ -226,4 +327,64 @@ public class gameController {
 
     }
 
+    public int getLigneNom(String nom){
+        String nomLigne;
+        for (int i = 0; i < scores.size(); i++) {
+            String ligne = scores.get(i);
+            nomLigne = "";
+            if (ligne.charAt(0) != '#') {
+                for (int j = 0; j < ligne.length() && ligne.charAt(j) != ' '; j++) {
+                    nomLigne += ligne.charAt(j);
+                }
+            }
+            if (nomLigne.equals(nom)) return i;
+        }
+        return scores.size()-1;
+    }
+
+    public int getScoreLigne(int numLigne) {
+        String ligne = scores.get(numLigne);
+        String scoresLigne = "";
+        for (int j = ligne.length()-1; ligne.charAt(j) != ' '; j--) {
+            scoresLigne = ligne.charAt(j) + scoresLigne;
+        }
+        return Integer.parseInt(scoresLigne);
+    }
+
+    public void ajouterScore(String nom, int score, int ligne) {
+        System.out.println(scores.size() + " " + ligne);
+        if (ligne == scores.size()-1) scores.add(nom + " " + score);
+        else if (score < getScoreLigne(ligne)){
+            scores.set(ligne, nom + " " + score);
+        } else scores.set(ligne, nom + " " + score);
+        System.out.println(scores.size() + " " + ligne);
+    }
+
+    public void updateFile(URL chemin, List<String> lignes) throws URISyntaxException, IOException {
+        Files.write(Paths.get(chemin.toURI()), lignes);
+    }
+
+    public void modifierLigne(int numeroLigne, String nouvelleLigne) {
+        try {
+            // Lire toutes les lignes
+            URL resource = getClass().getResource("/scores.txt");
+            List<String> lignes = Files.readAllLines(Paths.get(resource.toURI()));
+
+            // Vérifier que la ligne existe
+            if (numeroLigne >= 0 && numeroLigne < lignes.size()) {
+                // Modifier la ligne
+                lignes.set(numeroLigne, nouvelleLigne);
+
+                // Réécrire le fichier
+                Files.write(Path.of("scores.txt"), lignes);
+                System.out.println("Ligne " + numeroLigne + " modifiée avec succès");
+            } else {
+                System.out.println("Numéro de ligne invalide");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

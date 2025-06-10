@@ -53,7 +53,7 @@ public class GameGrid extends GridPane {
                 if (grid[i][j] == 1) {
                     rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/rock1.png")), 32, 32, false, false)));
                 } else if (grid[i][j] == 2) {
-                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/wall1.png")), 32, 32, false, false)));
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/wall.png")), 32, 32, false, false)));
                 } else if (grid[i][j] == 3) {
                     rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grass1.png")), 32, 32, false, false)));
                 } else if (grid[i][j] == 4) {
