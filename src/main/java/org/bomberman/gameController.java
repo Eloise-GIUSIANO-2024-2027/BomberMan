@@ -37,6 +37,7 @@ public class gameController {
 
     private List<PacMan_Personnage> joueurs = new ArrayList<>();
     private List<Bot_Personnage> bot = new ArrayList<>();
+    private List<Bombe> listeBombes = new ArrayList<>();
 
     private boolean paused = false;
 
@@ -120,7 +121,7 @@ public class gameController {
 
                 if (game.getGrid()[px][py] == 0 && j1.estVivant()) {
                     System.out.println("Bombe");
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
                     gameGridDisplay.refresh();
                 }
             }
@@ -137,7 +138,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j2.estVivant()) {
                     System.out.println("Bombe");
                     // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot, listeBombes);
                     gameGridDisplay.refresh();
                 }
             }
@@ -154,7 +155,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j3.estVivant()) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
                     gameGridDisplay.refresh();
                 }
             }
@@ -171,7 +172,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j4.estVivant()) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes);
                     gameGridDisplay.refresh();
                 }
             }
