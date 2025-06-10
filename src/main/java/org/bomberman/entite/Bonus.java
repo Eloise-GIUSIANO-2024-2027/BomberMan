@@ -55,7 +55,13 @@ public class Bonus {
         this.game = game;
         this.gameGrid = gameGrid;
 
-        this.type = Math.random() < 0.5 ? TypeBonus.VITESSE : TypeBonus.RAYON;
+        // CORRECTION : Utiliser le paramètre 'type' passé au constructeur
+        // Si type est null, alors générer aléatoirement
+        if (type != null) {
+            this.type = type;
+        } else {
+            this.type = Math.random() < 0.5 ? TypeBonus.VITESSE : TypeBonus.RAYON;
+        }
 
         String imagePath;
         if (this.type == TypeBonus.VITESSE) {
@@ -79,6 +85,8 @@ public class Bonus {
         imageView.setFitHeight(48);
         imageView.setX(bonusX * 48);
         imageView.setY(bonusY * 48);
+
+        System.out.println("Bonus " + typeBonusString + " créé à la position (" + bonusX + ", " + bonusY + ")");
     }
 
     // Méthode spécifique pour PacMan_Personnage

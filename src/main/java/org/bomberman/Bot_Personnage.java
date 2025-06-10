@@ -35,7 +35,7 @@ public class Bot_Personnage extends Group {
         this.vitesse = 3.0;
         this.vitesseInitiale = this.vitesse;
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme+ "-" +botNumber+".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
@@ -72,7 +72,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-           rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-" +theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
         }
     }
 
@@ -157,6 +157,7 @@ public class Bot_Personnage extends Group {
 
         // 1. FUITE SI BOMBE PROCHE (priorité absolue)
         if (estDansZoneDanger(botX, botY)) {
+            System.out.println("Bot " + botId + " fuit une bombe !");
             for (int[] dir : new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}) {
                 int newX = botX + dir[0];
                 int newY = botY + dir[1];
@@ -178,50 +179,85 @@ public class Bot_Personnage extends Group {
             return;
         }
 
-        // 2. RECHERCHE DE BONUS PROCHE (nouvelle priorité)
-        Bonus bonusLePlusProche = trouverBonusLePlusProche();
-        if (bonusLePlusProche != null) {
-            double distanceBonus = calculerDistance(botX, botY, bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY());
-
-            // Si le bonus est très proche (distance <= 3), on y va en priorité
-            if (distanceBonus <= 3) {
-                System.out.println("Bot " + botId + " se dirige vers un bonus à (" + bonusLePlusProche.getBonusX() + "," + bonusLePlusProche.getBonusY() + ")");
-                if (seDeplacerVersObjectif(bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY())) {
-                    return; // On a réussi à se déplacer vers le bonus
-                }
-            }
-        }
-
-        // 3. RECHERCHE DE LA CIBLE LA PLUS PROCHE (joueur ou autres bots)
-        CibleInfo cibleLaPlusProche = trouverCibleLaPlusProche(joueur, bot);
+        // 2. RECHERCHE DE LA CIBLE LA PLUS PROCHE
+        CibleInfo cibleLaPlusProche = trouverCibleLaPlusProche(joueur, tousLesJoueurs, bot);
 
         if (cibleLaPlusProche != null) {
-            // 4. SI CIBLE À PORTÉE DE BOMBE → POSER UNE BOMBE
-            if (estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
-                if (canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
-                    System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
-                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
-                    setCanPlaceBomb(false);
-                    game.getGrid()[botY][botX] = 3;
+            double distanceCible = cibleLaPlusProche.distance;
+
+            // 3. SI CIBLE TRÈS PROCHE → ATTAQUER
+            if (distanceCible <= 2 && canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
+                System.out.println("Bot " + botId + " pose une bombe car cible très proche à distance " + distanceCible);
+                new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
+                setCanPlaceBomb(false);
+                game.getGrid()[botY][botX] = 3;
+                return;
+            }
+
+            // 4. SI CIBLE À PORTÉE DE BOMBE → ATTAQUER
+            if (estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y) && canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
+                System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
+                new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
+                setCanPlaceBomb(false);
+                game.getGrid()[botY][botX] = 3;
+                return;
+            }
+
+            // 5. PATHFINDING INTELLIGENT : Chercher un chemin vers la cible
+            List<int[]> chemin = trouverChemin(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y);
+
+            if (chemin != null && !chemin.isEmpty()) {
+                // Il y a un chemin libre, suivre le chemin
+                int[] prochainePas = chemin.get(0);
+                if (isValid(prochainePas[0], prochainePas[1])) {
+                    System.out.println("Bot " + botId + " suit un chemin vers la cible");
+                    seDeplacerVers(prochainePas[0], prochainePas[1]);
                     return;
+                }
+            } else {
+                // 6. PAS DE CHEMIN LIBRE → CASSER DES MURS STRATÉGIQUEMENT
+                int[] murACasser = trouverMurACasser(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y);
+                if (murACasser != null && canPlaceBomb()) {
+                    // Se diriger vers le mur à casser
+                    if (Math.abs(murACasser[0] - botX) <= 1 && Math.abs(murACasser[1] - botY) <= 1) {
+                        // On est adjacent au mur, poser une bombe
+                        if (game.getGrid()[botY][botX] == 0) {
+                            System.out.println("Bot " + botId + " casse un mur à (" + murACasser[0] + "," + murACasser[1] + ") pour atteindre la cible");
+                            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
+                            setCanPlaceBomb(false);
+                            game.getGrid()[botY][botX] = 3;
+                            return;
+                        }
+                    } else {
+                        // Se rapprocher du mur à casser
+                        if (seDeplacerVersObjectif(murACasser[0], murACasser[1])) {
+                            System.out.println("Bot " + botId + " se dirige vers un mur à casser");
+                            return;
+                        }
+                    }
                 }
             }
 
-            // 5. SINON → SE RAPPROCHER DE LA CIBLE
+            // 7. FALLBACK : Se rapprocher de la cible même si bloqué
             if (seDeplacerVersObjectif(cibleLaPlusProche.x, cibleLaPlusProche.y)) {
                 return;
             }
         }
 
-        // 6. Si on a un bonus pas trop loin et qu'on n'a pas de cible prioritaire, aller vers le bonus
+        // 8. RECHERCHE DE BONUS (seulement si pas de cible prioritaire)
+        Bonus bonusLePlusProche = trouverBonusLePlusProche();
         if (bonusLePlusProche != null) {
-            System.out.println("Bot " + botId + " se dirige vers un bonus éloigné à (" + bonusLePlusProche.getBonusX() + "," + bonusLePlusProche.getBonusY() + ")");
-            if (seDeplacerVersObjectif(bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY())) {
-                return;
+            double distanceBonus = calculerDistance(botX, botY, bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY());
+
+            if (distanceBonus <= 4) {
+                System.out.println("Bot " + botId + " se dirige vers un bonus");
+                if (seDeplacerVersObjectif(bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY())) {
+                    return;
+                }
             }
         }
 
-        // 7. BLOQUÉ → POSER UNE BOMBE POUR DÉTRUIRE DES OBSTACLES
+        // 9. DESTRUCTION ALÉATOIRE D'OBSTACLES
         if (canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
             System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
             new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
@@ -230,7 +266,104 @@ public class Bot_Personnage extends Group {
         }
     }
 
-    // Nouvelle méthode pour trouver le bonus le plus proche
+    // NOUVELLE MÉTHODE : Pathfinding simple avec BFS
+    private List<int[]> trouverChemin(int startX, int startY, int targetX, int targetY) {
+        int[][] grid = game.getGrid();
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        Queue<PathNode> queue = new LinkedList<>();
+
+        queue.offer(new PathNode(startX, startY, null));
+        visited[startY][startX] = true;
+
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+        while (!queue.isEmpty()) {
+            PathNode current = queue.poll();
+
+            // Arrivé à destination
+            if (current.x == targetX && current.y == targetY) {
+                List<int[]> chemin = new ArrayList<>();
+                PathNode node = current.parent; // On ignore la position de départ
+                while (node != null && node.parent != null) {
+                    chemin.add(0, new int[]{node.x, node.y});
+                    node = node.parent;
+                }
+                return chemin;
+            }
+
+            // Explorer les voisins
+            for (int[] dir : directions) {
+                int newX = current.x + dir[0];
+                int newY = current.y + dir[1];
+
+                if (newX >= 0 && newX < grid[0].length && newY >= 0 && newY < grid.length
+                        && !visited[newY][newX] && grid[newY][newX] == 0) {
+                    visited[newY][newX] = true;
+                    queue.offer(new PathNode(newX, newY, current));
+                }
+            }
+        }
+
+        return null; // Pas de chemin trouvé
+    }
+
+    // Classe pour le pathfinding
+    private static class PathNode {
+        int x, y;
+        PathNode parent;
+
+        PathNode(int x, int y, PathNode parent) {
+            this.x = x;
+            this.y = y;
+            this.parent = parent;
+        }
+    }
+
+    // NOUVELLE MÉTHODE : Trouve le mur le plus stratégique à casser
+    private int[] trouverMurACasser(int botX, int botY, int targetX, int targetY) {
+        int[][] grid = game.getGrid();
+
+        // Vérifier les murs dans la direction de la cible
+        int dx = Integer.signum(targetX - botX);
+        int dy = Integer.signum(targetY - botY);
+
+        // Priorité 1: Murs directement dans la ligne de mire
+        if (dx != 0) { // Mouvement horizontal
+            for (int x = botX + dx; x != targetX && x >= 0 && x < grid[0].length; x += dx) {
+                if (grid[botY][x] == 2) { // Mur destructible
+                    return new int[]{x, botY};
+                } else if (grid[botY][x] == 1) { // Mur indestructible
+                    break;
+                }
+            }
+        }
+
+        if (dy != 0) { // Mouvement vertical
+            for (int y = botY + dy; y != targetY && y >= 0 && y < grid.length; y += dy) {
+                if (grid[y][botX] == 2) { // Mur destructible
+                    return new int[]{botX, y};
+                } else if (grid[y][botX] == 1) { // Mur indestructible
+                    break;
+                }
+            }
+        }
+
+        // Priorité 2: Murs adjacents au bot
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int[] dir : directions) {
+            int newX = botX + dir[0];
+            int newY = botY + dir[1];
+
+            if (newX >= 0 && newX < grid[0].length && newY >= 0 && newY < grid.length
+                    && grid[newY][newX] == 2) {
+                return new int[]{newX, newY};
+            }
+        }
+
+        return null;
+    }
+
+    // Méthodes existantes...
     private Bonus trouverBonusLePlusProche() {
         List<Bonus> activeBonuses = game.getActiveBonuses();
         if (activeBonuses.isEmpty()) {
@@ -251,7 +384,6 @@ public class Bot_Personnage extends Group {
         return bonusLePlusProche;
     }
 
-    // Méthode améliorée pour se déplacer vers un objectif
     private boolean seDeplacerVersObjectif(int objectifX, int objectifY) {
         int botX = getGridX();
         int botY = getGridY();
@@ -259,7 +391,6 @@ public class Bot_Personnage extends Group {
         int dx = objectifX - botX;
         int dy = objectifY - botY;
 
-        // Prioriser le mouvement selon la plus grande distance
         int[][] directions = Math.abs(dx) > Math.abs(dy) ?
                 new int[][]{{Integer.signum(dx), 0}, {0, Integer.signum(dy)}} :
                 new int[][]{{0, Integer.signum(dy)}, {Integer.signum(dx), 0}};
@@ -273,10 +404,9 @@ public class Bot_Personnage extends Group {
             }
         }
 
-        return false; // Impossible de se déplacer vers l'objectif
+        return false;
     }
 
-    // Classe interne pour stocker les informations de cible
     private static class CibleInfo {
         int x, y;
         double distance;
@@ -288,15 +418,17 @@ public class Bot_Personnage extends Group {
         }
     }
 
-    private CibleInfo trouverCibleLaPlusProche(PacMan_Personnage joueur, List<Bot_Personnage> autresBots) {
+    private CibleInfo trouverCibleLaPlusProche(PacMan_Personnage joueur, List<PacMan_Personnage> tousLesJoueurs, List<Bot_Personnage> autresBots) {
         CibleInfo cibleLaPlusProche = null;
         double distanceMin = Double.MAX_VALUE;
 
-        if (joueur != null && joueur.estVivant()) {
-            double distance = calculerDistance(getGridX(), getGridY(), joueur.getGridX(), joueur.getGridY());
-            if (distance < distanceMin) {
-                distanceMin = distance;
-                cibleLaPlusProche = new CibleInfo(joueur.getGridX(), joueur.getGridY(), distance);
+        for (PacMan_Personnage j : tousLesJoueurs) {
+            if (j != null && j.estVivant()) {
+                double distance = calculerDistance(getGridX(), getGridY(), j.getGridX(), j.getGridY());
+                if (distance < distanceMin) {
+                    distanceMin = distance;
+                    cibleLaPlusProche = new CibleInfo(j.getGridX(), j.getGridY(), distance);
+                }
             }
         }
 
@@ -313,50 +445,27 @@ public class Bot_Personnage extends Group {
         return cibleLaPlusProche;
     }
 
-    // Calcule la distance de Manhattan entre deux points
     private double calculerDistance(int x1, int y1, int x2, int y2) {
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
     }
 
-    // Vérifie si une cible est à portée de bombe
     private boolean estAPorteeDeBombe(int bombeX, int bombeY, int cibleX, int cibleY) {
         int rayon = 2;
 
-        // Même position
         if (bombeX == cibleX && bombeY == cibleY) {
             return true;
         }
 
-        // Vérifier les 4 directions
-        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-        for (int[] dir : directions) {
-            for (int i = 1; i <= rayon; i++) {
-                int nx = bombeX + dir[0] * i;
-                int ny = bombeY + dir[1] * i;
-                // Hors limites
-                if (nx < 0 || ny < 0 || ny >= game.getGrid().length || nx >= game.getGrid()[0].length) {
-                    break;
-                }
-                int cell = game.getGrid()[ny][nx];
-                // Cible trouvée
-                if (nx == cibleX && ny == cibleY) {
-                    return true;
-                }
-                if (cell == 1) {
-                    break;
-                }
-                if (cell == 2) {
-                    if (nx == cibleX && ny == cibleY) {
-                        return true;
-                    }
-                    break;
-                }
-            }
+        if (bombeX == cibleX) {
+            return Math.abs(bombeY - cibleY) <= rayon;
         }
+        if (bombeY == cibleY) {
+            return Math.abs(bombeX - cibleX) <= rayon;
+        }
+
         return false;
     }
 
-    // Méthodes utilitaires inchangées...
     private boolean isValid(int x, int y) {
         int[][] grid = game.getGrid();
         return x >= 0 && y >= 0 && y < grid.length && x < grid[0].length && grid[y][x] == 0;

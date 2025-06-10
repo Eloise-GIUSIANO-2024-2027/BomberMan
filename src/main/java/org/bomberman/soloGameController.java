@@ -121,7 +121,7 @@ public class soloGameController {
                 int px = j1.getGridX(); // px is the column
                 int py = j1.getGridY(); // py is the row
 
-                if (game.getGrid()[py][px] == 0 && j1.estVivant()) { // This access is correct: [row][column]
+                if (game.getGrid()[py][px] == 0 && j1.estVivant() && j1.peutPlacerBombe() ) { // This access is correct: [row][column]
                     System.out.println("Bombe");
                     int rayon = j1.aBonusRayon() ? 2 : 1;
                     if (j1.aBonusRayon()) {
@@ -129,8 +129,10 @@ public class soloGameController {
                     }
                     // THE FIX IS HERE: Pass px (column) first, then py (row)
                     new Bombe( px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
-                    j1.setCanPlaceBomb(false);
                     gameGridDisplay.refresh();
+                } else if (!j1.peutPlacerBombe()) {
+                    long tempsRestant = j1.getTempsRestantCooldown();
+                    System.out.println("Cooldown actif - attendez " + (tempsRestant/1000.0) + " secondes");
                 }
             }
         }

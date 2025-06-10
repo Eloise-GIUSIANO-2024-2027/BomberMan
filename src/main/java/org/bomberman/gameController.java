@@ -321,7 +321,7 @@ public class gameController {
                 int px = j1.getGridX();
                 int py = j1.getGridY();
 
-                if (game.getGrid()[px][py] == 0) {
+                if (game.getGrid()[px][py] == 0 && j1.peutPlacerBombe()) {
                     System.out.println("Bombe");
                     // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                     int rayon = j1.aBonusRayon() ? 2 : 1;
@@ -329,7 +329,7 @@ public class gameController {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
                     new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
-                    j1.setCanPlaceBomb(false);
+                    j1.marquerBombePlacee();
                     gameGridDisplay.refresh();
                 }
             }
@@ -356,7 +356,7 @@ public class gameController {
                     int px2 = j2.getGridX();
                     int py2 = j2.getGridY();
 
-                    if (game.getGrid()[py2][px2] == 0) {
+                    if (game.getGrid()[py2][px2] == 0 && j2.peutPlacerBombe()) {
                         System.out.println("Bombe");
                         // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                         int rayon = j2.aBonusRayon() ? 2 : 1;
@@ -364,7 +364,7 @@ public class gameController {
                             j2.consommerBonusRayon();
                         }
                         new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes);
-                        j2.setCanPlaceBomb(false);
+                        j2.marquerBombePlacee();
                         gameGridDisplay.refresh();
                     }
                 }
@@ -390,7 +390,7 @@ public class gameController {
                     int px3 = j3.getGridX();
                     int py3 = j3.getGridY();
 
-                    if (game.getGrid()[py3][px3] == 0) {
+                    if (game.getGrid()[py3][px3] == 0 && j3.peutPlacerBombe()) {
                         System.out.println("Bombe");
                         // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                         int rayon = j3.aBonusRayon() ? 2 : 1;
@@ -398,7 +398,7 @@ public class gameController {
                             j3.consommerBonusRayon();
                         }
                         new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes);
-                        j3.setCanPlaceBomb(false);
+                        j3.marquerBombePlacee();
                         gameGridDisplay.refresh();
                     }
                 }
@@ -424,7 +424,7 @@ public class gameController {
                     int px4 = j4.getGridX();
                     int py4 = j4.getGridY();
 
-                    if (game.getGrid()[py4][px4] == 0) {
+                    if (game.getGrid()[py4][px4] == 0 && j4.peutPlacerBombe()) {
                         System.out.println("Bombe");
                         // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                         int rayon = j4.aBonusRayon() ? 2 : 1;
@@ -432,7 +432,7 @@ public class gameController {
                             j4.consommerBonusRayon();
                         }
                         new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes);
-                        j4.setCanPlaceBomb(false);
+                        j4.marquerBombePlacee();
                         gameGridDisplay.refresh();
                     }
                 }
