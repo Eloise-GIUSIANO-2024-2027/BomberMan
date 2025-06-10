@@ -304,7 +304,6 @@ public class gameController {
                 j1.deplacerEnHaut();
                 checkBonusCollision(j1);
             }
-
             case G -> {
                 j1.deplacerEnBas(k.getHeight());
                 checkBonusCollision(j1);

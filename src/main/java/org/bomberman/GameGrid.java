@@ -17,6 +17,7 @@ public class GameGrid extends GridPane {
     int[][] grid;
     private Pane entityLayer; // Couche pour les entités (personnages, bombes)
 
+
     public GameGrid(Game game) {
         this.game = game;
         grid = game.getGrid();
