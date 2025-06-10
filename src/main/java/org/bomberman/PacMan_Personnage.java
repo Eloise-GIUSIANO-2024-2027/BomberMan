@@ -8,6 +8,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.Objects;
+import java.util.Objects;
+import java.util.List;
 
 public class PacMan_Personnage extends Group {
     private String direction = "bas";
@@ -19,6 +21,11 @@ public class PacMan_Personnage extends Group {
     private boolean estVivant = true;
     private int playerNumber =1;// Initialise le joueur comme vivant par défaut
     private String theme = "wix";
+
+    // Pour le mode Capture The Flag
+    private Drapeau monDrapeau; // Le drapeau appartenant à ce joueur
+    private boolean aEteCapture = false; // Vrai si le drapeau de ce joueur a été capturé
+    private int drapeauxCaptures = 0; // Compteur des drapeaux ennemis capturés par ce joueur
 
 
     public PacMan_Personnage(Game game, int startX, int startY,int playerNumber) {
@@ -120,6 +127,8 @@ public class PacMan_Personnage extends Group {
         return this.estVivant;
     }
 
+    public int getPlayerNumber() {return this.playerNumber;}
+
     // Getters pour la position de grille (utiles pour debug)
     public int getGridX() {
         return gridX;
@@ -130,11 +139,56 @@ public class PacMan_Personnage extends Group {
     }
 
     //Pour le catch the flagh
-    private Drapeau drapeau;
-    private boolean aCaptureDrapeau = false;
-    private boolean elimineMaisActif = false;
+    // --- Pour le mode Capture The Flag ---
 
-    public void setDrapeau(Drapeau d) { this.drapeau = d; }
-    public Drapeau getDrapeau() { return drapeau; }
-    public boolean isElimine() { return elimineMaisActif; }
+    public void setMonDrapeau(Drapeau d) {
+        this.monDrapeau = d;
+    }
+
+    public Drapeau getMonDrapeau() {
+        return monDrapeau;
+    }
+
+    public boolean aEteCapture() {
+        return aEteCapture;
+    }
+
+    public void setAEteCapture(boolean aEteCapture) {
+        this.aEteCapture = aEteCapture;
+    }
+
+    public int getDrapeauxCaptures() {
+        return drapeauxCaptures;
+    }
+
+    public void incrementerDrapeauxCaptures() {
+        this.drapeauxCaptures++;
+    }
+
+    /**
+     * Vérifie si ce joueur est sur un drapeau ennemi et le capture si c'est le cas.
+     * @param tousLesDrapeaux La liste de tous les drapeaux présents sur la carte.
+     * @return true si un drapeau ennemi a été capturé, false sinon.
+     */
+    public boolean tenterCaptureDrapeau(List<Drapeau> tousLesDrapeaux) {
+        if (!this.estVivant) { // Seuls les joueurs vivants peuvent capturer des drapeaux
+            return false;
+        }
+
+        for (Drapeau drapeau : tousLesDrapeaux) {
+            // Un joueur ne peut pas capturer son propre drapeau
+            // Un joueur ne peut capturer un drapeau que s'il n'a pas déjà été capturé
+            if (drapeau.getGridX() == this.gridX &&
+                    drapeau.getGridY() == this.gridY &&
+                    drapeau.getProprietaire() != this && // Vérifie que ce n'est pas son propre drapeau
+                    !drapeau.isCaptured()) { // Vérifie qu'il n'est pas déjà capturé
+
+                drapeau.setCaptured(true); // Marque le drapeau comme capturé
+                drapeau.disparaitre(); // Rend le drapeau invisible
+                this.incrementerDrapeauxCaptures(); // Incrémente le compteur de drapeaux capturés
+                return true;
+            }
+        }
+        return false;
+    }
 }

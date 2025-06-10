@@ -16,13 +16,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.bomberman.entite.Bombe;
+import org.bomberman.entite.Bombe; // Assurez-vous que cette importation est correcte
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors; // Importation pour utiliser stream().filter()
 
 public class CTFcontroller {
 
@@ -30,15 +32,19 @@ public class CTFcontroller {
     private VBox pauseMenuContainer;
     @FXML
     private VBox finMenuContainer;
+    @FXML
+    private Label messageFinPartieLabel; // Label pour afficher le message de fin de partie/vainqueur
 
     private Timeline gameTimer;
     private int tempsRestant = 120;
 
     private List<PacMan_Personnage> joueurs = new ArrayList<>();
-    private List<Bot_Personnage> bot = new ArrayList<>();
+    private List<Bot_Personnage> bot = new ArrayList<>(); // Si tu as des bots, sinon ça peut être supprimé
     private List<Bombe> listeBombes = new ArrayList<>();
+    private List<Drapeau> listeDrapeaux = new ArrayList<>(); // Nouvelle liste pour stocker tous les drapeaux
 
     private boolean paused = false;
+    private boolean partieTerminee = false; // Pour s'assurer que le jeu ne continue pas après la fin
 
     @FXML
     private VBox gameArea;
@@ -46,56 +52,74 @@ public class CTFcontroller {
 
     private GameGrid gameGridDisplay;
     @FXML
-    private Button startButton; // Référence au bouton démarrer
+    private Button startButton;
 
     @FXML
     private Label timerLabel;
 
     @FXML
     public void startGame() throws IOException {
-        lancerTimer(); // debut du timer
+        lancerTimer();
 
-        // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
-
         gameArea.getChildren().clear();
 
-        // Créer un conteneur avec couches
         StackPane gameContainer = new StackPane();
-
-        // Ajouter la grille de terrain
         gameContainer.getChildren().add(gameGridDisplay);
-
-        // Ajouter la couche pour les entités (personnages + bombes)
-        Pane entityLayer = gameGridDisplay.getEntityLayer();
-        gameContainer.getChildren().add(entityLayer);
-
         gameArea.getChildren().add(gameContainer);
 
-        // Créer les personnages
-        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
-        Drapeau drapeau1 = new Drapeau(0, 0, pacman);
-        Drapeau drapeau2 = new Drapeau(12, 10, fantome);
-        Drapeau drapeau3 = new Drapeau(12, 0, pacman2);
-        Drapeau drapeau4 = new Drapeau(0, 10, pacman3);
-        gameGridDisplay.getChildren().addAll(drapeau1, drapeau2, drapeau3, drapeau4);
-        pacman.setDrapeau(drapeau1);
-        fantome.setDrapeau(drapeau2);
-        pacman2.setDrapeau(drapeau3);
-        pacman3.setDrapeau(drapeau4);
+        // Réinitialiser les listes pour un nouveau départ
+        joueurs.clear();
+        listeDrapeaux.clear();
+        listeBombes.clear();
+        partieTerminee = false;
+
+        // Définir les positions de départ des joueurs
+        int player1StartX = 0;
+        int player1StartY = 0;
+        int player2StartX = 12;
+        int player2StartY = 10;
+        int player3StartX = 12;
+        int player3StartY = 0;
+        int player4StartX = 0;
+        int player4StartY = 10;
+
+
+        // Créer les personnages AVEC LEURS POSITIONS DE DÉPART
+        PacMan_Personnage pacman = new Pacman(game, player1StartX, player1StartY, 1);
+        PacMan_Personnage fantome = new Pacman(game, player2StartX, player2StartY, 2);
+        PacMan_Personnage pacman2 = new Pacman(game, player3StartX, player3StartY, 3);
+        PacMan_Personnage pacman3 = new Pacman(game, player4StartX, player4StartY, 4);
+
+        // Créer les drapeaux avec les positions de DÉPART des joueurs et des couleurs différentes
+        // Et les assigner à leurs propriétaires
+        Drapeau drapeau1 = new Drapeau(player1StartX, player1StartY, pacman, Color.YELLOW);
+        Drapeau drapeau2 = new Drapeau(player2StartX, player2StartY, fantome, Color.BLUE);
+        Drapeau drapeau3 = new Drapeau(player3StartX, player3StartY, pacman2, Color.RED);
+        Drapeau drapeau4 = new Drapeau(player4StartX, player4StartY, pacman3, Color.GREEN);
+
+        // Ajouter les drapeaux à la liste des drapeaux gérés par le contrôleur
+        listeDrapeaux.add(drapeau1);
+        listeDrapeaux.add(drapeau2);
+        listeDrapeaux.add(drapeau3);
+        listeDrapeaux.add(drapeau4);
+
+        // Assigner à chaque joueur son propre drapeau
+        pacman.setMonDrapeau(drapeau1);
+        fantome.setMonDrapeau(drapeau2);
+        pacman2.setMonDrapeau(drapeau3);
+        pacman3.setMonDrapeau(drapeau4);
+
+        // Ajouter les drapeaux à la grille en premier
+        gameGridDisplay.getChildren().addAll(listeDrapeaux);
+        // Puis ajouter les personnages par-dessus
+        gameGridDisplay.getChildren().addAll(pacman, fantome, pacman2, pacman3);
 
         joueurs.add(pacman);
         joueurs.add(fantome);
         joueurs.add(pacman2);
         joueurs.add(pacman3);
 
-        // Ajouter les personnages DIRECTEMENT à la grille comme avant
-        gameGridDisplay.getChildren().addAll(joueurs);
-
-        // Focus et événements
         gameContainer.requestFocus();
         gameContainer.setFocusTraversable(true);
 
@@ -106,8 +130,7 @@ public class CTFcontroller {
                     togglePause();
                 }
 
-                if (!paused) {
-                    // Appelle ta méthode de déplacement
+                if (!paused && !partieTerminee) { // Ajout de !partieTerminee pour bloquer les mouvements
                     handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
                 }
             });
@@ -117,87 +140,133 @@ public class CTFcontroller {
     private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
         GameGrid k = gameGridDisplay;
 
+        // Sauvegarder les anciennes positions pour vérifier si le joueur a bougé
+        int oldJ1X = j1.getGridX();
+        int oldJ1Y = j1.getGridY();
+        int oldJ2X = j2.getGridX();
+        int oldJ2Y = j2.getGridY();
+        int oldJ3X = j3.getGridX();
+        int oldJ3Y = j3.getGridY();
+        int oldJ4X = j4.getGridX();
+        int oldJ4Y = j4.getGridY();
+
         switch (event.getCode()) {
             //Joueur 1
-            case T -> j1.deplacerEnHaut();
-            case G -> j1.deplacerEnBas(k.getHeight());
-            case H -> j1.deplacerADroite(k.getWidth());
-            case F -> j1.deplacerAGauche();
+            case T -> { if (j1.estVivant()) j1.deplacerEnHaut(); }
+            case G -> { if (j1.estVivant()) j1.deplacerEnBas(k.getHeight()); }
+            case H -> { if (j1.estVivant()) j1.deplacerADroite(k.getWidth()); }
+            case F -> { if (j1.estVivant()) j1.deplacerAGauche(); }
             case U -> {
+                // Un joueur même "éliminé" (drapeau capturé) peut poser des bombes
                 int px = j1.getGridX();
                 int py = j1.getGridY();
+                if (game.getGrid()[py][px] == 0) { // Vérifie que la case est vide pour poser une bombe
+                    System.out.println("Bombe par Joueur 1");
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    gameGridDisplay.refresh(); // Rafraîchit l'affichage pour voir la bombe
+                }
+            }
 
-                if (game.getGrid()[px][py] == 0 && j1.estVivant()) {
-                    System.out.println("Bombe");
+            //Joueur 2
+            case Z -> { if (j2.estVivant()) j2.deplacerEnHaut(); }
+            case S -> { if (j2.estVivant()) j2.deplacerEnBas(k.getHeight()); }
+            case D -> { if (j2.estVivant()) j2.deplacerADroite(k.getWidth()); }
+            case Q -> { if (j2.estVivant()) j2.deplacerAGauche(); }
+            case A -> {
+                int px = j2.getGridX();
+                int py = j2.getGridY();
+                if (game.getGrid()[py][px] == 0) {
+                    System.out.println("Bombe par Joueur 2");
                     new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
                     gameGridDisplay.refresh();
                 }
             }
 
-            //Joueur 2
-            case Z -> j2.deplacerEnHaut();
-            case S -> j2.deplacerEnBas(k.getHeight());
-            case D -> j2.deplacerADroite(k.getWidth());
-            case Q -> j2.deplacerAGauche();
-            case A -> {
-                int px = j2.getGridX();
-                int py = j2.getGridY();
-
-                if (game.getGrid()[py][px] == 0 && j2.estVivant()) {
-                    System.out.println("Bombe");
-                    // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot, listeBombes);
-                    gameGridDisplay.refresh();
-                }
-            }
-
             //Joueur 3
-            case O -> j3.deplacerEnHaut();
-            case L -> j3.deplacerEnBas(k.getHeight());
-            case M -> j3.deplacerADroite(k.getWidth());
-            case K -> j3.deplacerAGauche();
+            case O -> { if (j3.estVivant()) j3.deplacerEnHaut(); }
+            case L -> { if (j3.estVivant()) j3.deplacerEnBas(k.getHeight()); }
+            case M -> { if (j3.estVivant()) j3.deplacerADroite(k.getWidth()); }
+            case K -> { if (j3.estVivant()) j3.deplacerAGauche(); }
             case P -> {
                 int px = j3.getGridX();
                 int py = j3.getGridY();
-
-                if (game.getGrid()[py][px] == 0 && j3.estVivant()) {
-                    System.out.println("Bombe");
-
+                if (game.getGrid()[py][px] == 0) {
+                    System.out.println("Bombe par Joueur 3");
                     new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
                     gameGridDisplay.refresh();
                 }
             }
 
             //Joueur 4
-            case NUMPAD5 -> j4.deplacerEnHaut();
-            case NUMPAD2 -> j4.deplacerEnBas(k.getHeight());
-            case NUMPAD3 -> j4.deplacerADroite(k.getWidth());
-            case NUMPAD1 -> j4.deplacerAGauche();
+            case NUMPAD5 -> { if (j4.estVivant()) j4.deplacerEnHaut(); }
+            case NUMPAD2 -> { if (j4.estVivant()) j4.deplacerEnBas(k.getHeight()); }
+            case NUMPAD3 -> { if (j4.estVivant()) j4.deplacerADroite(k.getWidth()); }
+            case NUMPAD1 -> { if (j4.estVivant()) j4.deplacerAGauche(); }
             case NUMPAD4 -> {
                 int px = j4.getGridX();
                 int py = j4.getGridY();
-
-                if (game.getGrid()[py][px] == 0 && j4.estVivant()) {
-                    System.out.println("Bombe");
-
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes);
+                if (game.getGrid()[py][px] == 0) {
+                    System.out.println("Bombe par Joueur 4");
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
                     gameGridDisplay.refresh();
                 }
             }
         }
+        // Après chaque mouvement, vérifier si un joueur a capturé un drapeau
+        if (j1.getGridX() != oldJ1X || j1.getGridY() != oldJ1Y) {
+            if (j1.tenterCaptureDrapeau(listeDrapeaux)) {
+                // Marque le drapeau capturé comme "capturé" pour son propriétaire
+                listeDrapeaux.stream()
+                        .filter(d -> d.getGridX() == j1.getGridX() && d.getGridY() == j1.getGridY())
+                        .findFirst()
+                        .ifPresent(drapeauCapturé -> drapeauCapturé.getProprietaire().setAEteCapture(true));
+            }
+        }
+        if (j2.getGridX() != oldJ2X || j2.getGridY() != oldJ2Y) {
+            if (j2.tenterCaptureDrapeau(listeDrapeaux)) {
+                listeDrapeaux.stream()
+                        .filter(d -> d.getGridX() == j2.getGridX() && d.getGridY() == j2.getGridY())
+                        .findFirst()
+                        .ifPresent(drapeauCapturé -> drapeauCapturé.getProprietaire().setAEteCapture(true));
+            }
+        }
+        if (j3.getGridX() != oldJ3X || j3.getGridY() != oldJ3Y) {
+            if (j3.tenterCaptureDrapeau(listeDrapeaux)) {
+                listeDrapeaux.stream()
+                        .filter(d -> d.getGridX() == j3.getGridX() && d.getGridY() == j3.getGridY())
+                        .findFirst()
+                        .ifPresent(drapeauCapturé -> drapeauCapturé.getProprietaire().setAEteCapture(true));
+            }
+        }
+        if (j4.getGridX() != oldJ4X || j4.getGridY() != oldJ4Y) {
+            if (j4.tenterCaptureDrapeau(listeDrapeaux)) {
+                listeDrapeaux.stream()
+                        .filter(d -> d.getGridX() == j4.getGridX() && d.getGridY() == j4.getGridY())
+                        .findFirst()
+                        .ifPresent(drapeauCapturé -> drapeauCapturé.getProprietaire().setAEteCapture(true));
+            }
+        }
+
         verifierFinDePartie();
     }
 
 
     public void initialize() {
-        System.out.println("gameController initialisé.");
+        System.out.println("CTFcontroller initialisé.");
         if (startButton != null) {
             startButton.setVisible(true);
             startButton.setManaged(true);
         }
+        // Cache le menu de fin de partie au démarrage
+        if (finMenuContainer != null) {
+            finMenuContainer.setVisible(false);
+            finMenuContainer.setManaged(false);
+        }
     }
 
     private void togglePause() {
+        if (partieTerminee) return; // Ne pas permettre la pause si la partie est terminée
+
         paused = !paused;
 
         pauseMenuContainer.setVisible(paused);
@@ -216,8 +285,10 @@ public class CTFcontroller {
 
     @FXML
     public void retourMenu(ActionEvent event) {
+        if (gameTimer != null) {
+            gameTimer.stop(); // Arrêter le timer avant de quitter
+        }
         try {
-            // Charger le FXML du menu
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
             Parent menuRoot = loader.load();
             Scene menuScene = new Scene(menuRoot, 820, 650);
@@ -228,10 +299,9 @@ public class CTFcontroller {
             } else {
                 System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
             }
-            //Obtenir le Stage actuel et changer la scène
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(menuScene);
-            stage.setTitle("Super Bomberman"); // Remettre le titre du menu
+            stage.setTitle("Super Bomberman");
             stage.show();
 
         } catch (IOException e) {
@@ -252,57 +322,84 @@ public class CTFcontroller {
 
     @FXML
     public void quittertout() {
-        Platform.exit(); // Fait sortir l'application JavaFX
-        System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
-
+        Platform.exit();
+        System.exit(0);
     }
 
     private void lancerTimer() {
+        if (gameTimer != null) {
+            gameTimer.stop(); // Arrête l'ancien timer si on relance
+        }
         gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             tempsRestant--;
             int minutes = tempsRestant / 60;
             int secondes = tempsRestant % 60;
             String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
 
-            // Met à jour le texte du Label dans l'interface
             Platform.runLater(() -> timerLabel.setText(tempsFormate));
-            verifierFinDePartie();
+            // verifierFinDePartie(); // La vérification de fin de partie est maintenant appelée après le mouvement
 
-            if (tempsRestant <= 0) {
+            if (tempsRestant <= 0 && !partieTerminee) { // Vérifier partieTerminee ici aussi
                 gameTimer.stop();
-                finDePartie();
-                timerLabel.setText("TIMEUR : 00:00");
+                finDePartie("Le temps est écoulé ! Aucun vainqueur.");
             }
         }));
         gameTimer.setCycleCount(Timeline.INDEFINITE);
         gameTimer.play();
     }
 
+    /**
+     * Vérifie les conditions de fin de partie pour le mode Capture The Flag.
+     */
     private void verifierFinDePartie() {
-        long joueursEnVie = joueurs.stream().filter(PacMan_Personnage::estVivant).count();
+        if (partieTerminee) return; // Si la partie est déjà terminée, ne rien faire
 
-        if (joueursEnVie <= 1) {
-            if (gameTimer != null) {
-                gameTimer.stop();
+        int nombreDeJoueursVivants = (int) joueurs.stream().filter(PacMan_Personnage::estVivant).count();
+        int nombreDeDrapeauxEnnemisACapturer = joueurs.size() - 1;
+
+        for (PacMan_Personnage joueur : joueurs) {
+            // Un joueur ne gagne que s'il est VIVANT et a capturé tous les drapeaux ennemis
+            if (joueur.estVivant() && joueur.getDrapeauxCaptures() >= nombreDeDrapeauxEnnemisACapturer) {
+                finDePartie("Le joueur " + joueur.getPlayerNumber() + " a capturé tous les drapeaux ennemis et GAGNE LA PARTIE !");
+                return; // Un vainqueur a été trouvé, on arrête
             }
-            finDePartie();
         }
+
+        // Règle 2 : Le temps est écoulé
+        if (tempsRestant <= 0) {
+            finDePartie("Le temps est écoulé ! Aucun vainqueur.");
+            return;
+        }
+
+        // Règle 3 : Tous les joueurs sauf un sont éliminés (dans ce cas, le dernier survivant pourrait gagner
+        // mais selon tes règles, la capture de drapeau est prioritaire. On ne gagne pas juste en étant le dernier survivant).
+        // Si plus d'un joueur est vivant et personne n'a capturé tous les drapeaux, le jeu continue.
     }
 
 
-    private void finDePartie() {
-        System.out.println("Temps écoulé ! Partie terminée.");
+    private void finDePartie(String message) {
+        if (partieTerminee) return; // Empêcher la fin de partie multiple
+        partieTerminee = true;
+
+        System.out.println("Partie terminée. " + message);
+        if (gameTimer != null) {
+            gameTimer.stop(); // Arrêter le timer
+        }
         Platform.runLater(() -> {
-            // afficher un message ou recharger la scène
+            messageFinPartieLabel.setText(message); // Affiche le message de fin de partie
             finMenuContainer.setVisible(true);
             finMenuContainer.setManaged(true);
         });
     }
+
     @FXML
     public void replayGame() {
-        // Réinitialiser les listes de joueurs
+        // Réinitialiser les listes et l'état
         joueurs.clear();
-        bot.clear(); // Même s'il n'y a pas de bots ici, garde-le pour la cohérence
+        bot.clear();
+        listeBombes.clear();
+        listeDrapeaux.clear(); // Réinitialiser la liste des drapeaux
+        partieTerminee = false; // Réinitialiser l'état de la partie
 
         // Réinitialiser le timer
         if (gameTimer != null) {
@@ -322,8 +419,6 @@ public class CTFcontroller {
 
         StackPane gameContainer = new StackPane();
         gameContainer.getChildren().add(gameGridDisplay);
-        Pane entityLayer = gameGridDisplay.getEntityLayer();
-        gameContainer.getChildren().add(entityLayer);
         gameArea.getChildren().add(gameContainer);
 
         int player1StartX = 0;
@@ -341,19 +436,28 @@ public class CTFcontroller {
         PacMan_Personnage pacman2 = new Pacman(game, player3StartX, player3StartY, 3);
         PacMan_Personnage pacman3 = new Pacman(game, player4StartX, player4StartY, 4);
 
-        // Crée les drapeaux en utilisant les positions de DÉPART des joueurs
-        Drapeau drapeau1 = new Drapeau(player1StartX, player1StartY, pacman);
-        Drapeau drapeau2 = new Drapeau(player2StartX, player2StartY, fantome);
-        Drapeau drapeau3 = new Drapeau(player3StartX, player3StartY, pacman2);
-        Drapeau drapeau4 = new Drapeau(player4StartX, player4StartY, pacman3);
+        // Créer les drapeaux en utilisant les positions de DÉPART des joueurs et des couleurs différentes
+        Drapeau drapeau1 = new Drapeau(player1StartX, player1StartY, pacman, Color.YELLOW);
+        Drapeau drapeau2 = new Drapeau(player2StartX, player2StartY, fantome, Color.BLUE);
+        Drapeau drapeau3 = new Drapeau(player3StartX, player3StartY, pacman2, Color.RED);
+        Drapeau drapeau4 = new Drapeau(player4StartX, player4StartY, pacman3, Color.GREEN);
 
-        entityLayer.getChildren().addAll(drapeau1, drapeau2, drapeau3, drapeau4);
-        entityLayer.getChildren().addAll(pacman, fantome, pacman2, pacman3); // Add players to entityLayer too
+        // Ajouter les drapeaux à la liste
+        listeDrapeaux.add(drapeau1);
+        listeDrapeaux.add(drapeau2);
+        listeDrapeaux.add(drapeau3);
+        listeDrapeaux.add(drapeau4);
 
-        pacman.setDrapeau(drapeau1);
-        fantome.setDrapeau(drapeau2);
-        pacman2.setDrapeau(drapeau3);
-        pacman3.setDrapeau(drapeau4);
+        // Assigner à chaque joueur son propre drapeau
+        pacman.setMonDrapeau(drapeau1);
+        fantome.setMonDrapeau(drapeau2);
+        pacman2.setMonDrapeau(drapeau3);
+        pacman3.setMonDrapeau(drapeau4);
+
+        // Ajouter les drapeaux à la grille en premier
+        gameGridDisplay.getChildren().addAll(listeDrapeaux);
+        // Puis ajouter les personnages par-dessus
+        gameGridDisplay.getChildren().addAll(pacman, fantome, pacman2, pacman3);
 
         joueurs.add(pacman);
         joueurs.add(fantome);
@@ -372,7 +476,7 @@ public class CTFcontroller {
                     togglePause();
                 }
 
-                if (!paused) {
+                if (!paused && !partieTerminee) {
                     handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
                 }
             });
@@ -381,6 +485,4 @@ public class CTFcontroller {
         // Redémarrer le timer
         lancerTimer();
     }
-
-
 }

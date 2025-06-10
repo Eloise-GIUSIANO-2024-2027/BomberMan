@@ -55,7 +55,7 @@
             <VBox fx:id="finMenuContainer" alignment="CENTER" spacing="20.0"
                   styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
                 <Label text="~ FIN ~" styleClass="title"/>
-                <Label text="Le vainqueur est : " styleClass="vainqueur"/>
+                <Label fx:id="messageFinPartieLabel" text="Le vainqueur est : " styleClass="vainqueur"/>
                 <Button  text="REJOUER" onAction="#replayGame" />
                 <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
                 <Button  text="QUITTER LE JEU" onAction="#quittertout"/>
