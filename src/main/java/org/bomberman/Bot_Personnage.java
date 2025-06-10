@@ -35,7 +35,7 @@ public class Bot_Personnage extends Group {
         this.vitesse = 3.0;
         this.vitesseInitiale = this.vitesse;
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme+ "-" +botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
@@ -72,7 +72,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
+           rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-" +theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -313,26 +313,32 @@ public class Bot_Personnage extends Group {
         return cibleLaPlusProche;
     }
 
+    // Calcule la distance de Manhattan entre deux points
     private double calculerDistance(int x1, int y1, int x2, int y2) {
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
     }
 
+    // Vérifie si une cible est à portée de bombe
     private boolean estAPorteeDeBombe(int bombeX, int bombeY, int cibleX, int cibleY) {
         int rayon = 2;
 
+        // Même position
         if (bombeX == cibleX && bombeY == cibleY) {
             return true;
         }
 
+        // Vérifier les 4 directions
         int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         for (int[] dir : directions) {
             for (int i = 1; i <= rayon; i++) {
                 int nx = bombeX + dir[0] * i;
                 int ny = bombeY + dir[1] * i;
+                // Hors limites
                 if (nx < 0 || ny < 0 || ny >= game.getGrid().length || nx >= game.getGrid()[0].length) {
                     break;
                 }
                 int cell = game.getGrid()[ny][nx];
+                // Cible trouvée
                 if (nx == cibleX && ny == cibleY) {
                     return true;
                 }
@@ -350,6 +356,7 @@ public class Bot_Personnage extends Group {
         return false;
     }
 
+    // Méthodes utilitaires inchangées...
     private boolean isValid(int x, int y) {
         int[][] grid = game.getGrid();
         return x >= 0 && y >= 0 && y < grid.length && x < grid[0].length && grid[y][x] == 0;

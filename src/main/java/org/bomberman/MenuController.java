@@ -72,6 +72,34 @@ public class MenuController {
         }
     }
 
+    @FXML
+    private void startCTF(ActionEvent event) {
+        System.out.println("Démarrer le mode Solo !");
+        try {
+            // Charge le FXML du jeu (game.fxml)
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("CTFgame.fxml"));
+            Parent gameRoot = loader.load();
+            Scene gameScene = new Scene(gameRoot, 820, 650);
+
+            String cssPath = getClass().getResource("/styleGame.css").toExternalForm();
+            if (cssPath != null) {
+                gameScene.getStylesheets().add(cssPath);
+            } else {
+                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+            }
+
+            // Récupère le stage actuel
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(gameScene);
+            stage.setTitle("Super Bomberman - Le Jeu");
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors du chargement du jeu : " + e.getMessage());
+        }
+    }
+
     // Méthode appelée lorsque le bouton "PASSWORD" est cliqué
     @FXML
     private void changementTheme(ActionEvent event) {

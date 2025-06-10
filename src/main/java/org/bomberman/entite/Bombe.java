@@ -117,7 +117,6 @@ public class Bombe extends ImageView {
                     if (grid[ny][nx] == 1) { // Mur incassable
                         break; // Arrêter l'explosion dans cette direction
                     } else if (grid[ny][nx] == 2) { // Bloc cassable
-                        generateBonusChance(nx,ny);
                         grid[ny][nx] = 0; // Casser le bloc
                         affectedCells.add(new int[]{ny, nx});
                         break; // Arrêter l'explosion dans cette direction après avoir cassé le bloc
@@ -128,6 +127,402 @@ public class Bombe extends ImageView {
                     break; // Arrêter l'explosion dans cette direction
                 }
             }
+        }
+
+        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }
+
+        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
         }
 
                 for (PacMan_Personnage joueur : joueurs) {
@@ -247,6 +642,3 @@ public class Bombe extends ImageView {
         }
     }
 }
-
-
-
