@@ -18,14 +18,17 @@ public class Bot_Personnage extends Group {
     private boolean estVivant = true;
     private int botId; // Identifiant unique pour chaque bot
     private boolean canPlaceBomb = true;
+    private int botNumber;// Identifiant unique pour chaque bot
+    private List<Bombe> listeBombesBot = new ArrayList<>();
 
-    public Bot_Personnage(Game game, int startX, int startY, int botId) {
+    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) {
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
         this.botId = botId;
+        this.botNumber = botNumber;
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back.gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
@@ -50,7 +53,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left.gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -65,7 +68,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("droite")) {
             direction = "droite";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right.gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -79,7 +82,7 @@ public class Bot_Personnage extends Group {
         }
         if (!direction.equals("bas")) {
             direction = "bas";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front.gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -94,7 +97,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("haut")) {
             direction = "haut";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back.gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -171,7 +174,7 @@ public class Bot_Personnage extends Group {
             if (estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
                 if (game.getGrid()[botY][botX] == 0) {
                     System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
-                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null);
+                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
                     setCanPlaceBomb(false);
                     game.getGrid()[botY][botX] = 3;
                     return;
@@ -210,7 +213,7 @@ public class Bot_Personnage extends Group {
         // 5. BLOQUÉ → POSER UNE BOMBE POUR DÉTRUIRE DES OBSTACLES
         if (game.getGrid()[botY][botX] == 0) {
             System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
-            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null);
+            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
             setCanPlaceBomb(false);
             game.getGrid()[botY][botX] = 3;
         }

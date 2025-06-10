@@ -16,7 +16,7 @@ public class GameGrid extends GridPane {
     private Game game;
     int[][] grid;
     private Pane entityLayer; // Couche pour les entités (personnages, bombes)
-
+    private String theme = "default";
 
     public GameGrid(Game game) {
         this.game = game;
@@ -52,15 +52,15 @@ public class GameGrid extends GridPane {
 
                 // Appliquer les textures selon le type de case
                 if (grid[i][j] == 1) {
-                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/rock1.png")), 32, 32, false, false)));
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/rock"+theme+".png")), 32, 32, false, false)));
                 } else if (grid[i][j] == 2) {
-                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/wall.png")), 32, 32, false, false)));
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/wall"+theme+".png")), 32, 32, false, false)));
                 } else if (grid[i][j] == 3) {
-                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grass1.png")), 32, 32, false, false)));
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grassdefault.png")), 32, 32, false, false)));
                 } else if (grid[i][j] == 4) {
                     rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxs/explosion.png")), 32, 32, false, false)));
                 } else {
-                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grass1.png")), 32, 32, false, false)));
+                    rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/terrain/grass"+theme+".png")), 32, 32, false, false)));
                 }
 
                 this.add(rectangle, j, i);

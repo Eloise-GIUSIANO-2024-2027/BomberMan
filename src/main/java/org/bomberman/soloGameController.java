@@ -47,6 +47,7 @@ public class soloGameController {
 
     private List<PacMan_Personnage> joueurs = new ArrayList<>();
     private List<Bot_Personnage> bot = new ArrayList<>();
+    private List<Bombe> listeBombes = new ArrayList<>();
 
     @FXML
     public void startGame() {
@@ -58,10 +59,10 @@ public class soloGameController {
         gameAreaStackPane.getChildren().clear(); // Vide le StackPane
         gameAreaStackPane.getChildren().add(gameGridDisplay);
         //Acteurs du jeu
-        PacMan_Personnage pacman = new Pacman(game, 12, 0);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3);
+        PacMan_Personnage pacman = new Pacman(game, 12, 0,1);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1,2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2,3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3,4);
         joueurs.add(pacman);
 
         bot.add(bot1);
@@ -109,7 +110,7 @@ public class soloGameController {
                 if (game.getGrid()[py][px] == 0 && j1.estVivant()) { // This access is correct: [row][column]
                     System.out.println("Bombe");
                     // THE FIX IS HERE: Pass px (column) first, then py (row)
-                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1);
+                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
                     j1.setCanPlaceBomb(false);
                     gameGridDisplay.refresh();
                 }
@@ -258,10 +259,10 @@ public class soloGameController {
         gameAreaStackPane.getChildren().add(gameGridDisplay);
 
         // Créer les entités
-        PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3);
+        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1,2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2,3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3,4);
 
         joueurs.add(pacman);
         bot.add(bot1);

@@ -24,8 +24,13 @@ public class Bombe extends ImageView {
     private List<Bot_Personnage> botList;
     private PacMan_Personnage poseurJoueur;
     private Bot_Personnage poseurBot;
+    private List<Bombe> bombes ;
+    private boolean estPresent = true;
+    private boolean aExplose = false;
+    private Timer timer;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> botList, PacMan_Personnage poseurJoueur) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> botList, PacMan_Personnage poseurJoueur, List<Bombe> bombes) {
+
         this.x = x;
         this.y = y;
         this.rayon = rayon;
@@ -35,6 +40,8 @@ public class Bombe extends ImageView {
         this.botList = botList;
         this.poseurJoueur = poseurJoueur;
         this.poseurBot = poseurBot;
+
+        this.bombes = bombes;
 
         // Charger l'image de la bombe
         try {
@@ -68,17 +75,25 @@ public class Bombe extends ImageView {
     }
 
     private void startTimer() {
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> explode());
+                Platform.runLater(() -> explode() );
             }
         }, 2000); // 2 secondes
     }
 
+    public void exploserImmediatement() {
+        if (timer != null) {
+            timer.cancel(); // Annuler le timer normal
+        }
+        Platform.runLater(() -> explode());
+    }
+
     private void explode() {
         int[][] grid = game.getGrid();
+        aExplose = true;
 
         // Centre - retirer la bombe
         grid[y][x] = 0;
@@ -108,6 +123,32 @@ public class Bombe extends ImageView {
                     grid[ny][x] = 0;
                 }
                 affectedCells.add(new int[]{ny, x});
+        // Définir les quatre directions : Droite, Gauche, Bas, Haut (dy, dx)
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+        // Propager l'explosion dans chaque direction
+        for (int[] dir : directions) {
+            int dy = dir[0];
+            int dx = dir[1];
+
+            for (int i = 1; i <= rayon; i++) { // Itérer vers l'extérieur jusqu'au rayon
+                int ny = y + dy * i;
+                int nx = x + dx * i;
+
+                // Vérifier les limites de la grille
+                if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length) {
+                    if (grid[ny][nx] == 1) { // Mur incassable
+                        break; // Arrêter l'explosion dans cette direction
+                    } else if (grid[ny][nx] == 2) { // Bloc cassable
+                        grid[ny][nx] = 0; // Casser le bloc
+                        affectedCells.add(new int[]{ny, nx});
+                        break; // Arrêter l'explosion dans cette direction après avoir cassé le bloc
+                    } else { // Espace vide
+                        affectedCells.add(new int[]{ny, nx});
+                    }
+                } else { // Hors des limites de la grille
+                    break; // Arrêter l'explosion dans cette direction
+                }
             }
         }
 
@@ -123,7 +164,6 @@ public class Bombe extends ImageView {
                     int affectedCol = cell[1];
 
                     if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
-                        // Le joueur est dans la zone d'explosion
                         joueur.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
                         gameGrid.getEntityLayer().getChildren().remove(joueur); // Supprimer visuellement le joueur
                         System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
@@ -135,23 +175,46 @@ public class Bombe extends ImageView {
 
         for (Bot_Personnage bot : botList) {
             if (bot.estVivant()) {
-                int joueurGridX = bot.getGridX();
-                int joueurGridY = bot.getGridY();
+                int botGridX = bot.getGridX();
+                int botGridY = bot.getGridY();
 
                 // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
                 for (int[] cell : affectedCells) {
                     int affectedRow = cell[0];
                     int affectedCol = cell[1];
 
-                    if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
-                        // Le joueur est dans la zone d'explosion
-                        bot.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
+                    if (botGridY == affectedRow && botGridX == affectedCol) {
+                        bot.disparait();
                         gameGrid.getEntityLayer().getChildren().remove(bot); // Supprimer visuellement le joueur
-                        System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
-                        break; // Un joueur ne peut être tué qu'une fois par explosion, pas besoin de vérifier d'autres cellules
+                        break;
                     }
                 }
             }
+        }
+
+        // EXPLOSION EN CHAÎNE : Vérifier l'impact sur les autres bombes
+        List<Bombe> bombesToExplode = new ArrayList<>();
+        for (Bombe autreBombe : bombes) {
+            if (autreBombe != this && autreBombe.estPresent() && !autreBombe.aExplose) {
+                int bombeGridX = autreBombe.getGridX();
+                int bombeGridY = autreBombe.getGridY();
+
+                for (int[] cell : affectedCells) {
+                    int affectedRow = cell[0];
+                    int affectedCol = cell[1];
+
+                    if (bombeGridY == affectedRow && bombeGridX == affectedCol) {
+                        bombesToExplode.add(autreBombe);
+                        System.out.println("Bombe en chaîne détectée aux coordonnées: " + bombeGridX + "," + bombeGridY);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Déclencher l'explosion des bombes touchées
+        for (Bombe bombeEnChaine : bombesToExplode) {
+            bombeEnChaine.exploserImmediatement();
         }
 
 
@@ -189,5 +252,22 @@ public class Bombe extends ImageView {
 
             System.out.println("Bonus " + type + " généré à la position: " + bonusX + ", " + bonusY);
         }
+    }
+
+    public void disparait() {
+        this.estPresent = false;
+        this.setVisible(false);
+    }
+
+    public boolean estPresent() {
+        return this.estPresent;
+    }
+
+    public int getGridX() {
+        return x;
+    }
+
+    public int getGridY() {
+        return y;
     }
 }

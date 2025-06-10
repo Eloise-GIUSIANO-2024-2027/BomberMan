@@ -15,8 +15,8 @@ public class PacMan_Fantome extends PacMan_Personnage {
     private final Circle retineDroite;
 
 
-    public PacMan_Fantome(Game game, int startX, int startY) {
-        super(game, startX, startY);
+    public PacMan_Fantome(Game game, int startX, int startY,int playerNumber) {
+        super(game, startX, startY,playerNumber);
         basCorps = new Rectangle(0, 10, 20, 10);
         basCorps.setFill(Color.BLUE);
 

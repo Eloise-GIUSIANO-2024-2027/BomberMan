@@ -39,6 +39,7 @@ public class gameController {
 
     private List<PacMan_Personnage> joueurs = new ArrayList<>();
     private List<Bot_Personnage> bot = new ArrayList<>();
+    private List<Bombe> listeBombes = new ArrayList<>();
 
     private boolean paused = false;
 
@@ -134,10 +135,10 @@ public class gameController {
         gameArea.getChildren().add(gameContainer);
 
         // Recréer les joueurs
-        PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
+        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
+        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
+        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
 
         joueurs.add(pacman);
         joueurs.add(fantome);
@@ -327,7 +328,7 @@ public class gameController {
                     if (j1.aBonusRayon()) {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
-                    new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1);
+                    new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
                     j1.setCanPlaceBomb(false);
                     gameGridDisplay.refresh();
                 }
@@ -362,7 +363,7 @@ public class gameController {
                         if (j2.aBonusRayon()) {
                             j2.consommerBonusRayon();
                         }
-                        new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2);
+                        new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes);
                         j2.setCanPlaceBomb(false);
                         gameGridDisplay.refresh();
                     }
@@ -396,7 +397,7 @@ public class gameController {
                         if (j3.aBonusRayon()) {
                             j3.consommerBonusRayon();
                         }
-                        new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3);
+                        new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes);
                         j3.setCanPlaceBomb(false);
                         gameGridDisplay.refresh();
                     }
@@ -430,7 +431,7 @@ public class gameController {
                         if (j4.aBonusRayon()) {
                             j4.consommerBonusRayon();
                         }
-                        new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4);
+                        new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes);
                         j4.setCanPlaceBomb(false);
                         gameGridDisplay.refresh();
                     }
