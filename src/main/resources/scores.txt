@@ -1,5 +1,4 @@
-# Dernier ID :
+# derID :
 0
 # Pseudo : meilleur score
-Pseudo1 123
-Pseudo2 538
+intiPseudo 0

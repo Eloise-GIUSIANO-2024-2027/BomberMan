@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import org.bomberman.entite.Bombe;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -153,45 +155,62 @@ public class gameController {
         if (saisiJ1.getLength() != 0) {
             nomJ1 = saisiJ1.getText();
             ligneJ1 = getLigneNom(nomJ1);
+            scoreJ1 = getScoreLigne(ligneJ1);
+            ajouterScore(nomJ1, 0, ligneJ1);
+            updateFile(scores);
         } else {
-            nomJ1 = "Joueur " + derID;
+            nomJ1 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
             ligneJ1 = getLigneNom(nomJ1);
+            ajouterScore(nomJ1, 0, ligneJ1);
+            updateFile(scores);
 
         }
         if (saisiJ2.getLength() != 0) {
             nomJ2 = saisiJ2.getText();
             ligneJ2 = getLigneNom(nomJ2);
-            scoreJ1 = getScoreLigne(ligneJ2);
-            for (String ligne : scores) System.out.println(ligne);
+            scoreJ2 = getScoreLigne(ligneJ2);
             ajouterScore(nomJ2, 0, ligneJ2);
-            for (String ligne : scores) System.out.println(ligne);
-            updateFile(resource, scores);
+            updateFile(scores);
         } else {
-            nomJ2 = "Joueur " + derID;
+            nomJ2 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
             ligneJ2 = getLigneNom(nomJ2);
+            ajouterScore(nomJ2, 0, ligneJ2);
+            updateFile(scores);
         }
         if (saisiJ3.getLength() != 0) {
             nomJ3 = saisiJ3.getText();
-            ligneJ2 = getLigneNom(nomJ3);
+            ligneJ3 = getLigneNom(nomJ3);
+            scoreJ3 = getScoreLigne(ligneJ3);
+            ajouterScore(nomJ3, 0, ligneJ3);
+            updateFile(scores);
         } else {
-            nomJ3 = "Joueur " + derID;
-            ligneJ2 = getLigneNom(nomJ3);
+            nomJ3 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ3 = getLigneNom(nomJ3);
+            ajouterScore(nomJ3, 0, ligneJ3);
+            updateFile(scores);
         }
         if (saisiJ4.getLength() != 0) {
             nomJ4 = saisiJ4.getText();
-            ligneJ2 = getLigneNom(nomJ4);
+            ligneJ4 = getLigneNom(nomJ4);
+            scoreJ4 = getScoreLigne(ligneJ4);
+            ajouterScore(nomJ4, 0, ligneJ4);
+            updateFile(scores);
         } else {
-            nomJ4 = "Joueur " + derID;
-            ligneJ2 = getLigneNom(nomJ4);
+            nomJ4 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ4 = getLigneNom(nomJ4);
+            ajouterScore(nomJ4, 0, ligneJ4);
+            updateFile(scores);
         }
 
-
-        // Maj des pseudos
-        labelJ1.setText(nomJ1 + " : " + scoreJ1);
-        labelJ2.setText(nomJ2 + " : " + scoreJ2);
-        labelJ3.setText(nomJ3 + " : " + scoreJ3);
-        labelJ4.setText(nomJ4 + " : " + scoreJ4);
-
+        refreshScores();
 
         System.out.println("Nom de j1 : " + nomJ1 + ", " + getScoreLigne(ligneJ1) + ", " + ligneJ1);
         System.out.println("Nom de j2 : " + nomJ2 + ", " + ligneJ2);
@@ -360,31 +379,21 @@ public class gameController {
         System.out.println(scores.size() + " " + ligne);
     }
 
-    public void updateFile(URL chemin, List<String> lignes) throws URISyntaxException, IOException {
-        Files.write(Paths.get(chemin.toURI()), lignes);
+    public void updateFile(List<String> lignes) throws IOException {
+        Path cheminFichier = Paths.get("src/main/resources/scores.txt");
+
+        if (!Files.exists(cheminFichier)) {
+            throw new IOException("Le fichier n'existe pas : " + cheminFichier.toAbsolutePath());
+        }
+
+        Files.write(cheminFichier, lignes);
     }
 
-    public void modifierLigne(int numeroLigne, String nouvelleLigne) {
-        try {
-            // Lire toutes les lignes
-            URL resource = getClass().getResource("/scores.txt");
-            List<String> lignes = Files.readAllLines(Paths.get(resource.toURI()));
-
-            // Vérifier que la ligne existe
-            if (numeroLigne >= 0 && numeroLigne < lignes.size()) {
-                // Modifier la ligne
-                lignes.set(numeroLigne, nouvelleLigne);
-
-                // Réécrire le fichier
-                Files.write(Path.of("scores.txt"), lignes);
-                System.out.println("Ligne " + numeroLigne + " modifiée avec succès");
-            } else {
-                System.out.println("Numéro de ligne invalide");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+    public void refreshScores() {
+        // Maj des pseudos
+        labelJ1.setText(nomJ1 + " : " + scoreJ1);
+        labelJ2.setText(nomJ2 + " : " + scoreJ2);
+        labelJ3.setText(nomJ3 + " : " + scoreJ3);
+        labelJ4.setText(nomJ4 + " : " + scoreJ4);
     }
 }
