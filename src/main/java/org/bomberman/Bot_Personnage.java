@@ -19,6 +19,7 @@ public class Bot_Personnage extends Group {
     private int botId;
     private int botNumber;// Identifiant unique pour chaque bot
     private List<Bombe> listeBombesBot = new ArrayList<>();
+    private String theme = "wix";
 
     public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) {
         this.game = game;
@@ -27,7 +28,7 @@ public class Bot_Personnage extends Group {
         this.botId = botId;
         this.botNumber = botNumber;
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme+ "-" +botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
@@ -44,7 +45,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left" +theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -59,7 +60,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("droite")) {
             direction = "droite";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right"+theme+ "-" +botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -73,7 +74,7 @@ public class Bot_Personnage extends Group {
         }
         if (!direction.equals("bas")) {
             direction = "bas";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
