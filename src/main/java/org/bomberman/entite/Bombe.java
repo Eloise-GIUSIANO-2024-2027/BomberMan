@@ -129,7 +129,7 @@ public class Bombe extends ImageView {
 
             // Créer une nouvelle ImageView pour l'explosion
             ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
-                    getClass().getResourceAsStream("/fxs/explosion.png")), 48, 48, false, false));
+                    getClass().getResourceAsStream("/fxs/explosion.gif")), 48, 48, false, false));
             explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
             explosionFx.setFitHeight(48);
 
