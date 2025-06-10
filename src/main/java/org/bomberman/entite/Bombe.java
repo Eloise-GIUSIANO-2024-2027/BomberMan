@@ -5,6 +5,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.application.Platform;
+import org.bomberman.Bot_Personnage;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
 import org.bomberman.PacMan_Personnage; // Importez la classe PacMan_Personnage
@@ -20,28 +21,28 @@ public class Bombe extends ImageView {
     private Game game;
     private GameGrid gameGrid;
     private List<PacMan_Personnage> joueurs;
+    private List<Bot_Personnage> bot;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
         this.game = game;
         this.gameGrid = gameGrid;
         this.joueurs = joueurs;
+        this.bot = bot;
 
         // Charger l'image de la bombe
         try {
             Image bombeImage = new Image(Objects.requireNonNull(
-                    getClass().getResourceAsStream("/fxs/imgBombe.png")), 48, 48, false, false);
+                    getClass().getResourceAsStream("/fxs/imgBombe.gif")), 48, 48, false, false);
             this.setImage(bombeImage);
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement de l'image de la bombe: " + e.getMessage());
         }
 
         int[][] grid = game.getGrid();
-
-
-        if (x >= 0 && x < grid.length && y >= 0 && y < grid[0].length) {
+        if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
             // Marquer la case comme occupée par une bombe
             grid[y][x] = 3; // 3 = bombe
             game.setGrid(grid);
@@ -128,8 +129,31 @@ public class Bombe extends ImageView {
             }
         }
 
+        for (Bot_Personnage bot : bot) {
+            if (bot.estVivant()) {
+                int joueurGridX = bot.getGridX();
+                int joueurGridY = bot.getGridY();
+
+                // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
+                for (int[] cell : affectedCells) {
+                    int affectedRow = cell[0];
+                    int affectedCol = cell[1];
+
+                    if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
+                        // Le joueur est dans la zone d'explosion
+                        bot.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
+                        gameGrid.getEntityLayer().getChildren().remove(bot); // Supprimer visuellement le joueur
+                        System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
+                        break; // Un joueur ne peut être tué qu'une fois par explosion, pas besoin de vérifier d'autres cellules
+                    }
+                }
+            }
+        }
+
+
+
         game.setGrid(grid);
-        gameGrid.refresh();
+        gameGrid.refresh(); // Recréer seulement la grille de terrain
 
         // Supprimer visuellement la bombe
         Platform.runLater(() -> {

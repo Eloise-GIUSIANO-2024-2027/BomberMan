@@ -34,7 +34,7 @@ public class Game {
                 } else if (Math.random() < 0.5) {
                     grid[i][j] = 2;
                 } else {
-                    grid[i][j] = 0;
+                    grid[i][j] = 0;  // Espaces vides
                 }
             }
         }
