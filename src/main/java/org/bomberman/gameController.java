@@ -8,6 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
@@ -22,6 +24,11 @@ import java.io.IOException;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +56,50 @@ public class gameController {
     @FXML
     private Button startButton; // Référence au bouton démarrer
 
+
+    // affichge des scores :
+    @FXML
+    private Label labelJ1;
+    @FXML
+    private Label labelJ2;
+    @FXML
+    private Label labelJ3;
+    @FXML
+    private Label labelJ4;
+
+
+    // Zone de saisi des pseudo
+    @FXML
+    private TextField saisiJ1;
+    private String nomJ1;
+    private int ligneJ1;
+    private int scoreJ1 = 0;
+    @FXML
+    private TextField saisiJ2;
+    private String nomJ2;
+    private int ligneJ2;
+    private int scoreJ2 = 0;
+    @FXML
+    private TextField saisiJ3;
+    private String nomJ3;
+    private int ligneJ3;
+    private int scoreJ3 = 0;
+    @FXML
+    private TextField saisiJ4;
+    private String nomJ4;
+    private int ligneJ4;
+    private int scoreJ4 = 0;
+
+    // Obtention des scores.txt
+    private List<String> scores;
+    private int derID;
+
+
+    // Partie modifiée de gameController.java
+
+    // Partie modifiée de gameController.java
+
+    // Partie modifiée de gameController.java
     @FXML
     private Label timerLabel;
 
@@ -57,6 +108,8 @@ public class gameController {
         lancerTimer(); // debut du timer
 
         // Crée une instance de ta GameGrid personnalisée
+    public void startGame() throws IOException, URISyntaxException {
+        game.startGame();
         gameGridDisplay = new GameGrid(game);
 
         gameArea.getChildren().clear();
@@ -104,10 +157,84 @@ public class gameController {
                 }
             });
         }
+
+        // ----- Traitement des pseudos ------
+        // Chargement du fichier des scores
+        URL resource = getClass().getResource("/scores.txt");
+        if (resource != null) {
+            scores = Files.readAllLines(Paths.get(resource.toURI()));
+        }
+        derID = Integer.parseInt(scores.get(1));
+
+
+
+        if (saisiJ1.getLength() != 0) {
+            nomJ1 = saisiJ1.getText();
+            ligneJ1 = getLigneNom(nomJ1);
+            scoreJ1 = getScoreLigne(ligneJ1);
+            ajouterScore(nomJ1, 0, ligneJ1);
+            updateFile(scores);
+        } else {
+            nomJ1 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ1 = getLigneNom(nomJ1);
+            ajouterScore(nomJ1, 0, ligneJ1);
+            updateFile(scores);
+
+        }
+        if (saisiJ2.getLength() != 0) {
+            nomJ2 = saisiJ2.getText();
+            ligneJ2 = getLigneNom(nomJ2);
+            scoreJ2 = getScoreLigne(ligneJ2);
+            ajouterScore(nomJ2, 0, ligneJ2);
+            updateFile(scores);
+        } else {
+            nomJ2 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ2 = getLigneNom(nomJ2);
+            ajouterScore(nomJ2, 0, ligneJ2);
+            updateFile(scores);
+        }
+        if (saisiJ3.getLength() != 0) {
+            nomJ3 = saisiJ3.getText();
+            ligneJ3 = getLigneNom(nomJ3);
+            scoreJ3 = getScoreLigne(ligneJ3);
+            ajouterScore(nomJ3, 0, ligneJ3);
+            updateFile(scores);
+        } else {
+            nomJ3 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ3 = getLigneNom(nomJ3);
+            ajouterScore(nomJ3, 0, ligneJ3);
+            updateFile(scores);
+        }
+        if (saisiJ4.getLength() != 0) {
+            nomJ4 = saisiJ4.getText();
+            ligneJ4 = getLigneNom(nomJ4);
+            scoreJ4 = getScoreLigne(ligneJ4);
+            ajouterScore(nomJ4, 0, ligneJ4);
+            updateFile(scores);
+        } else {
+            nomJ4 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ4 = getLigneNom(nomJ4);
+            ajouterScore(nomJ4, 0, ligneJ4);
+            updateFile(scores);
+        }
+
+        refreshScores();
+
+        System.out.println("Nom de j1 : " + nomJ1 + ", " + getScoreLigne(ligneJ1) + ", " + ligneJ1);
+        System.out.println("Nom de j2 : " + nomJ2 + ", " + ligneJ2);
     }
 
     private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
         GameGrid k = gameGridDisplay;
+
 
         switch (event.getCode()) {
             //Joueur 1
@@ -354,4 +481,54 @@ public class gameController {
     }
 
 
+    public int getLigneNom(String nom){
+        String nomLigne;
+        for (int i = 0; i < scores.size(); i++) {
+            String ligne = scores.get(i);
+            nomLigne = "";
+            if (ligne.charAt(0) != '#') {
+                for (int j = 0; j < ligne.length() && ligne.charAt(j) != ' '; j++) {
+                    nomLigne += ligne.charAt(j);
+                }
+            }
+            if (nomLigne.equals(nom)) return i;
+        }
+        return scores.size()-1;
+    }
+
+    public int getScoreLigne(int numLigne) {
+        String ligne = scores.get(numLigne);
+        String scoresLigne = "";
+        for (int j = ligne.length()-1; ligne.charAt(j) != ' '; j--) {
+            scoresLigne = ligne.charAt(j) + scoresLigne;
+        }
+        return Integer.parseInt(scoresLigne);
+    }
+
+    public void ajouterScore(String nom, int score, int ligne) {
+        System.out.println(scores.size() + " " + ligne);
+        if (ligne == scores.size()-1) scores.add(nom + " " + score);
+        else if (score < getScoreLigne(ligne)){
+            scores.set(ligne, nom + " " + score);
+        } else scores.set(ligne, nom + " " + score);
+        System.out.println(scores.size() + " " + ligne);
+    }
+
+    public void updateFile(List<String> lignes) throws IOException {
+        Path cheminFichier = Paths.get("src/main/resources/scores.txt");
+
+        if (!Files.exists(cheminFichier)) {
+            throw new IOException("Le fichier n'existe pas : " + cheminFichier.toAbsolutePath());
+        }
+
+        Files.write(cheminFichier, lignes);
+    }
+
+    public void refreshScores() {
+        // Maj des pseudos
+        labelJ1.setText(nomJ1 + " : " + scoreJ1);
+        labelJ2.setText(nomJ2 + " : " + scoreJ2);
+        labelJ3.setText(nomJ3 + " : " + scoreJ3);
+        labelJ4.setText(nomJ4 + " : " + scoreJ4);
+    }
 }
