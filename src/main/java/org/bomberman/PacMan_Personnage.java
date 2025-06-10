@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Objects;
 
-public class PacMan_Personnage extends Group {
+public class PacMan_Personnage extends Group  {
     private String direction = "bas";
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)

@@ -1,21 +1,19 @@
 package org.bomberman.entite;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView; // L'import est toujours nécessaire
+import javafx.scene.image.ImageView;
 import javafx.animation.PauseTransition;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 import javafx.application.Platform;
-import javafx.scene.layout.Pane; // Pour supprimer l'ImageView du parent
+import javafx.scene.layout.Pane;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
 import org.bomberman.PacMan_Personnage;
+import org.bomberman.Bot_Personnage;
 
 import java.util.List;
 import java.util.Objects;
-
-// Assurez-vous que Joueur est correctement importé si cette classe n'est pas dans le même package
-// import org.bomberman.entite.Joueur; // Cette ligne est nécessaire si Bonus n'est pas dans le même package que Joueur
 
 public class Bonus {
     private int bonusX;
@@ -25,7 +23,6 @@ public class Bonus {
     private ImageView imageView;
     private String typeBonusString;
     private TypeBonus type;
-    private List<PacMan_Personnage> joueurs;
 
     public int getBonusX() {
         return bonusX;
@@ -65,7 +62,7 @@ public class Bonus {
             imagePath = "/terrain/BONUS.png";
             this.typeBonusString = "VITESSE";
         } else {
-            imagePath = "/terrain/BONUS2.png"; // ← Vous devez créer cette image
+            imagePath = "/terrain/BONUS2.png";
             this.typeBonusString = "RAYON";
         }
 
@@ -78,49 +75,73 @@ public class Bonus {
             imageView = new ImageView();
         }
 
-        // Configure l'ImageView
         imageView.setFitWidth(48);
         imageView.setFitHeight(48);
-        imageView.setX(bonusX * 48); // Positionne l'ImageView
+        imageView.setX(bonusX * 48);
         imageView.setY(bonusY * 48);
-
     }
 
-        // ← AJOUTER cette nouvelle méthode
-        public void appliquerBonusRayon(PacMan_Personnage joueur) {
-            System.out.println("Bonus rayon collecté !");
+    // Méthode spécifique pour PacMan_Personnage
+    public void appliquerBonus(PacMan_Personnage joueur) {
+        if (typeBonusString.equals("VITESSE")) {
+            appliquerBonusVitesse(joueur);
+        } else if (typeBonusString.equals("RAYON")) {
             joueur.activerBonusRayon();
         }
 
-        public void appliquerBonusVitesse(PacMan_Personnage joueur, GridPane map, int bonusX, int bonusY) {
-            System.out.println("Bonus de vitesse activé ! Vitesse du joueur augmentée pour 15 secondes.");
-            double vitesseInitiale = joueur.vitesse;
-            joueur.vitesse = vitesseInitiale / 2.0;
+        supprimerBonus();
+    }
 
-            PauseTransition pause = new PauseTransition(Duration.seconds(15));
-            pause.setOnFinished(event -> {
-                Platform.runLater(() -> {
-                    joueur.vitesse = vitesseInitiale;
-                    System.out.println("Bonus de vitesse terminé. Vitesse rétablie pour le joueur.");
-                });
-            });
-            pause.play();
-        }
-
-    public void appliquerBonus(PacMan_Personnage joueur) {
+    // Méthode spécifique pour Bot_Personnage
+    public void appliquerBonus(Bot_Personnage bot) {
         if (typeBonusString.equals("VITESSE")) {
-            appliquerBonusVitesse(joueur, gameGrid, bonusX, bonusY);
+            appliquerBonusVitesse(bot);
         } else if (typeBonusString.equals("RAYON")) {
-            appliquerBonusRayon(joueur);
+            bot.activerBonusRayon();
         }
-        // Déplace la suppression de l'affichage et de la liste ici pour qu'elle soit générique à tous les bonus
+
+        supprimerBonus();
+    }
+
+    private void appliquerBonusVitesse(PacMan_Personnage joueur) {
+        System.out.println("Bonus de vitesse activé pour le joueur ! Vitesse augmentée pour 15 secondes.");
+        double vitesseInitiale = joueur.vitesse;
+        joueur.vitesse = vitesseInitiale / 2.0;
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(15));
+        pause.setOnFinished(event -> {
+            Platform.runLater(() -> {
+                joueur.vitesse = vitesseInitiale;
+                System.out.println("Bonus de vitesse terminé pour le joueur. Vitesse rétablie.");
+            });
+        });
+        pause.play();
+    }
+
+    private void appliquerBonusVitesse(Bot_Personnage bot) {
+        System.out.println("Bonus de vitesse activé pour le bot ! Vitesse augmentée pour 15 secondes.");
+        double vitesseInitiale = bot.vitesse;
+        bot.vitesse = vitesseInitiale / 2.0;
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(15));
+        pause.setOnFinished(event -> {
+            Platform.runLater(() -> {
+                bot.vitesse = vitesseInitiale;
+                System.out.println("Bonus de vitesse terminé pour le bot. Vitesse rétablie.");
+            });
+        });
+        pause.play();
+    }
+
+    private void supprimerBonus() {
+        // Supprimer l'affichage du bonus
         Platform.runLater(() -> {
             if (imageView.getParent() != null) {
                 ((Pane) imageView.getParent()).getChildren().remove(imageView);
             }
         });
-        // S'assurer que Game a bien une méthode pour retirer ce bonus de sa liste 'activeBonuses'
-        // C'est critique pour qu'il n'y ait plus de collision détectée avec un bonus déjà pris
+
+        // Retirer le bonus de la liste des bonus actifs
         game.removeBonus(this);
     }
 }

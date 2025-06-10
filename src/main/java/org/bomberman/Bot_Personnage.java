@@ -17,40 +17,39 @@ public class Bot_Personnage extends Group {
     private static final int CELL_SIZE = 50;
     private Game game;
     private boolean estVivant = true;
-    private int botId; // Identifiant unique pour chaque bot
+    private int botId;
     private boolean canPlaceBomb = true;
-    private int botNumber;// Identifiant unique pour chaque bot
+    private int botNumber;
     private List<Bombe> listeBombesBot = new ArrayList<>();
     private String theme = "default";
     private boolean aBonusRayon = false;
-    public double vitesse; // Vitesse actuelle du bot
-    private double vitesseInitiale; // Vitesse de base du bot
+    public double vitesse;
+    private double vitesseInitiale;
 
-    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber, double vitesse, double vitesseInitiale) {
+    public Bot_Personnage(Game game, int startX, int startY, int botId, int botNumber, double vitesse, double vitesseInitiale) {
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
         this.botId = botId;
         this.botNumber = botNumber;
-        this.vitesse = 3.0; // OU TA VALEUR DE DÉFAUT POUR LES BOTS
+        this.vitesse = 3.0;
         this.vitesseInitiale = this.vitesse;
 
-        // AJOUTE CES GETTERS/SETTERS pour la vitesse
-        public double getVitesse() {
-            return vitesse;
-        }
-
-        public void setVitesse(double vitesse) {
-            this.vitesse = vitesse;
-        }
-
-        public double getVitesseInitiale() {
-            return vitesseInitiale;
-        }
-
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" +theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
+    }
+
+    public double getVitesse() {
+        return vitesse;
+    }
+
+    public void setVitesse(double vitesse) {
+        this.vitesse = vitesse;
+    }
+
+    public double getVitesseInitiale() {
+        return vitesseInitiale;
     }
 
     public boolean canPlaceBomb() {
@@ -61,7 +60,6 @@ public class Bot_Personnage extends Group {
         this.canPlaceBomb = canPlaceBomb;
     }
 
-    // Méthodes de déplacement inchangées...
     public void deplacerAGauche() {
         if (!estVivant) return;
         int nouvellePositionX = gridX - 1;
@@ -74,7 +72,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
         }
     }
 
@@ -90,7 +88,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("droite")) {
             direction = "droite";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
         }
     }
 
@@ -105,7 +103,7 @@ public class Bot_Personnage extends Group {
         }
         if (!direction.equals("bas")) {
             direction = "bas";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
         }
     }
 
@@ -121,7 +119,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("haut")) {
             direction = "haut";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme + "-" + botNumber + ".gif")), 32, 32, false, false)));
         }
     }
 
@@ -147,13 +145,10 @@ public class Bot_Personnage extends Group {
         return botId;
     }
 
-    public Group getImageView() { // Renvoie le groupe comme une "ImageView" pour l'ajout visuel
-        return this; // Puisque Bot_Personnage étend Group, il peut être ajouté directement.
-        // C'est l'équivalent de getImageView() pour les joueurs.
+    public Group getImageView() {
+        return this;
     }
 
-
-    // Méthode principale modifiée pour cibler tous les ennemis
     public void agir(PacMan_Personnage joueur, List<PacMan_Personnage> tousLesJoueurs, GameGrid gameGrid, List<Bot_Personnage> bot) {
         if (!estVivant) return;
 
@@ -162,7 +157,7 @@ public class Bot_Personnage extends Group {
 
         // 1. FUITE SI BOMBE PROCHE (priorité absolue)
         if (estDansZoneDanger(botX, botY)) {
-            for (int[] dir : new int[][]{{0,-1},{0,1},{-1,0},{1,0}}) {
+            for (int[] dir : new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}) {
                 int newX = botX + dir[0];
                 int newY = botY + dir[1];
                 if (!estDansZoneDanger(newX, newY) && isValid(newX, newY)) {
@@ -172,7 +167,7 @@ public class Bot_Personnage extends Group {
             }
 
             // Plan B : fuir vers une case libre même si elle reste dans la zone danger
-            for (int[] dir : new int[][]{{0,-1},{0,1},{-1,0},{1,0}}) {
+            for (int[] dir : new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}) {
                 int newX = botX + dir[0];
                 int newY = botY + dir[1];
                 if (isValid(newX, newY)) {
@@ -182,21 +177,28 @@ public class Bot_Personnage extends Group {
             }
             return;
         }
-        if (canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
-            System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
-            // L'appel doit correspondre au constructeur à 9 arguments :
-            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot ); // <-- Correct pour le bot
-            setCanPlaceBomb(false);
-            game.getGrid()[botY][botX] = 3;
+
+        // 2. RECHERCHE DE BONUS PROCHE (nouvelle priorité)
+        Bonus bonusLePlusProche = trouverBonusLePlusProche();
+        if (bonusLePlusProche != null) {
+            double distanceBonus = calculerDistance(botX, botY, bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY());
+
+            // Si le bonus est très proche (distance <= 3), on y va en priorité
+            if (distanceBonus <= 3) {
+                System.out.println("Bot " + botId + " se dirige vers un bonus à (" + bonusLePlusProche.getBonusX() + "," + bonusLePlusProche.getBonusY() + ")");
+                if (seDeplacerVersObjectif(bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY())) {
+                    return; // On a réussi à se déplacer vers le bonus
+                }
+            }
         }
 
-        // 2. RECHERCHE DE LA CIBLE LA PLUS PROCHE (joueur ou autres bots)
+        // 3. RECHERCHE DE LA CIBLE LA PLUS PROCHE (joueur ou autres bots)
         CibleInfo cibleLaPlusProche = trouverCibleLaPlusProche(joueur, bot);
 
         if (cibleLaPlusProche != null) {
-            // 3. SI CIBLE À PORTÉE DE BOMBE → POSER UNE BOMBE
+            // 4. SI CIBLE À PORTÉE DE BOMBE → POSER UNE BOMBE
             if (estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
-                if (game.getGrid()[botY][botX] == 0) {
+                if (canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
                     System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
                     new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
                     setCanPlaceBomb(false);
@@ -205,42 +207,73 @@ public class Bot_Personnage extends Group {
                 }
             }
 
-            // 4. SINON → SE RAPPROCHER DE LA CIBLE
-            int dx = cibleLaPlusProche.x - botX;
-            int dy = cibleLaPlusProche.y - botY;
-
-            int[][] directions = Math.abs(dx) > Math.abs(dy) ?
-                    new int[][]{{Integer.signum(dx), 0}, {0, Integer.signum(dy)}} :
-                    new int[][]{{0, Integer.signum(dy)}, {Integer.signum(dx), 0}};
-
-            for (int[] dir : directions) {
-                int newX = botX + dir[0];
-                int newY = botY + dir[1];
-                if (isValid(newX, newY)) {
-                    seDeplacerVers(newX, newY);
-                    return;
-                }
-            }
-
-            if (canPlaceBomb() && estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
-                if (game.getGrid()[botY][botX] == 0) {
-                    System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
-                    // L'appel doit correspondre au constructeur à 9 arguments :
-                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot); // <-- Correct pour le bot
-                    setCanPlaceBomb(false);
-                    game.getGrid()[botY][botX] = 3;
-                    return;
-                }
+            // 5. SINON → SE RAPPROCHER DE LA CIBLE
+            if (seDeplacerVersObjectif(cibleLaPlusProche.x, cibleLaPlusProche.y)) {
+                return;
             }
         }
 
-        // 5. BLOQUÉ → POSER UNE BOMBE POUR DÉTRUIRE DES OBSTACLES
-        if (game.getGrid()[botY][botX] == 0) {
+        // 6. Si on a un bonus pas trop loin et qu'on n'a pas de cible prioritaire, aller vers le bonus
+        if (bonusLePlusProche != null) {
+            System.out.println("Bot " + botId + " se dirige vers un bonus éloigné à (" + bonusLePlusProche.getBonusX() + "," + bonusLePlusProche.getBonusY() + ")");
+            if (seDeplacerVersObjectif(bonusLePlusProche.getBonusX(), bonusLePlusProche.getBonusY())) {
+                return;
+            }
+        }
+
+        // 7. BLOQUÉ → POSER UNE BOMBE POUR DÉTRUIRE DES OBSTACLES
+        if (canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
             System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
             new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot);
             setCanPlaceBomb(false);
             game.getGrid()[botY][botX] = 3;
         }
+    }
+
+    // Nouvelle méthode pour trouver le bonus le plus proche
+    private Bonus trouverBonusLePlusProche() {
+        List<Bonus> activeBonuses = game.getActiveBonuses();
+        if (activeBonuses.isEmpty()) {
+            return null;
+        }
+
+        Bonus bonusLePlusProche = null;
+        double distanceMin = Double.MAX_VALUE;
+
+        for (Bonus bonus : activeBonuses) {
+            double distance = calculerDistance(getGridX(), getGridY(), bonus.getBonusX(), bonus.getBonusY());
+            if (distance < distanceMin) {
+                distanceMin = distance;
+                bonusLePlusProche = bonus;
+            }
+        }
+
+        return bonusLePlusProche;
+    }
+
+    // Méthode améliorée pour se déplacer vers un objectif
+    private boolean seDeplacerVersObjectif(int objectifX, int objectifY) {
+        int botX = getGridX();
+        int botY = getGridY();
+
+        int dx = objectifX - botX;
+        int dy = objectifY - botY;
+
+        // Prioriser le mouvement selon la plus grande distance
+        int[][] directions = Math.abs(dx) > Math.abs(dy) ?
+                new int[][]{{Integer.signum(dx), 0}, {0, Integer.signum(dy)}} :
+                new int[][]{{0, Integer.signum(dy)}, {Integer.signum(dx), 0}};
+
+        for (int[] dir : directions) {
+            int newX = botX + dir[0];
+            int newY = botY + dir[1];
+            if (isValid(newX, newY)) {
+                seDeplacerVers(newX, newY);
+                return true;
+            }
+        }
+
+        return false; // Impossible de se déplacer vers l'objectif
     }
 
     // Classe interne pour stocker les informations de cible
@@ -255,13 +288,11 @@ public class Bot_Personnage extends Group {
         }
     }
 
-    // Trouve la cible la plus proche (joueur ou autres bots)
     private CibleInfo trouverCibleLaPlusProche(PacMan_Personnage joueur, List<Bot_Personnage> autresBots) {
         CibleInfo cibleLaPlusProche = null;
         double distanceMin = Double.MAX_VALUE;
 
-        // Vérifier le joueur principal
-        if (joueur != null) {
+        if (joueur != null && joueur.estVivant()) {
             double distance = calculerDistance(getGridX(), getGridY(), joueur.getGridX(), joueur.getGridY());
             if (distance < distanceMin) {
                 distanceMin = distance;
@@ -269,7 +300,6 @@ public class Bot_Personnage extends Group {
             }
         }
 
-        // Vérifier les autres bots
         for (Bot_Personnage autreBot : autresBots) {
             if (autreBot != this && autreBot.estVivant()) {
                 double distance = calculerDistance(getGridX(), getGridY(), autreBot.getGridX(), autreBot.getGridY());
@@ -283,40 +313,33 @@ public class Bot_Personnage extends Group {
         return cibleLaPlusProche;
     }
 
-    // Calcule la distance de Manhattan entre deux points
     private double calculerDistance(int x1, int y1, int x2, int y2) {
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
     }
 
-    // Vérifie si une cible est à portée de bombe
     private boolean estAPorteeDeBombe(int bombeX, int bombeY, int cibleX, int cibleY) {
         int rayon = 2;
 
-        // Même position
         if (bombeX == cibleX && bombeY == cibleY) {
             return true;
         }
 
-        // Vérifier les 4 directions
         int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         for (int[] dir : directions) {
             for (int i = 1; i <= rayon; i++) {
                 int nx = bombeX + dir[0] * i;
                 int ny = bombeY + dir[1] * i;
-                // Hors limites
                 if (nx < 0 || ny < 0 || ny >= game.getGrid().length || nx >= game.getGrid()[0].length) {
                     break;
                 }
                 int cell = game.getGrid()[ny][nx];
-                // Cible trouvée
                 if (nx == cibleX && ny == cibleY) {
                     return true;
                 }
-                // Obstacle → arrêter dans cette direction
-                if (cell == 1) { // Mur incassable
+                if (cell == 1) {
                     break;
                 }
-                if (cell == 2) { // Bloc destructible → cible peut être atteinte mais propagation s'arrête
+                if (cell == 2) {
                     if (nx == cibleX && ny == cibleY) {
                         return true;
                     }
@@ -327,7 +350,6 @@ public class Bot_Personnage extends Group {
         return false;
     }
 
-    // Méthodes utilitaires inchangées...
     private boolean isValid(int x, int y) {
         int[][] grid = game.getGrid();
         return x >= 0 && y >= 0 && y < grid.length && x < grid[0].length && grid[y][x] == 0;
@@ -339,8 +361,8 @@ public class Bot_Personnage extends Group {
 
         for (int by = 0; by < grid.length; by++) {
             for (int bx = 0; bx < grid[0].length; bx++) {
-                if (grid[by][bx] == 3) { // Bombe trouvée
-                    if (x == bx && y == by) return true; // Centre
+                if (grid[by][bx] == 3) {
+                    if (x == bx && y == by) return true;
 
                     int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
                     for (int[] dir : directions) {
@@ -351,9 +373,9 @@ public class Bot_Personnage extends Group {
                             if (nx < 0 || ny < 0 || ny >= grid.length || nx >= grid[0].length) break;
 
                             int cell = grid[ny][nx];
-                            if (cell == 1) break; // Mur incassable → stop
+                            if (cell == 1) break;
                             if (nx == x && ny == y) return true;
-                            if (cell == 2) break; // Bloc destructible → zone atteinte, mais stop propagation
+                            if (cell == 2) break;
                         }
                     }
                 }
@@ -385,7 +407,7 @@ public class Bot_Personnage extends Group {
 
     public void activerBonusRayon() {
         this.aBonusRayon = true;
-        System.out.println("Joueur a reçu le bonus Rayon !");
+        System.out.println("Bot " + botId + " a reçu le bonus Rayon !");
     }
 
     public boolean aBonusRayon() {
@@ -394,19 +416,18 @@ public class Bot_Personnage extends Group {
 
     public void consommerBonusRayon() {
         this.aBonusRayon = false;
-        System.out.println("Bonus Rayon consommé.");
+        System.out.println("Bot " + botId + " : Bonus Rayon consommé.");
     }
 
-    private void checkBonusCollision(PacMan_Personnage joueur) {
+    private void checkBonusCollision() {
         List<Bonus> activeBonuses = game.getActiveBonuses();
         for (int i = activeBonuses.size() - 1; i >= 0; i--) {
             Bonus bonus = activeBonuses.get(i);
-            if (bonus.getBonusX() == joueur.getGridX() && bonus.getBonusY() == joueur.getGridY()) {
-                // Utiliser la nouvelle méthode générique
-                bonus.appliquerBonus(joueur);
+            if (bonus.getBonusX() == this.getGridX() && bonus.getBonusY() == this.getGridY()) {
+                System.out.println("Bot " + botId + " a ramassé un bonus " + bonus.getTypeBonusString() + " !");
+                bonus.appliquerBonus(this);
                 break;
             }
         }
     }
-
 }
