@@ -28,7 +28,7 @@ public class Bombe extends ImageView {
     private Timer timer;
     private int scoreJoueur;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot, List<Bombe> bombes, int scoreJoueur) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot, List<Bombe> bombes) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
@@ -37,7 +37,6 @@ public class Bombe extends ImageView {
         this.joueurs = joueurs;
         this.bot = bot;
         this.bombes = bombes;
-        this.scoreJoueur = scoreJoueur;
 
         // Charger l'image de la bombe
         try {
@@ -222,5 +221,9 @@ public class Bombe extends ImageView {
 
     public int getGridY() {
         return y;
+    }
+
+    public int getScoreJoueur() {
+        return scoreJoueur;
     }
 }

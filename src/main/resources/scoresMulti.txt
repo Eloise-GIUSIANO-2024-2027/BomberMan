@@ -1,0 +1,8 @@
+# derID :
+4
+# Pseudo : meilleur score
+Joueur_1 657
+Joueur_2 200
+Joueur_2 0
+Joueur_3 0
+Joueur_4 0

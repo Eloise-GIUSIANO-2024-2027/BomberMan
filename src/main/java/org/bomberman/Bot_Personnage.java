@@ -19,6 +19,7 @@ public class Bot_Personnage extends Group {
     private int botId;
     private int botNumber;// Identifiant unique pour chaque bot
     private List<Bombe> listeBombesBot = new ArrayList<>();
+    private String theme = "default";
     private int scoreBot = 0;
 
     public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) {
@@ -28,7 +29,7 @@ public class Bot_Personnage extends Group {
         this.botId = botId;
         this.botNumber = botNumber;
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" + theme+ "-" +botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
@@ -153,7 +154,7 @@ public class Bot_Personnage extends Group {
             if (estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
                 if (game.getGrid()[botY][botX] == 0) {
                     System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
-                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, listeBombesBot, scoreBot);
+                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, listeBombesBot);
                     game.getGrid()[botY][botX] = 3;
                     return;
                 }
@@ -180,7 +181,7 @@ public class Bot_Personnage extends Group {
         // 5. BLOQUÉ → POSER UNE BOMBE POUR DÉTRUIRE DES OBSTACLES
         if (game.getGrid()[botY][botX] == 0) {
             System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
-            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, listeBombesBot, scoreBot);
+            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, listeBombesBot);
             game.getGrid()[botY][botX] = 3;
         }
     }
