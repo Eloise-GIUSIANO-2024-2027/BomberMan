@@ -45,7 +45,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left" +theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-" +theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -60,7 +60,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("droite")) {
             direction = "droite";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right"+theme+ "-" +botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right-"+theme+ "-" +botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -74,7 +74,7 @@ public class Bot_Personnage extends Group {
         }
         if (!direction.equals("bas")) {
             direction = "bas";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -89,7 +89,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("haut")) {
             direction = "haut";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
