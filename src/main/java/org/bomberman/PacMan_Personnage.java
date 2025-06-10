@@ -128,4 +128,13 @@ public class PacMan_Personnage extends Group {
     public int getGridY() {
         return gridY;
     }
+
+    //Pour le catch the flagh
+    private Drapeau drapeau;
+    private boolean aCaptureDrapeau = false;
+    private boolean elimineMaisActif = false;
+
+    public void setDrapeau(Drapeau d) { this.drapeau = d; }
+    public Drapeau getDrapeau() { return drapeau; }
+    public boolean isElimine() { return elimineMaisActif; }
 }
