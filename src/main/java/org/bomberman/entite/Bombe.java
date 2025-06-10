@@ -26,8 +26,9 @@ public class Bombe extends ImageView {
     private boolean estPresent = true;
     private boolean aExplose = false;
     private Timer timer;
+    private int scoreJoueur;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot,  List<Bombe> bombes) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot, List<Bombe> bombes, int scoreJoueur) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
@@ -36,6 +37,7 @@ public class Bombe extends ImageView {
         this.joueurs = joueurs;
         this.bot = bot;
         this.bombes = bombes;
+        this.scoreJoueur = scoreJoueur;
 
         // Charger l'image de la bombe
         try {
@@ -112,6 +114,7 @@ public class Bombe extends ImageView {
                         break; // Arrêter l'explosion dans cette direction
                     } else if (grid[ny][nx] == 2) { // Bloc cassable
                         grid[ny][nx] = 0; // Casser le bloc
+                        scoreJoueur += 100; // Ajout des points pour la destruction du mur
                         affectedCells.add(new int[]{ny, nx});
                         break; // Arrêter l'explosion dans cette direction après avoir cassé le bloc
                     } else { // Espace vide
@@ -137,7 +140,9 @@ public class Bombe extends ImageView {
                     if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
                         joueur.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
                         gameGrid.getEntityLayer().getChildren().remove(joueur); // Supprimer visuellement le joueur
+                        scoreJoueur += 250; // Ajout des points pour le kill
                         System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
+
                         break; // Un joueur ne peut être tué qu'une fois par explosion, pas besoin de vérifier d'autres cellules
                     }
                 }
@@ -157,6 +162,7 @@ public class Bombe extends ImageView {
                     if (botGridY == affectedRow && botGridX == affectedCol) {
                         bot.disparait();
                         gameGrid.getEntityLayer().getChildren().remove(bot); // Supprimer visuellement le joueur
+                        scoreJoueur += 250; // Ajout des points pour le kill
                         break;
                     }
                 }

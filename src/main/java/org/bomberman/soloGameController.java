@@ -49,6 +49,9 @@ public class soloGameController {
     private List<Bot_Personnage> bot = new ArrayList<>();
     private List<Bombe> listeBombes = new ArrayList<>();
 
+
+
+
     @FXML
     public void startGame() {
         lancerTimer(); // debut du timer
@@ -110,7 +113,7 @@ public class soloGameController {
                 if (game.getGrid()[py][px] == 0 && j1.estVivant()) { // This access is correct: [row][column]
                     System.out.println("Bombe");
                     // THE FIX IS HERE: Pass px (column) first, then py (row)
-                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes, scoreJoueur);
                     gameGridDisplay.refresh();
                 }
             }

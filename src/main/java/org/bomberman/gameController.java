@@ -8,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -103,15 +102,10 @@ public class gameController {
     @FXML
     private Label timerLabel;
 
-    @FXML
-    public void startGame() throws IOException {
-        lancerTimer(); // debut du timer
-
-        // Crée une instance de ta GameGrid personnalisée
+    @FXML // Crée une instance de ta GameGrid personnalisée
     public void startGame() throws IOException, URISyntaxException {
-        game.startGame();
         gameGridDisplay = new GameGrid(game);
-
+            lancerTimer(); // debut du timer
         gameArea.getChildren().clear();
 
         // Créer un conteneur avec couches
@@ -164,7 +158,7 @@ public class gameController {
         if (resource != null) {
             scores = Files.readAllLines(Paths.get(resource.toURI()));
         }
-        derID = Integer.parseInt(scores.get(1));
+        derID = Integer.parseInt(scores.get(1))+1;
 
 
 
@@ -227,9 +221,6 @@ public class gameController {
         }
 
         refreshScores();
-
-        System.out.println("Nom de j1 : " + nomJ1 + ", " + getScoreLigne(ligneJ1) + ", " + ligneJ1);
-        System.out.println("Nom de j2 : " + nomJ2 + ", " + ligneJ2);
     }
 
     private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
@@ -248,7 +239,8 @@ public class gameController {
 
                 if (game.getGrid()[px][py] == 0 && j1.estVivant()) {
                     System.out.println("Bombe");
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes, scoreJ1);
+                    refreshScores();
                     gameGridDisplay.refresh();
                 }
             }
@@ -265,7 +257,8 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j2.estVivant()) {
                     System.out.println("Bombe");
                     // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot, listeBombes);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot, listeBombes, scoreJ2);
+                    refreshScores();
                     gameGridDisplay.refresh();
                 }
             }
@@ -282,7 +275,8 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j3.estVivant()) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes, scoreJ3);
+                    refreshScores();
                     gameGridDisplay.refresh();
                 }
             }
@@ -299,7 +293,8 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j4.estVivant()) {
                     System.out.println("Bombe");
 
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes);
+                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes, scoreJ4);
+                    refreshScores();
                     gameGridDisplay.refresh();
                 }
             }
@@ -506,12 +501,10 @@ public class gameController {
     }
 
     public void ajouterScore(String nom, int score, int ligne) {
-        System.out.println(scores.size() + " " + ligne);
         if (ligne == scores.size()-1) scores.add(nom + " " + score);
         else if (score < getScoreLigne(ligne)){
             scores.set(ligne, nom + " " + score);
         } else scores.set(ligne, nom + " " + score);
-        System.out.println(scores.size() + " " + ligne);
     }
 
     public void updateFile(List<String> lignes) throws IOException {

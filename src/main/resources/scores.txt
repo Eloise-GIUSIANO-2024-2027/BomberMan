@@ -1,4 +1,8 @@
 # derID :
-0
+4
 # Pseudo : meilleur score
 intiPseudo 0
+Joueur_1 0
+Joueur_2 0
+Joueur_3 0
+Joueur_4 0
