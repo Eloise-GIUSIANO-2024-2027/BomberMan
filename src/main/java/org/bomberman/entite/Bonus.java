@@ -89,27 +89,11 @@ public class Bonus {
         // ← AJOUTER cette nouvelle méthode
         public void appliquerBonusRayon(PacMan_Personnage joueur) {
             System.out.println("Bonus rayon collecté !");
-
-            Platform.runLater(() -> {
-                if (imageView.getParent() != null) {
-                    ((Pane) imageView.getParent()).getChildren().remove(imageView);
-                }
-            });
-            game.removeBonus(this);
-
             joueur.activerBonusRayon();
         }
 
         public void appliquerBonusVitesse(PacMan_Personnage joueur, GridPane map, int bonusX, int bonusY) {
             System.out.println("Bonus de vitesse activé ! Vitesse du joueur augmentée pour 15 secondes.");
-
-            Platform.runLater(() -> {
-                if (imageView.getParent() != null) {
-                    ((Pane) imageView.getParent()).getChildren().remove(imageView);
-                }
-            });
-            game.removeBonus(this);
-
             double vitesseInitiale = joueur.vitesse;
             joueur.vitesse = vitesseInitiale / 2.0;
 
@@ -129,8 +113,14 @@ public class Bonus {
         } else if (typeBonusString.equals("RAYON")) {
             appliquerBonusRayon(joueur);
         }
+        // Déplace la suppression de l'affichage et de la liste ici pour qu'elle soit générique à tous les bonus
+        Platform.runLater(() -> {
+            if (imageView.getParent() != null) {
+                ((Pane) imageView.getParent()).getChildren().remove(imageView);
+            }
+        });
+        // S'assurer que Game a bien une méthode pour retirer ce bonus de sa liste 'activeBonuses'
+        // C'est critique pour qu'il n'y ait plus de collision détectée avec un bonus déjà pris
+        game.removeBonus(this);
     }
-
-
-
 }

@@ -18,9 +18,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.bomberman.entite.Bombe;
+import org.bomberman.entite.Bonus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class soloGameController {
@@ -99,18 +101,34 @@ public class soloGameController {
 
         switch (event.getCode()) {
             //Joueur 1
-            case Z -> j1.deplacerEnHaut();
-            case S -> j1.deplacerEnBas(k.getHeight());
-            case D -> j1.deplacerADroite(k.getWidth());
-            case Q -> j1.deplacerAGauche();
+            case Z -> {
+                j1.deplacerEnHaut();
+                checkBonusCollision(j1);
+            }
+            case S -> {
+                j1.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j1);
+            }
+            case D -> {
+                j1.deplacerADroite(k.getWidth());
+                checkBonusCollision(j1);
+            }
+            case Q -> {
+                j1.deplacerAGauche();
+                checkBonusCollision(j1);
+            }
             case A -> {
                 int px = j1.getGridX(); // px is the column
                 int py = j1.getGridY(); // py is the row
 
                 if (game.getGrid()[py][px] == 0 && j1.estVivant()) { // This access is correct: [row][column]
                     System.out.println("Bombe");
+                    int rayon = j1.aBonusRayon() ? 2 : 1;
+                    if (j1.aBonusRayon()) {
+                        j1.consommerBonusRayon();
+                    }
                     // THE FIX IS HERE: Pass px (column) first, then py (row)
-                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
+                    new Bombe( px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
                     j1.setCanPlaceBomb(false);
                     gameGridDisplay.refresh();
                 }
@@ -291,6 +309,19 @@ public class soloGameController {
 
         // Relancer le timer
         lancerTimer();
+    }
+
+    // Dans soloGameController
+    private void checkBonusCollision(PacMan_Personnage joueur ) {
+        List<Bonus> activeBonuses = game.getActiveBonuses();
+        for (int i = activeBonuses.size() - 1; i >= 0; i--) {
+            Bonus bonus = activeBonuses.get(i);
+            if (bonus.getBonusX() == joueur.getGridX() && bonus.getBonusY() == joueur.getGridY()) {
+                // Utiliser la nouvelle méthode générique
+                bonus.appliquerBonus(joueur);
+                break;
+            }
+        }
     }
 
 }

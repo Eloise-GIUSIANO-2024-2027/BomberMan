@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import org.bomberman.entite.Bombe;
+import org.bomberman.entite.Bonus;
 
 import java.util.*;
 
@@ -20,15 +21,34 @@ public class Bot_Personnage extends Group {
     private boolean canPlaceBomb = true;
     private int botNumber;// Identifiant unique pour chaque bot
     private List<Bombe> listeBombesBot = new ArrayList<>();
+    private String theme = "default";
+    private boolean aBonusRayon = false;
+    public double vitesse; // Vitesse actuelle du bot
+    private double vitesseInitiale; // Vitesse de base du bot
 
-    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) {
+    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber, double vitesse, double vitesseInitiale) {
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
         this.botId = botId;
         this.botNumber = botNumber;
+        this.vitesse = 3.0; // OU TA VALEUR DE DÉFAUT POUR LES BOTS
+        this.vitesseInitiale = this.vitesse;
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+        // AJOUTE CES GETTERS/SETTERS pour la vitesse
+        public double getVitesse() {
+            return vitesse;
+        }
+
+        public void setVitesse(double vitesse) {
+            this.vitesse = vitesse;
+        }
+
+        public double getVitesseInitiale() {
+            return vitesseInitiale;
+        }
+
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-" +theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
@@ -49,11 +69,12 @@ public class Bot_Personnage extends Group {
         if (isValidGridPosition(nouvellePositionX, gridY)) {
             gridX = nouvellePositionX;
             updatePixelPosition();
+            checkBonusCollision();
         }
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -64,11 +85,12 @@ public class Bot_Personnage extends Group {
         if (isValidGridPosition(nouvellePositionX, gridY)) {
             gridX = nouvellePositionX;
             updatePixelPosition();
+            checkBonusCollision();
         }
 
         if (!direction.equals("droite")) {
             direction = "droite";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -79,10 +101,11 @@ public class Bot_Personnage extends Group {
         if (isValidGridPosition(gridX, nouvellePositionY)) {
             gridY = nouvellePositionY;
             updatePixelPosition();
+            checkBonusCollision();
         }
         if (!direction.equals("bas")) {
             direction = "bas";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -93,11 +116,12 @@ public class Bot_Personnage extends Group {
         if (isValidGridPosition(gridX, nouvellePositionY)) {
             gridY = nouvellePositionY;
             updatePixelPosition();
+            checkBonusCollision();
         }
 
         if (!direction.equals("haut")) {
             direction = "haut";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+ "-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -161,7 +185,7 @@ public class Bot_Personnage extends Group {
         if (canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
             System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
             // L'appel doit correspondre au constructeur à 9 arguments :
-            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null); // <-- Correct pour le bot
+            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot ); // <-- Correct pour le bot
             setCanPlaceBomb(false);
             game.getGrid()[botY][botX] = 3;
         }
@@ -202,7 +226,7 @@ public class Bot_Personnage extends Group {
                 if (game.getGrid()[botY][botX] == 0) {
                     System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
                     // L'appel doit correspondre au constructeur à 9 arguments :
-                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null); // <-- Correct pour le bot
+                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null, listeBombesBot); // <-- Correct pour le bot
                     setCanPlaceBomb(false);
                     game.getGrid()[botY][botX] = 3;
                     return;
@@ -346,6 +370,8 @@ public class Bot_Personnage extends Group {
         else if (dx == -1) deplacerAGauche();
         else if (dy == 1) deplacerEnBas(game.getGrid().length * CELL_SIZE);
         else if (dy == -1) deplacerEnHaut();
+
+        checkBonusCollision();
     }
 
     public void disparait() {
@@ -356,4 +382,31 @@ public class Bot_Personnage extends Group {
     public boolean estVivant() {
         return this.estVivant;
     }
+
+    public void activerBonusRayon() {
+        this.aBonusRayon = true;
+        System.out.println("Joueur a reçu le bonus Rayon !");
+    }
+
+    public boolean aBonusRayon() {
+        return aBonusRayon;
+    }
+
+    public void consommerBonusRayon() {
+        this.aBonusRayon = false;
+        System.out.println("Bonus Rayon consommé.");
+    }
+
+    private void checkBonusCollision(PacMan_Personnage joueur) {
+        List<Bonus> activeBonuses = game.getActiveBonuses();
+        for (int i = activeBonuses.size() - 1; i >= 0; i--) {
+            Bonus bonus = activeBonuses.get(i);
+            if (bonus.getBonusX() == joueur.getGridX() && bonus.getBonusY() == joueur.getGridY()) {
+                // Utiliser la nouvelle méthode générique
+                bonus.appliquerBonus(joueur);
+                break;
+            }
+        }
+    }
+
 }

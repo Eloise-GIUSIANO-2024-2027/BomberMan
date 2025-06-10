@@ -191,10 +191,10 @@ public class gameController {
         gameArea.getChildren().add(gameContainer);
 
         // Créer les personnages
-        PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
+        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
+        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
+        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
 
         joueurs.add(pacman);
         joueurs.add(fantome);
@@ -324,7 +324,7 @@ public class gameController {
                 if (game.getGrid()[px][py] == 0) {
                     System.out.println("Bombe");
                     // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                    int rayon = j1.aBonusRayon() ? 3 : 2;
+                    int rayon = j1.aBonusRayon() ? 2 : 1;
                     if (j1.aBonusRayon()) {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
@@ -359,7 +359,7 @@ public class gameController {
                     if (game.getGrid()[py2][px2] == 0) {
                         System.out.println("Bombe");
                         // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j2.aBonusRayon() ? 3 : 2;
+                        int rayon = j2.aBonusRayon() ? 2 : 1;
                         if (j2.aBonusRayon()) {
                             j2.consommerBonusRayon();
                         }
@@ -393,7 +393,7 @@ public class gameController {
                     if (game.getGrid()[py3][px3] == 0) {
                         System.out.println("Bombe");
                         // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j3.aBonusRayon() ? 3 : 2;
+                        int rayon = j3.aBonusRayon() ? 2 : 1;
                         if (j3.aBonusRayon()) {
                             j3.consommerBonusRayon();
                         }
@@ -427,7 +427,7 @@ public class gameController {
                     if (game.getGrid()[py4][px4] == 0) {
                         System.out.println("Bombe");
                         // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j4.aBonusRayon() ? 3 : 2;
+                        int rayon = j4.aBonusRayon() ? 2 : 1;
                         if (j4.aBonusRayon()) {
                             j4.consommerBonusRayon();
                         }
