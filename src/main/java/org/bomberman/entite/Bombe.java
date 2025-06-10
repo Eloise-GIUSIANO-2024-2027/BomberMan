@@ -21,16 +21,20 @@ public class Bombe extends ImageView {
     private Game game;
     private GameGrid gameGrid;
     private List<PacMan_Personnage> joueurs;
-    private List<Bot_Personnage> bot;
+    private List<Bot_Personnage> botList;
+    private PacMan_Personnage poseurJoueur;
+    private Bot_Personnage poseurBot;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> botList, PacMan_Personnage poseurJoueur) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
         this.game = game;
         this.gameGrid = gameGrid;
         this.joueurs = joueurs;
-        this.bot = bot;
+        this.botList = botList;
+        this.poseurJoueur = poseurJoueur;
+        this.poseurBot = poseurBot;
 
         // Charger l'image de la bombe
         try {
@@ -129,7 +133,7 @@ public class Bombe extends ImageView {
             }
         }
 
-        for (Bot_Personnage bot : bot) {
+        for (Bot_Personnage bot : botList) {
             if (bot.estVivant()) {
                 int joueurGridX = bot.getGridX();
                 int joueurGridY = bot.getGridY();
@@ -160,17 +164,22 @@ public class Bombe extends ImageView {
             if (this.getParent() instanceof Pane pane) {
                 pane.getChildren().remove(this);
             }
+            if (poseurJoueur != null) {
+                poseurJoueur.setCanPlaceBomb(true);
+                System.out.println("Joueur peut de nouveau poser une bombe.");
+            }
         });
     }
 
-    // ← AJOUTER cette méthode dans Bombe.java
     private void generateBonusChance(int bonusX, int bonusY) {
         // 1 chance sur 4 de générer un bonus
         if (Math.random() < 0.25) {
-            Bonus bonus = new Bonus(game, bonusX, bonusY, gameGrid);
+            // Choisir aléatoirement le type de bonus (50% vitesse, 50% rayon)
+            Bonus.TypeBonus type = Math.random() < 0.5 ? Bonus.TypeBonus.VITESSE : Bonus.TypeBonus.RAYON;
+
+            Bonus bonus = new Bonus(game, bonusX, bonusY, gameGrid, type);
             game.addBonus(bonus);
 
-            // Ajouter visuellement le bonus à la grille
             Platform.runLater(() -> {
                 gameGrid.getChildren().add(bonus.getImageView());
                 GridPane.setColumnIndex(bonus.getImageView(), bonusX);
@@ -178,9 +187,7 @@ public class Bombe extends ImageView {
                 bonus.getImageView().toFront();
             });
 
-            System.out.println("Bonus généré à la position: " + bonusX + ", " + bonusY);
+            System.out.println("Bonus " + type + " généré à la position: " + bonusX + ", " + bonusY);
         }
     }
-
-
 }

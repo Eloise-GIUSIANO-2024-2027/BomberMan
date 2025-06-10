@@ -18,6 +18,10 @@ public class PacMan_Personnage extends Group {
     private Game game;
     private boolean estVivant = true; // Initialise le joueur comme vivant par défaut
     public double vitesse = 0.1;
+    public boolean bonusRayonActif = false;
+
+    private boolean aBonusRayon = false; // Pour le bonus de rayon
+    private boolean canPlaceBomb = true;
 
     // ← AJOUTER ces méthodes
     public void setVitesse(double vitesse) {
@@ -26,6 +30,28 @@ public class PacMan_Personnage extends Group {
 
     public double getVitesse() {
         return vitesse;
+    }
+
+    public boolean canPlaceBomb() {
+        return canPlaceBomb;
+    }
+
+    public void setCanPlaceBomb(boolean canPlaceBomb) {
+        this.canPlaceBomb = canPlaceBomb;
+    }
+
+    public void activerBonusRayon() {
+        this.aBonusRayon = true;
+        System.out.println("Joueur a reçu le bonus Rayon !");
+    }
+
+    public boolean aBonusRayon() {
+        return aBonusRayon;
+    }
+
+    public void consommerBonusRayon() {
+        this.aBonusRayon = false;
+        System.out.println("Bonus Rayon consommé.");
     }
 
     public PacMan_Personnage(Game game, int startX, int startY) {

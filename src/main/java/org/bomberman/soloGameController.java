@@ -109,7 +109,8 @@ public class soloGameController {
                 if (game.getGrid()[py][px] == 0 && j1.estVivant()) { // This access is correct: [row][column]
                     System.out.println("Bombe");
                     // THE FIX IS HERE: Pass px (column) first, then py (row)
-                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot);
+                    new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1);
+                    j1.setCanPlaceBomb(false);
                     gameGridDisplay.refresh();
                 }
             }

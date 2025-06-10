@@ -17,6 +17,7 @@ public class Bot_Personnage extends Group {
     private Game game;
     private boolean estVivant = true;
     private int botId; // Identifiant unique pour chaque bot
+    private boolean canPlaceBomb = true;
 
     public Bot_Personnage(Game game, int startX, int startY, int botId) {
         this.game = game;
@@ -27,6 +28,14 @@ public class Bot_Personnage extends Group {
         rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back.gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
+    }
+
+    public boolean canPlaceBomb() {
+        return canPlaceBomb;
+    }
+
+    public void setCanPlaceBomb(boolean canPlaceBomb) {
+        this.canPlaceBomb = canPlaceBomb;
     }
 
     // Méthodes de déplacement inchangées...
@@ -111,6 +120,12 @@ public class Bot_Personnage extends Group {
         return botId;
     }
 
+    public Group getImageView() { // Renvoie le groupe comme une "ImageView" pour l'ajout visuel
+        return this; // Puisque Bot_Personnage étend Group, il peut être ajouté directement.
+        // C'est l'équivalent de getImageView() pour les joueurs.
+    }
+
+
     // Méthode principale modifiée pour cibler tous les ennemis
     public void agir(PacMan_Personnage joueur, List<PacMan_Personnage> tousLesJoueurs, GameGrid gameGrid, List<Bot_Personnage> bot) {
         if (!estVivant) return;
@@ -140,6 +155,13 @@ public class Bot_Personnage extends Group {
             }
             return;
         }
+        if (canPlaceBomb() && game.getGrid()[botY][botX] == 0) {
+            System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
+            // L'appel doit correspondre au constructeur à 9 arguments :
+            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null); // <-- Correct pour le bot
+            setCanPlaceBomb(false);
+            game.getGrid()[botY][botX] = 3;
+        }
 
         // 2. RECHERCHE DE LA CIBLE LA PLUS PROCHE (joueur ou autres bots)
         CibleInfo cibleLaPlusProche = trouverCibleLaPlusProche(joueur, bot);
@@ -149,7 +171,8 @@ public class Bot_Personnage extends Group {
             if (estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
                 if (game.getGrid()[botY][botX] == 0) {
                     System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
-                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot);
+                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null);
+                    setCanPlaceBomb(false);
                     game.getGrid()[botY][botX] = 3;
                     return;
                 }
@@ -171,12 +194,24 @@ public class Bot_Personnage extends Group {
                     return;
                 }
             }
+
+            if (canPlaceBomb() && estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
+                if (game.getGrid()[botY][botX] == 0) {
+                    System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
+                    // L'appel doit correspondre au constructeur à 9 arguments :
+                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null); // <-- Correct pour le bot
+                    setCanPlaceBomb(false);
+                    game.getGrid()[botY][botX] = 3;
+                    return;
+                }
+            }
         }
 
         // 5. BLOQUÉ → POSER UNE BOMBE POUR DÉTRUIRE DES OBSTACLES
         if (game.getGrid()[botY][botX] == 0) {
             System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
-            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot);
+            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, null);
+            setCanPlaceBomb(false);
             game.getGrid()[botY][botX] = 3;
         }
     }
