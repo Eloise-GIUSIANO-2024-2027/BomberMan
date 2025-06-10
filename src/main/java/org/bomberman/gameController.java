@@ -74,10 +74,10 @@ public class gameController {
         gameArea.getChildren().add(gameContainer);
 
         // Créer les personnages
-        PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
+        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
+        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
+        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
 
         joueurs.add(pacman);
         joueurs.add(fantome);
@@ -319,10 +319,10 @@ public class gameController {
         gameArea.getChildren().add(gameContainer);
 
         // Recréer les joueurs
-        PacMan_Personnage pacman = new Pacman(game, 0, 0);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10);
+        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
+        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
+        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
 
         joueurs.add(pacman);
         joueurs.add(fantome);

@@ -75,8 +75,19 @@ public class MenuController {
     // Méthode appelée lorsque le bouton "PASSWORD" est cliqué
     @FXML
     private void changementTheme(ActionEvent event) {
-        System.out.println("Changement du theme !");
-        // Implémente les futur theme
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("theme.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Bomberman - selection de theme");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors du chargement de la page des themes : " + e.getMessage());
+        }
     }
 
     @FXML

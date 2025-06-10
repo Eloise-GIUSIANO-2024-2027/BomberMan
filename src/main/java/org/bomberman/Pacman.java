@@ -6,8 +6,8 @@ import javafx.scene.shape.Line;
 public class Pacman extends PacMan_Personnage {
 
 
-    public Pacman(Game game, int startX, int startY) {
-        super(game,startX,startY);
+    public Pacman(Game game, int startX, int startY, int playerNumber) {
+        super(game,startX,startY,playerNumber);
         setLayoutX(5);  // Position X de départ
         setLayoutY(5);
     }
