@@ -39,6 +39,8 @@ public class Bombe extends ImageView {
         }
 
         int[][] grid = game.getGrid();
+
+
         if (x >= 0 && x < grid.length && y >= 0 && y < grid[0].length) {
             // Marquer la case comme occupée par une bombe
             grid[y][x] = 3; // 3 = bombe
@@ -78,21 +80,29 @@ public class Bombe extends ImageView {
         List<int[]> affectedCells = new ArrayList<>();
         affectedCells.add(new int[]{y, x});
 
-// Horizontal
+        // Horizontal
         for (int dx = -rayon; dx <= rayon; dx++) {
             int nx = x + dx;
             if (nx >= 0 && nx < grid[0].length) {
-                if (grid[y][nx] == 2) grid[y][nx] = 0;
-                affectedCells.add(new int[]{y, nx}); // ➕ Ajouter la case à la liste
+                // ← AJOUTER: Générer bonus si c'est un mur destructible
+                if (grid[y][nx] == 2) {
+                    generateBonusChance(nx, y); // Passer colonne, ligne
+                    grid[y][nx] = 0;
+                }
+                affectedCells.add(new int[]{y, nx});
             }
         }
 
-// Vertical
+        // Vertical
         for (int dy = -rayon; dy <= rayon; dy++) {
             int ny = y + dy;
             if (ny >= 0 && ny < grid.length) {
-                if (grid[ny][x] == 2) grid[ny][x] = 0;
-                affectedCells.add(new int[]{ny, x}); // ➕ Ajouter la case à la liste
+                // ← AJOUTER: Générer bonus si c'est un mur destructible
+                if (grid[ny][x] == 2) {
+                    generateBonusChance(x, ny); // Passer colonne, ligne
+                    grid[ny][x] = 0;
+                }
+                affectedCells.add(new int[]{ny, x});
             }
         }
 
@@ -119,7 +129,7 @@ public class Bombe extends ImageView {
         }
 
         game.setGrid(grid);
-        gameGrid.refresh(); // Recréer seulement la grille de terrain
+        gameGrid.refresh();
 
         // Supprimer visuellement la bombe
         Platform.runLater(() -> {
@@ -128,4 +138,25 @@ public class Bombe extends ImageView {
             }
         });
     }
+
+    // ← AJOUTER cette méthode dans Bombe.java
+    private void generateBonusChance(int bonusX, int bonusY) {
+        // 1 chance sur 4 de générer un bonus
+        if (Math.random() < 0.25) {
+            Bonus bonus = new Bonus(game, bonusX, bonusY, gameGrid);
+            game.addBonus(bonus);
+
+            // Ajouter visuellement le bonus à la grille
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(bonus.getImageView());
+                GridPane.setColumnIndex(bonus.getImageView(), bonusX);
+                GridPane.setRowIndex(bonus.getImageView(), bonusY);
+                bonus.getImageView().toFront();
+            });
+
+            System.out.println("Bonus généré à la position: " + bonusX + ", " + bonusY);
+        }
+    }
+
+
 }

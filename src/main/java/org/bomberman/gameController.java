@@ -16,9 +16,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import org.bomberman.entite.Bombe;
+import org.bomberman.entite.Bonus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class gameController {
@@ -102,10 +104,21 @@ public class gameController {
 
         switch (event.getCode()) {
             //Joueur 1
-            case T -> j1.deplacerEnHaut();
-            case G -> j1.deplacerEnBas(k.getHeight());
-            case H -> j1.deplacerADroite(k.getWidth());
-            case F -> j1.deplacerAGauche();
+            case T -> { j1.deplacerEnHaut();
+                checkBonusCollision(j1);  }
+
+            case G -> {
+                j1.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j1);
+            }
+            case H -> {
+                j1.deplacerADroite(k.getWidth());
+                checkBonusCollision(j1); // ← AJOUTER
+            }
+            case F -> {
+                j1.deplacerAGauche();
+                checkBonusCollision(j1); // ← AJOUTER
+            }
             case U -> {
                 int px = j1.getGridX();
                 int py = j1.getGridY();
@@ -118,10 +131,18 @@ public class gameController {
             }
 
             //Joueur 2
-            case Z -> j2.deplacerEnHaut();
-            case S -> j2.deplacerEnBas(k.getHeight());
-            case D -> j2.deplacerADroite(k.getWidth());
-            case Q -> j2.deplacerAGauche();
+            case Z ->  { j2.deplacerEnHaut();
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case S ->  { j2.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case D ->  { j2.deplacerADroite(k.getWidth());
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case Q ->  { j2.deplacerAGauche();
+                checkBonusCollision(j2); // ← AJOUTER
+            }
             case A -> {
                 int px = j2.getGridX();
                 int py = j2.getGridY();
@@ -135,10 +156,18 @@ public class gameController {
             }
 
             //Joueur 3
-            case O -> j3.deplacerEnHaut();
-            case L -> j3.deplacerEnBas(k.getHeight());
-            case M -> j3.deplacerADroite(k.getWidth());
-            case K -> j3.deplacerAGauche();
+            case O -> { j3.deplacerEnHaut();
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case L -> { j3.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case M -> { j3.deplacerADroite(k.getWidth());
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case K -> { j3.deplacerAGauche();
+                checkBonusCollision(j3); // ← AJOUTER
+            }
             case P -> {
                 int px = j3.getGridX();
                 int py = j3.getGridY();
@@ -152,10 +181,18 @@ public class gameController {
             }
 
             //Joueur 4
-            case NUMPAD5 -> j4.deplacerEnHaut();
-            case NUMPAD2 -> j4.deplacerEnBas(k.getHeight());
-            case NUMPAD3 -> j4.deplacerADroite(k.getWidth());
-            case NUMPAD1 -> j4.deplacerAGauche();
+            case NUMPAD5 -> { j4.deplacerEnHaut();
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD2 -> { j4.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD3 -> { j4.deplacerADroite(k.getWidth());
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD1 -> { j4.deplacerAGauche();
+                checkBonusCollision(j4); // ← AJOUTER
+            }
             case NUMPAD4 -> {
                 int px = j4.getGridX();
                 int py = j4.getGridY();
@@ -170,6 +207,17 @@ public class gameController {
         }
     }
 
+    private void checkBonusCollision(PacMan_Personnage joueur) {
+        Iterator<Bonus> iterator = game.getActiveBonuses().iterator();
+        while (iterator.hasNext()) {
+            Bonus bonus = iterator.next();
+            if (bonus.getBonusX() == joueur.getGridX() && bonus.getBonusY() == joueur.getGridY()) {
+                bonus.appliquerBonusVitesse(joueur, gameGridDisplay, bonus.getBonusX(), bonus.getBonusY());
+                //iterator.remove(); // Suppression sûre avec Iterator
+                break;
+            }
+        }
+    }
 
     public void initialize() {
         System.out.println("gameController initialisé.");

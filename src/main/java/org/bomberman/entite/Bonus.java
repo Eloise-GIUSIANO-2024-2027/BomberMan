@@ -1,32 +1,85 @@
 package org.bomberman.entite;
 
-import javafx.scene.layout.GridPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView; // L'import est toujours nécessaire
 import javafx.animation.PauseTransition;
+import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
+import javafx.application.Platform;
+import javafx.scene.layout.Pane; // Pour supprimer l'ImageView du parent
+import org.bomberman.Game;
+import org.bomberman.GameGrid;
+import org.bomberman.PacMan_Personnage;
+
+import java.util.Objects;
 
 // Assurez-vous que Joueur est correctement importé si cette classe n'est pas dans le même package
 // import org.bomberman.entite.Joueur; // Cette ligne est nécessaire si Bonus n'est pas dans le même package que Joueur
 
 public class Bonus {
+    private int bonusX;
+    private int bonusY;
+    private Game game;
+    private GameGrid gameGrid;
+    private ImageView imageView;
 
-    public void appliquerBonusVitesse(Joueur joueur, GridPane map, int bonusX, int bonusY) {
-        // ... (ton code pour la suppression visuelle du bonus)
+    public Bonus(Game game, int bonusX, int bonusY, GameGrid gameGrid) {
+        this.bonusX = bonusX;
+        this.bonusY = bonusY;
+        this.game = game;
+        this.gameGrid = gameGrid;
 
-        double vitesseInitiale = joueur.vitesse; // <-- Changer int en double ici
-        joueur.vitesse = vitesseInitiale / 2.0; // <-- Utiliser 2.0 pour une division flottante
+        try {
+            Image bonusImage = new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/terrain/BONUS.png")), 48, 48, false, false);
+            imageView = new ImageView(bonusImage); // Crée l'ImageView
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de l'image du bonus: " + e.getMessage());
+            imageView = new ImageView(); // Fallback
+        }
 
-        // Tu peux ajouter une vérification si tu veux une vitesse minimale (ex: ne pas passer sous 0.05)
-        // if (joueur.vitesse < 0.05) {
-        //     joueur.vitesse = 0.05;
-        // }
+        // Configure l'ImageView
+        imageView.setFitWidth(48);
+        imageView.setFitHeight(48);
+        imageView.setX(bonusX * 48); // Positionne l'ImageView
+        imageView.setY(bonusY * 48);
+
+    }
+
+    public void appliquerBonusVitesse(PacMan_Personnage joueur, GridPane map, int bonusX, int bonusY) {
+        System.out.println("Bonus de vitesse activé ! Vitesse du joueur augmentée pour 15 secondes.");
+
+        Platform.runLater(() -> {
+            if (imageView.getParent() != null) {
+                ((Pane) imageView.getParent()).getChildren().remove(imageView);
+            }
+        });
+        game.removeBonus(this);
+
+        double vitesseInitiale = joueur.vitesse; // ← Maintenant ça marche !
+        joueur.vitesse = vitesseInitiale / 2.0; // Diviser par 2 = plus rapide
 
         PauseTransition pause = new PauseTransition(Duration.seconds(15));
         pause.setOnFinished(event -> {
-            joueur.vitesse = vitesseInitiale;
-            System.out.println("Bonus de vitesse terminé. Vitesse rétablie pour le joueur.");
+            Platform.runLater(() -> {
+                joueur.vitesse = vitesseInitiale;
+                System.out.println("Bonus de vitesse terminé. Vitesse rétablie pour le joueur.");
+            });
         });
         pause.play();
 
-        System.out.println("Bonus de vitesse activé ! Vitesse du joueur augmentée pour 15 secondes.");
+    }
+
+    public int getBonusX() {
+        return bonusX;
+    }
+
+    // ← AJOUTER cette méthode
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public int getBonusY() {
+        return bonusY;
     }
 }

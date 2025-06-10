@@ -17,7 +17,16 @@ public class PacMan_Personnage extends Group {
     private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
     private Game game;
     private boolean estVivant = true; // Initialise le joueur comme vivant par défaut
+    public double vitesse = 0.1;
 
+    // ← AJOUTER ces méthodes
+    public void setVitesse(double vitesse) {
+        this.vitesse = vitesse;
+    }
+
+    public double getVitesse() {
+        return vitesse;
+    }
 
     public PacMan_Personnage(Game game, int startX, int startY) {
         this.game = game;
@@ -125,5 +134,11 @@ public class PacMan_Personnage extends Group {
 
     public int getGridY() {
         return gridY;
+    }
+
+    public interface Joueur {
+        double vitesse = 0.1; // vitesse par défaut
+        void setVitesse(double vitesse);
+        double getVitesse();
     }
 }
