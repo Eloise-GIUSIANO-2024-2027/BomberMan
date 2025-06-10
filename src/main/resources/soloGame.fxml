@@ -41,7 +41,11 @@
         <StackPane fx:id="gameContainer" alignment="CENTER">
             <!-- Jeu actif -->
             <VBox fx:id="gameAreaStackPane" alignment="CENTER" spacing="5.0">
-                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
+                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame" styleClass="start-button"/>
+                <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
+                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>
+                <Label text="Joueur (En haut a droite) = Z: haut, S: bas, Q: gauche, D: droite, A: Bombe" styleClass="commande"/>
+
             </VBox>
             <!-- Menu pause transparent -->
             <VBox fx:id="pauseMenuContainer" alignment="CENTER" spacing="20.0"
@@ -50,6 +54,9 @@
                 <Button fx:id="resumeGameButton" text="REPRENDRE" onAction="#resumeGame" />
                 <Button fx:id="backToMainMenuButton" text="RETOUR AU MENU" onAction="#retourMenu" />
                 <Button fx:id="exitButton" text="QUITTER LE JEU" onAction="#quittertout"/>
+                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>
+                <Label text="Joueur (En haut a droite) = Z: haut, S: bas, Q: gauche, D: droite, A: Bombe" styleClass="commande"/>
+
             </VBox>
             <VBox fx:id="finMenuContainer" alignment="CENTER" spacing="20.0"
                   styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">

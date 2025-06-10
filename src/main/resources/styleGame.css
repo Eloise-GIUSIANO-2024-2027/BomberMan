@@ -33,6 +33,20 @@ Button:hover {
     -fx-background-color: rgba(255, 255, 255, 0.2);
 }
 
+.start-button{
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 25px;
+    -fx-padding: 10px 10px;
+    -fx-cursor: hand;
+    -fx-font-family: "Press Start 2P Regular";
+}
+
+.start-button:hover {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
 .menu {
     -fx-background-color: rgba(0, 0, 0, 0.6);
     -fx-padding: 20;
@@ -50,4 +64,15 @@ Button:hover {
 .vainqueur {
     fx-font-size: 20;
     -fx-text-fill: white;
+}
+
+.commandeTitle{
+    -fx-font-size: 12;
+    -fx-text-fill: #AAAAAA;
+
+}
+
+.commande{
+    -fx-font-size: 10;
+    -fx-text-fill: #AAAAAA;
 }
