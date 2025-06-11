@@ -20,13 +20,13 @@ import java.util.List;
 
 public class PacMan_Personnage extends Group  {
     private String direction = "bas";
-    private Rectangle rectangle = new Rectangle(48, 48);
+    protected Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)
     private int gridY = 0; // Position Y dans la grille (ligne)
     private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
-    private Game game;
+    protected Game game;
     private boolean estVivant = true;
-    private int playerNumber =1;// Initialise le joueur comme vivant par défaut
+    protected int playerNumber =1;// Initialise le joueur comme vivant par défaut
     private String theme = "wix";
     public double vitesse = 0.1;
     public boolean bonusRayonActif = false;
