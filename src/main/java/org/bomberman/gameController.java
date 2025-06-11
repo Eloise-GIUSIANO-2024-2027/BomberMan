@@ -135,15 +135,15 @@ public class gameController {
         gameArea.getChildren().add(gameContainer);
 
         // Créer les personnages
-        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
+        PacMan_Personnage pacman1 = new Pacman(game, 0, 0,1);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 10,2);
+        PacMan_Personnage pacman3 = new Pacman(game, 12, 0,3);
+        PacMan_Personnage pacman4 = new Pacman(game, 0, 10,4);
 
-        joueurs.add(pacman);
-        joueurs.add(fantome);
+        joueurs.add(pacman1);
         joueurs.add(pacman2);
         joueurs.add(pacman3);
+        joueurs.add(pacman4);
 
         // Ajouter les personnages DIRECTEMENT à la grille comme avant
         gameGridDisplay.getChildren().addAll(joueurs);
@@ -161,7 +161,7 @@ public class gameController {
 
                 if (!paused) {
                     // Appelle ta méthode de déplacement
-                    handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
+                    handlePlayerMovement(event, pacman1, pacman2, pacman3, pacman4);
                 }
             });
         }
@@ -178,12 +178,14 @@ public class gameController {
 
         if (saisiJ1.getLength() != 0) {
             nomJ1 = saisiJ1.getText();
+            joueurs.get(0).nom = nomJ1;
             ligneJ1 = getLigneNom(nomJ1);
             scoreJ1 = getScoreLigne(ligneJ1);
             ajouterScore(nomJ1, 0, ligneJ1);
             updateFile(scores);
         } else {
             nomJ1 = "Joueur_" + derID;
+            joueurs.get(0).nom = nomJ1;
             scores.set(1, derID + "");
             ++derID;
             ligneJ1 = getLigneNom(nomJ1);
@@ -193,12 +195,14 @@ public class gameController {
         }
         if (saisiJ2.getLength() != 0) {
             nomJ2 = saisiJ2.getText();
+            joueurs.get(1).nom = nomJ1;
             ligneJ2 = getLigneNom(nomJ2);
             scoreJ2 = getScoreLigne(ligneJ2);
             ajouterScore(nomJ2, 0, ligneJ2);
             updateFile(scores);
         } else {
             nomJ2 = "Joueur_" + derID;
+            joueurs.get(1).nom = nomJ1;
             scores.set(1, derID + "");
             ++derID;
             ligneJ2 = getLigneNom(nomJ2);
@@ -207,12 +211,14 @@ public class gameController {
         }
         if (saisiJ3.getLength() != 0) {
             nomJ3 = saisiJ3.getText();
+            joueurs.get(2).nom = nomJ1;
             ligneJ3 = getLigneNom(nomJ3);
             scoreJ3 = getScoreLigne(ligneJ3);
             ajouterScore(nomJ3, 0, ligneJ3);
             updateFile(scores);
         } else {
             nomJ3 = "Joueur_" + derID;
+            joueurs.get(2).nom = nomJ1;
             scores.set(1, derID + "");
             ++derID;
             ligneJ3 = getLigneNom(nomJ3);
@@ -221,12 +227,14 @@ public class gameController {
         }
         if (saisiJ4.getLength() != 0) {
             nomJ4 = saisiJ4.getText();
+            joueurs.get(3).nom = nomJ1;
             ligneJ4 = getLigneNom(nomJ4);
             scoreJ4 = getScoreLigne(ligneJ4);
             ajouterScore(nomJ4, 0, ligneJ4);
             updateFile(scores);
         } else {
             nomJ4 = "Joueur_" + derID;
+            joueurs.get(3).nom = nomJ1;
             scores.set(1, derID + "");
             ++derID;
             ligneJ4 = getLigneNom(nomJ4);
@@ -323,24 +331,28 @@ public class gameController {
         switch (Joueur){
             case 1:
                 scoreJ1 += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreJ1
+                joueurs.get(0).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
                 ajouterScore(nomJ1, scoreJ1, ligneJ1);      // Maj de la variable scores
                 updateFile(scores);                         // sauvegarde du nouveau score
                 //System.out.println(scoreJ1 + " " + bomb.getScoreJoueur());
                 break;
             case 2:
                 scoreJ2 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ2
+                joueurs.get(1).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
                 ajouterScore(nomJ2, scoreJ2, ligneJ2);      // Maj de la variable scores
                 updateFile(scores);                         // sauvegarde du nouveau score
                 //System.out.println("Joueur 2 : " + scoreJ2);
                 break;
             case 3:
                 scoreJ3 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ3
+                joueurs.get(2).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
                 ajouterScore(nomJ3, scoreJ3, ligneJ3);      // Maj de la variable scores
                 updateFile(scores);                         // sauvegarde du nouveau score
                 //System.out.println(scoreJ3 + " " + bomb.getScoreJoueur());
                 break;
             case 4:
                 scoreJ4 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ4
+                joueurs.get(3).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
                 ajouterScore(nomJ4, scoreJ4, ligneJ4);      // Maj de la variable scores
                 updateFile(scores);                         // sauvegarde du nouveau score
                 //System.out.println(scoreJ4 + " " + bomb.getScoreJoueur());
