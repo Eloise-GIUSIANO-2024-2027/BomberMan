@@ -124,3 +124,21 @@ Button:hover {
     -fx-text-fill: red;
     -fx-effect: dropshadow(gaussian, darkred, 5, 0, 0, 0);
 }
+
+.text-field {
+    -fx-background-color: #AAAAAA; /* Couleur de fond sombre */
+    -fx-text-fill: #BBBBBB;       /* Couleur du texte gris clair */
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #808080; /* Couleur du texte d'aide */
+    -fx-border-color: #616161;    /* Couleur de la bordure */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Pseudo-classe pour le focus */
+.text-field:focused {
+    -fx-border-color: #BBBBBB; /* Bordure bleue au focus */
+    -fx-background-color: #3C3F41;
+}

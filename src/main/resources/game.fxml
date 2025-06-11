@@ -52,19 +52,19 @@
                 <HBox spacing="10" alignment="bottom_center">
                     <VBox>
                         <Label text="Nom Joueur 1 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ1"/>
+                        <TextField fx:id="saisiJ1" promptText="Entrez votre nom" />
                     </VBox>
                     <VBox>
                         <Label text="Nom Joueur 2 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ2"/>
+                        <TextField fx:id="saisiJ2" promptText="Entrez votre nom" />
                     </VBox>
                     <VBox>
                         <Label text="Nom Joueur 3 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ3"/>
+                        <TextField fx:id="saisiJ3" promptText="Entrez votre nom" />
                     </VBox>
                     <VBox>
                         <Label text="Nom Joueur 4 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ4"/>
+                        <TextField fx:id="saisiJ4" promptText="Entrez votre nom" />
                     </VBox>
                 </HBox>
                 <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>

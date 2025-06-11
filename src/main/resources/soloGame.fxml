@@ -48,7 +48,7 @@
                 <HBox spacing="10" alignment="bottom_center">
                     <VBox>
                         <Label text="Nom Joueur : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJoueur"/>
+                        <TextField fx:id="saisiJoueur" promptText="Entrez votre nom" />
                     </VBox>
                 </HBox>
                 <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>
