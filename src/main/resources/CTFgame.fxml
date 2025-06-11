@@ -45,7 +45,7 @@
             <VBox fx:id="gameArea" alignment="CENTER" spacing="5.0">
                 <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame" styleClass="start-button"/>
                 <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitlePause"/>
-                <ImageView fitHeight="200.0" fitWidth="750.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <ImageView fitHeight="150.0"  pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <image>
                         <Image url="@menu/claveir.png" /> </image>
                 </ImageView>
