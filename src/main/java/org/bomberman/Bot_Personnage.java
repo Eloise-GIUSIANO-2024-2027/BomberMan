@@ -6,41 +6,63 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import org.bomberman.entite.Bombe;
 import org.bomberman.entite.Bonus;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class Bot_Personnage extends PacMan_Personnage {
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
+public class Bot_Personnage extends Group {
+    private String direction = "bas";
+    private Rectangle rectangle = new Rectangle(48, 48);
+    private int gridX;
+    private int gridY;
+    private static final int CELL_SIZE = 50;
+    private Game game;
+    private boolean estVivant = true;
+    private int botId;
+    private int botNumber;// Identifiant unique pour chaque bot
+    private List<Bombe> listeBombesBot = new ArrayList<>();
+    private String theme = "default";
     private Random random = new Random();
     private String strategie = "AGGRESSIVE"; // AGGRESSIVE, DEFENSIVE, MIXED
     private int rayonDetection = 3; // Distance à laquelle le bot détecte le joueur
     private boolean enModePoursuiteJoueur = false;
-
-    // Cooldown pour éviter les actions trop répétitives
     private long dernierePlacementBombe = 0;
     private long derniereCollecteBonus = 0;
     private static final long COOLDOWN_BOMBE_BOT = 1000; // 2 secondes
     private static final long COOLDOWN_BONUS = 1000; // 1 seconde
 
-    public Bot_Personnage(Game game, int startX, int startY, int botNumber, int playerNumber, double vitesseX, double vitesseY) {
+    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) throws IOException {
+        this.game = game;
+        this.gridX = startX;
+        this.gridY = startY;
+        this.botId = botId;
+        this.botNumber = botNumber;
+        Path path = Paths.get("src/main/resources/data.txt");
+        System.out.println(Files.readString(path));
+        this.theme = Files.readString(path);
         super(game, startX, startY, playerNumber);
         this.vitesse = vitesseX;
 
-        // Changer l'apparence du bot
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(
-                getClass().getResourceAsStream("/character/idle-front-wix-" + botNumber + ".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
+        super.getChildren().add(rectangle);
+        updatePixelPosition();
     }
 
 
     public void agir(PacMan_Personnage joueurPrincipal, List<PacMan_Personnage> tousJoueurs,
                      GameGrid gameGrid, List<Bot_Personnage> autresBots) {
 
+
         if (!this.estVivant() || joueurPrincipal == null || !joueurPrincipal.estVivant()) {
             return; // Ne rien faire si mort ou pas de joueur à attaquer
-        }
+
 
         System.out.println("Bot " + getPlayerNumber() + " - Position: (" + getGridX() + "," + getGridY() + ") - Action en cours...");
 
@@ -48,7 +70,6 @@ public class Bot_Personnage extends PacMan_Personnage {
         if (chercherEtCollecterBonus()) {
             System.out.println("Bot " + getPlayerNumber() + " - Collecte de bonus");
             return;
-        }
 
         //  PRIORITÉ 2: Attaquer le joueur s'il est proche
         if (tentativeAttaqueJoueur(joueurPrincipal, gameGrid)) {
@@ -60,7 +81,6 @@ public class Bot_Personnage extends PacMan_Personnage {
         if (seRapprocherDuJoueur(joueurPrincipal)) {
             System.out.println("Bot " + getPlayerNumber() + " - Poursuite du joueur");
             return;
-        }
 
         //  PRIORITÉ 4: Mouvement aléatoire si rien d'autre à faire
         mouvementAleatoire();

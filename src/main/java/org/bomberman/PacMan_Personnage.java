@@ -14,6 +14,10 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Objects;
 import java.util.List;
@@ -26,8 +30,9 @@ public class PacMan_Personnage extends Group  {
     private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
     protected Game game;
     private boolean estVivant = true;
+
     protected int playerNumber =1;// Initialise le joueur comme vivant par défaut
-    private String theme = "wix";
+    private String theme = "default";
     public double vitesse = 0.1;
     public boolean bonusRayonActif = false;
 
@@ -45,6 +50,7 @@ public class PacMan_Personnage extends Group  {
     public double getVitesse() {
         return vitesse;
     }
+
 
     // Pour le mode Capture The Flag
     private Drapeau monDrapeau; // Le drapeau appartenant à ce joueur
@@ -73,11 +79,13 @@ public class PacMan_Personnage extends Group  {
         System.out.println("Bonus Rayon consommé.");
     }
 
-    public PacMan_Personnage(Game game, int startX, int startY,int playerNumber) {
+    public PacMan_Personnage(Game game, int startX, int startY,int playerNumber) throws IOException {
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
         this.playerNumber = playerNumber;
+        Path path = Paths.get("src/main/resources/data.txt");
+        this.theme = Files.readString(path);
 
         rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-"+theme+"-"+this.playerNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(this.rectangle);

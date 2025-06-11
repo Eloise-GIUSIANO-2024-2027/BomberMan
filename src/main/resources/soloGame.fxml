@@ -4,6 +4,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bomberman.soloGameController">
 
     <top>
@@ -41,7 +43,13 @@
         <StackPane fx:id="gameContainer" alignment="CENTER">
             <!-- Jeu actif -->
             <VBox fx:id="gameAreaStackPane" alignment="CENTER" spacing="5.0">
-                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
+                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame" styleClass="start-button"/>
+                <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
+                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>
+                <ImageView fitHeight="200.0" fitWidth="750.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <image>
+                        <Image url="@menu/clavierSolo.png" /> </image>
+                </ImageView>
             </VBox>
 
             <!-- NOUVEAU: Label de statut dynamique (Victoire/Défaite) -->
@@ -61,6 +69,11 @@
                 <Button fx:id="resumeGameButton" text="REPRENDRE" onAction="#resumeGame" />
                 <Button fx:id="backToMainMenuButton" text="RETOUR AU MENU" onAction="#retourMenu" />
                 <Button fx:id="exitButton" text="QUITTER LE JEU" onAction="#quittertout"/>
+                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitlePause"/>
+                <ImageView fitHeight="200.0" fitWidth="750.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <image>
+                        <Image url="@menu/clavierSolo.png" /> </image>
+                </ImageView>
             </VBox>
 
             <!-- MENU DE FIN avec Label dynamique -->

@@ -382,7 +382,9 @@ public class CTFcontroller {
     }
 
     @FXML
+
     public void replayGame() {
+
         joueurs.clear();
         bot.clear();
         listeBombes.clear();

@@ -32,7 +32,8 @@ public class soloGameController {
     private boolean isPaused = false;
 
     @FXML
-    private VBox gameAreaStackPane;
+
+    private VBox gameAreaStackPane; // Référence au  FXML
     Game game = new Game();
     GameGrid gameGridDisplay = new GameGrid(game);
 
@@ -59,9 +60,12 @@ public class soloGameController {
     private List<Bot_Personnage> bot = new ArrayList<>();
     private List<Bombe> listeBombes = new ArrayList<>();
 
+    public soloGameController() throws IOException {
+    }
+
     @FXML
-    public void startGame() {
-        lancerTimer();
+    public void startGame() throws IOException {
+        lancerTimer(); // debut du timer
         lancerTimerBots();
 
         gameGridDisplay = new GameGrid(game);
@@ -376,7 +380,12 @@ public class soloGameController {
     }
 
     @FXML
-    public void replayGame() {
+    public void replayGame() throws IOException {
+        // Réinitialiser les listes
+        joueurs.clear();
+        bot.clear();
+
+        // Réinitialiser le timer
         if (gameTimer != null) {
             gameTimer.stop();
         }

@@ -33,6 +33,8 @@ public class gameController {
     private VBox pauseMenuContainer;
     @FXML
     private VBox finMenuContainer;
+    @FXML
+    private Label messageFinPartieLabel;
 
     private Timeline gameTimer;
     private int tempsRestant = 120;
@@ -46,6 +48,8 @@ public class gameController {
     @FXML
     private VBox gameArea;
     Game game = new Game();
+
+    private boolean partieTerminee = false;
 
     private GameGrid gameGridDisplay;
     @FXML
@@ -106,8 +110,67 @@ public class gameController {
     }
 
 
+    private void lancerTimer() {
+        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            tempsRestant--;
+            int minutes = tempsRestant / 60;
+            int secondes = tempsRestant % 60;
+            String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
+
+            // Met à jour le texte du Label dans l'interface
+            Platform.runLater(() -> timerLabel.setText(tempsFormate));
+            verifierFinDePartie();
+
+            if (tempsRestant <= 0) {
+                gameTimer.stop();
+                finDePartie();
+                timerLabel.setText("TIMEUR : 00:00");
+            }
+        }));
+        gameTimer.setCycleCount(Timeline.INDEFINITE);
+        gameTimer.play();
+    }
+
+    private void verifierFinDePartie() {
+        long joueursEnVie = joueurs.stream().filter(PacMan_Personnage::estVivant).count();
+
+        for (PacMan_Personnage joueur : joueurs) {
+            if (joueursEnVie <= 1) {
+                if (gameTimer != null) {
+                    gameTimer.stop();
+                    finDePartie("Le joueur " + joueur.getPlayerNumber() + " a GAGNE LA PARTIE !");
+
+                }
+            }
+        }
+    }
+
+
+    private void finDePartie() {
+        System.out.println("Temps écoulé ! Partie terminée.");
+        Platform.runLater(() -> {
+            // afficher un message ou recharger la scène
+            finMenuContainer.setVisible(true);
+            finMenuContainer.setManaged(true);
+        });
+    }
+
+    private void finDePartie(String message) {
+        if (partieTerminee) return; // Empêcher la fin de partie multiple
+        partieTerminee = true;
+
+        if (gameTimer != null) {
+            gameTimer.stop(); // Arrêter le timer
+        }
+        Platform.runLater(() -> {
+            messageFinPartieLabel.setText(message); // Affiche le message de fin de partie
+            finMenuContainer.setVisible(true);
+            finMenuContainer.setManaged(true);
+        });
+    }
+
     @FXML
-    public void replayGame() {
+    public void replayGame() throws IOException {
         // Réinitialiser les listes de joueurs
         joueurs.clear();
         bot.clear(); // Même s'il n'y a pas de bots ici, garde-le pour la cohérence

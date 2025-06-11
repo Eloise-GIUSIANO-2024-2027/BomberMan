@@ -40,8 +40,14 @@
     <center>
         <StackPane fx:id="gameContainer" alignment="CENTER">
             <!-- Jeu actif -->
-            <VBox fx:id="gameArea" alignment="CENTER">
-                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
+            <VBox fx:id="gameArea" alignment="CENTER" spacing="5.0">
+                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame" styleClass="start-button"/>
+                <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
+                <Label text="LES COMMANDES DE JEU CAPTURE THE FLAG" styleClass="commandeTitle"/>
+                <Label text="Joueur 1 (En haut a gauche) = T: haut, G: bas, F: gauche, H: droite, U: Bombe" styleClass="commande"/>
+                <Label text="Joueur 2 (En bas a droite) = Z: haut, S: bas, Q: gauche, D: droite, A: Bombe" styleClass="commande"/>
+                <Label text="Joueur 3 (En haut a droite) = O: haut, L: bas, K: gauche, M: droite, P: Bombe" styleClass="commande"/>
+                <Label text="Joueur 4 (En bas a gauche) = 5: haut, 2: bas, 1: gauche, 3: droite, 4: Bombe" styleClass="commande"/>
             </VBox>
             <!-- Menu pause transparent -->
             <VBox fx:id="pauseMenuContainer" alignment="CENTER" spacing="20.0"
@@ -50,12 +56,18 @@
                 <Button text="REPRENDRE" onAction="#resumeGame" />
                 <Button text="RETOUR AU MENU" onAction="#retourMenu" />
                 <Button text="QUITTER LE JEU" onAction="#quittertout"/>
+
+                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>
+                <Label text="Joueur 1 (En haut a gauche) = T: haut, G: bas, F: gauche, H: droite, U: Bombe" styleClass="commande"/>
+                <Label text="Joueur 2 (En bas a droite) = Z: haut, S: bas, Q: gauche, D: droite, A: Bombe" styleClass="commande"/>
+                <Label text="Joueur 3 (En haut a droite) = O: haut, L: bas, K: gauche, M: droite, P: Bombe" styleClass="commande"/>
+                <Label text="Joueur 4 (En bas a gauche) = 5: haut, 2: bas, 1: gauche, 3: droite, 4: Bombe" styleClass="commande"/>
             </VBox>
             <!-- Menu pause fin -->
             <VBox fx:id="finMenuContainer" alignment="CENTER" spacing="20.0"
                   styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
                 <Label text="~ FIN ~" styleClass="title"/>
-                <Label fx:id="messageFinPartieLabel" text="Le vainqueur est : " styleClass="vainqueur"/>
+                <Label fx:id="messageFinPartieLabel" text=" " styleClass="vainqueur"/>
                 <Button  text="REJOUER" onAction="#replayGame" />
                 <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
                 <Button  text="QUITTER LE JEU" onAction="#quittertout"/>

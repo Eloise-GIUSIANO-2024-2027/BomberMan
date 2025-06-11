@@ -11,8 +11,19 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MenuController {
+
+    private String theme = "default";
+
+    public MenuController() throws IOException {
+        Path path = Paths.get("src/main/resources/data.txt");
+        this.theme = Files.readString(path);
+    }
+
     // Méthode appelée lorsque le bouton "NORMAL GAME" est cliqué
     @FXML
     private void startMultiGame(ActionEvent event) {
@@ -24,11 +35,15 @@ public class MenuController {
             Parent gameRoot = loader.load();
             Scene gameScene = new Scene(gameRoot, 820, 650);
 
-            String cssPath = getClass().getResource("/styleGame.css").toExternalForm();
-            if (cssPath != null) {
-                gameScene.getStylesheets().add(cssPath);
-            } else {
-                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+            String cssdef = getClass().getResource("/styleGame.css").toExternalForm();
+            String csswix = getClass().getResource("/styleWix.css").toExternalForm();
+
+            MenuController menu = new MenuController();
+            System.out.println(menu.theme);
+            if (menu.theme.equals("default")) {
+                gameScene.getStylesheets().add(cssdef);
+            } else if (menu.theme.equals("wix")) {
+                gameScene.getStylesheets().add(csswix);
             }
 
             // Récupère le stage actuel
@@ -43,7 +58,7 @@ public class MenuController {
         }
     }
 
-    // Méthode appelée lorsque le bouton "BATTLE MODE" est cliqué
+        // Méthode appelée lorsque le bouton "BATTLE MODE" est cliqué
     @FXML
     private void startSoloMode(ActionEvent event) {
         System.out.println("Démarrer le mode Solo !");
@@ -53,11 +68,15 @@ public class MenuController {
             Parent gameRoot = loader.load();
             Scene gameScene = new Scene(gameRoot, 820, 650);
 
-            String cssPath = getClass().getResource("/styleGame.css").toExternalForm();
-            if (cssPath != null) {
-                gameScene.getStylesheets().add(cssPath);
-            } else {
-                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+            String cssdef = getClass().getResource("/styleGame.css").toExternalForm();
+            String csswix = getClass().getResource("/styleWix.css").toExternalForm();
+
+            MenuController menu = new MenuController();
+            System.out.println(menu.theme);
+            if (menu.theme.equals("default")) {
+                gameScene.getStylesheets().add(cssdef);
+            } else if (menu.theme.equals("wix")) {
+                gameScene.getStylesheets().add(csswix);
             }
 
             // Récupère le stage actuel
@@ -81,11 +100,15 @@ public class MenuController {
             Parent gameRoot = loader.load();
             Scene gameScene = new Scene(gameRoot, 820, 650);
 
-            String cssPath = getClass().getResource("/styleGame.css").toExternalForm();
-            if (cssPath != null) {
-                gameScene.getStylesheets().add(cssPath);
-            } else {
-                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+            String cssdef = getClass().getResource("/styleGame.css").toExternalForm();
+            String csswix = getClass().getResource("/styleWix.css").toExternalForm();
+
+            MenuController menu = new MenuController();
+            System.out.println(menu.theme);
+            if (menu.theme.equals("default")) {
+                gameScene.getStylesheets().add(cssdef);
+            } else if (menu.theme.equals("wix")) {
+                gameScene.getStylesheets().add(csswix);
             }
 
             // Récupère le stage actuel

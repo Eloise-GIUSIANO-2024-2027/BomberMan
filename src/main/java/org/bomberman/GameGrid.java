@@ -9,6 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class GameGrid extends GridPane {
@@ -18,7 +22,7 @@ public class GameGrid extends GridPane {
     private Pane entityLayer; // Couche pour les entités (personnages, bombes)
     private String theme = "default";
 
-    public GameGrid(Game game) {
+    public GameGrid(Game game) throws IOException {
         this.game = game;
         grid = game.getGrid();
 
@@ -26,6 +30,9 @@ public class GameGrid extends GridPane {
         this.setAlignment(Pos.CENTER);
         this.setHgap(2);
         this.setVgap(2);
+        Path path = Paths.get("src/main/resources/data.txt");
+        System.out.println(Files.readString(path));
+        this.theme = Files.readString(path);
 
         // Créer une couche pour les entités
         entityLayer = new Pane();

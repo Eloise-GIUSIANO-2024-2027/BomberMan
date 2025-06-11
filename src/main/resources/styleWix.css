@@ -1,5 +1,5 @@
 .root {
-    -fx-background-color: #062B16; /* Couleur de fond sombre pour le jeu/menu */
+    -fx-background-color: #FF5AAC; /* Couleur de fond sombre pour le jeu/menu */
     -fx-font-family: "Press Start 2P Regular"; /* Police par défaut */
 }
 
@@ -13,7 +13,7 @@
 
 .controls {
     -fx-font-size: 12px;
-    -fx-text-fill: #AAAAAA;
+    -fx-text-fill: #A84854;
     -fx-alignment: CENTER_LEFT;
     -fx-font-family: "Press Start 2P Regular";
 }
@@ -68,22 +68,21 @@ Button:hover {
 
 .commandeTitle{
     -fx-font-size: 12;
-    -fx-text-fill: #AAAAAA;
+    -fx-text-fill: #A84854;
 
 }
 
 .commande{
     -fx-font-size: 10;
-    -fx-text-fill: #AAAAAA;
+    -fx-text-fill: #A84854;
 }
 
 .commandeTitlePause{
     -fx-font-size: 12;
-    -fx-text-fill: #CECECE;
+    -fx-text-fill: #AAAAAA;
 
 }
-
 .commandePause{
     -fx-font-size: 10;
-    -fx-text-fill: #CECECE;
+    -fx-text-fill: #AAAAAA;
 }

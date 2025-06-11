@@ -9,10 +9,7 @@ import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class ThemeController {
     @FXML
@@ -43,7 +40,22 @@ public class ThemeController {
             System.err.println("Erreur lors du chargement du menu : " + e.getMessage());
         }
     }
+    public void themeChangeDefault(ActionEvent event) throws IOException {
+        try (FileWriter writer = new FileWriter(new File("src/main/resources/data.txt"))) {
+            writer.write("default");
+        } catch (IOException e) {
+            System.err.println("Erreur lors de l'écriture : " + e.getMessage());
+            throw e;
+        }
 
-    public void themeChange(ActionEvent event) throws FileNotFoundException {
+    }
+    public void themeChangeWix(ActionEvent event) throws IOException {
+        try (FileWriter writer = new FileWriter(new File("src/main/resources/data.txt"))) {
+            writer.write("wix");
+        } catch (IOException e) {
+            System.err.println("Erreur lors de l'écriture : " + e.getMessage());
+            throw e;
+        }
+
     }
 }

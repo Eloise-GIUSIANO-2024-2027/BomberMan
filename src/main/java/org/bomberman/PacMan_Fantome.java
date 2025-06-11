@@ -4,6 +4,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
+import java.io.IOException;
+
 public class PacMan_Fantome extends PacMan_Personnage {
 
     private final Rectangle basCorps;
@@ -15,7 +17,7 @@ public class PacMan_Fantome extends PacMan_Personnage {
     private final Circle retineDroite;
 
 
-    public PacMan_Fantome(Game game, int startX, int startY,int playerNumber) {
+    public PacMan_Fantome(Game game, int startX, int startY,int playerNumber) throws IOException {
         super(game, startX, startY,playerNumber);
         basCorps = new Rectangle(0, 10, 20, 10);
         basCorps.setFill(Color.BLUE);
