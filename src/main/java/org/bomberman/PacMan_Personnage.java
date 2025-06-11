@@ -94,7 +94,7 @@ public class PacMan_Personnage extends Group  {
         updatePixelPosition();
     }
 
-    private void updatePixelPosition() {
+    public void updatePixelPosition() {
         double newX = gridX * CELL_SIZE;
         double newY = gridY * CELL_SIZE;
 

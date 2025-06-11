@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Bot_Personnage extends Group {
+public class Bot_Personnage extends PacMan_Personnage {
     private String direction = "bas";
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX;
@@ -37,8 +37,10 @@ public class Bot_Personnage extends Group {
     private long derniereCollecteBonus = 0;
     private static final long COOLDOWN_BOMBE_BOT = 1000; // 2 secondes
     private static final long COOLDOWN_BONUS = 1000; // 1 seconde
+    private PacMan_Personnage joueur;
 
     public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) throws IOException {
+        super(game, startX, startY, botNumber);
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
@@ -47,8 +49,6 @@ public class Bot_Personnage extends Group {
         Path path = Paths.get("src/main/resources/data.txt");
         System.out.println(Files.readString(path));
         this.theme = Files.readString(path);
-        super(game, startX, startY, playerNumber);
-        this.vitesse = vitesseX;
 
         rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
@@ -62,14 +62,12 @@ public class Bot_Personnage extends Group {
 
         if (!this.estVivant() || joueurPrincipal == null || !joueurPrincipal.estVivant()) {
             return; // Ne rien faire si mort ou pas de joueur à attaquer
-
-
-        System.out.println("Bot " + getPlayerNumber() + " - Position: (" + getGridX() + "," + getGridY() + ") - Action en cours...");
-
+        }
         //  PRIORITÉ 1: Collecter des bonus si disponibles à proximité
         if (chercherEtCollecterBonus()) {
             System.out.println("Bot " + getPlayerNumber() + " - Collecte de bonus");
             return;
+        }
 
         //  PRIORITÉ 2: Attaquer le joueur s'il est proche
         if (tentativeAttaqueJoueur(joueurPrincipal, gameGrid)) {
@@ -80,13 +78,14 @@ public class Bot_Personnage extends Group {
         // PRIORITÉ 3: Se rapprocher du joueur
         if (seRapprocherDuJoueur(joueurPrincipal)) {
             System.out.println("Bot " + getPlayerNumber() + " - Poursuite du joueur");
-            return;
+            return;}
 
-        //  PRIORITÉ 4: Mouvement aléatoire si rien d'autre à faire
-        mouvementAleatoire();
+            //  PRIORITÉ 4: Mouvement aléatoire si rien d'autre à faire
+            mouvementAleatoire();
         System.out.println("Bot " + getPlayerNumber() + " - Mouvement aléatoire");
-    }
 
+
+    }
 
     private boolean tentativeAttaqueJoueur(PacMan_Personnage joueur, GameGrid gameGrid) {
         int distanceX = Math.abs(this.getGridX() - joueur.getGridX());

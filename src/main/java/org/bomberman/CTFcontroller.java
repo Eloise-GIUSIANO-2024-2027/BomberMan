@@ -383,7 +383,7 @@ public class CTFcontroller {
 
     @FXML
 
-    public void replayGame() {
+    public void replayGame() throws IOException {
 
         joueurs.clear();
         bot.clear();

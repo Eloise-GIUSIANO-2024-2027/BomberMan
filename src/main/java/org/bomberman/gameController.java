@@ -123,7 +123,7 @@ public class gameController {
 
             if (tempsRestant <= 0) {
                 gameTimer.stop();
-                finDePartie();
+                partieTerminee = true;
                 timerLabel.setText("TIMEUR : 00:00");
             }
         }));
@@ -145,19 +145,8 @@ public class gameController {
         }
     }
 
-
-    private void finDePartie() {
-        System.out.println("Temps écoulé ! Partie terminée.");
-        Platform.runLater(() -> {
-            // afficher un message ou recharger la scène
-            finMenuContainer.setVisible(true);
-            finMenuContainer.setManaged(true);
-        });
-    }
-
     private void finDePartie(String message) {
         if (partieTerminee) return; // Empêcher la fin de partie multiple
-        partieTerminee = true;
 
         if (gameTimer != null) {
             gameTimer.stop(); // Arrêter le timer
@@ -299,37 +288,7 @@ public class gameController {
     }
 
 
-    private void lancerTimer() {
-        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            tempsRestant--;
-            int minutes = tempsRestant / 60;
-            int secondes = tempsRestant % 60;
-            String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
 
-            // Met à jour le texte du Label dans l'interface
-            Platform.runLater(() -> timerLabel.setText(tempsFormate));
-            verifierFinDePartie();
-
-            if (tempsRestant <= 0) {
-                gameTimer.stop();
-                finDePartie();
-                timerLabel.setText("TIMEUR : 00:00");
-            }
-        }));
-        gameTimer.setCycleCount(Timeline.INDEFINITE);
-        gameTimer.play();
-    }
-
-    private void verifierFinDePartie() {
-        long joueursEnVie = joueurs.stream().filter(PacMan_Personnage::estVivant).count();
-
-        if (joueursEnVie <= 1) {
-            if (gameTimer != null) {
-                gameTimer.stop();
-            }
-            finDePartie();
-        }
-    }
 
     private void togglePause() {
         paused = !paused;
@@ -349,14 +308,14 @@ public class gameController {
     }
 
 
-    private void finDePartie() {
-        System.out.println("Temps écoulé ! Partie terminée.");
-        Platform.runLater(() -> {
-            // afficher un message ou recharger la scène
-            finMenuContainer.setVisible(true);
-            finMenuContainer.setManaged(true);
-        });
-    }
+//    private void finDePartie() {
+//        System.out.println("Temps écoulé ! Partie terminée.");
+//        Platform.runLater(() -> {
+//            // afficher un message ou recharger la scène
+//            finMenuContainer.setVisible(true);
+//            finMenuContainer.setManaged(true);
+//        });
+//    }
 
 
     private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {

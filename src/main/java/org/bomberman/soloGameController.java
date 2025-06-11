@@ -75,9 +75,9 @@ public class soloGameController {
 
         //Acteurs du jeu
         PacMan_Personnage pacman = new Pacman(game, 12, 0, 1);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2, 1.0, 1.0);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2, 3, 1.0, 1.0);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4, 1.0, 1.0);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2, 3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4);
 
         joueurs.add(pacman);
         bot.add(bot1);
@@ -418,9 +418,9 @@ public class soloGameController {
         gameAreaStackPane.getChildren().add(gameGridDisplay);
 
         PacMan_Personnage pacman = new Pacman(game, 0, 0, 1);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2, 1.0, 1.0);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2, 3, 1.0, 1.0);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4, 1.0, 1.0);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2, 3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4);
 
         joueurs.add(pacman);
         bot.add(bot1);
