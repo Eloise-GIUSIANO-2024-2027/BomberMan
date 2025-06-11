@@ -1,0 +1,66 @@
+/* Fichier CSS pour la page des règles (regles.css) */
+
+/* 1. Arrière-plan de la page (AnchorPane) */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #3f7de8, #1a4a9c); /* Bleu du ciel vers un bleu plus foncé/grisâtre */
+}
+
+
+/* Style du titre principal "Les règles et commandes" */
+.bigTitre { /* Ciblage spécifique par le texte si besoin */
+    -fx-font-family: "Press Start 2P" ;
+    -fx-font-size: 20px; /* <<< Changé : Légèrement augmenté (anciennement 14px) */
+    -fx-text-fill: #FFFFFF; /* Blanc pur */
+}
+
+/* Style du titre principal "Les règles et commandes" */
+.bigTitreFond { /* Ciblage spécifique par le texte si besoin */
+    -fx-effect: dropshadow(gaussian,rgba(112,114,110,0.75), 10, 0.2, 2, 5); /* Ombre plus prononcée */
+    -fx-background-color: #1a4a9c;
+}
+
+Button {
+    -fx-background-color: #1a4a9c; /* Rouge-orangé vibrant, comme une bombe ou le feu */
+    -fx-text-fill: white;
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 20px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */
+    -fx-padding: 18px 22px; /* Ajuste le padding pour la nouvelle taille du texte */
+    -fx-border-color: #3f7de8; /* Bordure orange plus claire */
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2); /* Ombre légère */
+}
+
+Button:hover {
+    -fx-background-color: #FF6347; /* Changement de couleur au survol */
+}
+
+Button:pressed {
+    -fx-background-color: #CC3300; /* Couleur quand le bouton est pressé */
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2); /* Effet d'ombre interne */
+}
+
+
+/* 3. Style du bouton "RETOUR" (start-button) */
+.start-button {
+    -fx-background-color: #FF7000; /* Rouge-orangé vibrant, comme une bombe ou le feu */
+    -fx-text-fill: white;
+    -fx-font-family: "Press Start 2P", "Consolas", monospace;
+    -fx-font-size: 6px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */
+    -fx-padding: 9px 13px; /* Ajuste le padding pour la nouvelle taille du texte */
+    -fx-border-color: #FFA500; /* Bordure orange plus claire */
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2); /* Ombre légère */
+}
+
+.start-button:hover {
+    -fx-background-color: #FF6347; /* Changement de couleur au survol */
+}
+
+.start-button:pressed {
+    -fx-background-color: #CC3300; /* Couleur quand le bouton est pressé */
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2); /* Effet d'ombre interne */
+}
