@@ -10,6 +10,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <AnchorPane prefHeight="630.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bomberman.RegleController" stylesheets="@regles.css">
     <HBox alignment="CENTER" prefHeight="102.0" prefWidth="800.0" styleClass="bigTitreFond" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
@@ -35,12 +37,12 @@
         </children>
     </HBox>
 
-    <VBox alignment="TOP_CENTER" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="102.0">
+    <VBox alignment="TOP_CENTER" spacing="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="102.0">
         <padding>
             <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
         </padding>
 
-        <VBox alignment="TOP_CENTER" spacing="0.0" styleClass="vbox-section">
+        <VBox alignment="TOP_CENTER" spacing="3.0" styleClass="vbox-section">
             <padding>
                 <Insets top="50.0" bottom="50.0" />
             </padding>
@@ -55,7 +57,7 @@
             </Label>
         </VBox>
 
-        <VBox alignment="TOP_CENTER" spacing="0.0" styleClass="vbox-section">
+        <VBox alignment="TOP_CENTER" spacing="3.0" styleClass="vbox-section">
             <padding>
                 <Insets top="0.0" bottom="0.0" />
             </padding>
@@ -80,9 +82,13 @@
             </padding>
             <Label alignment="TOP_LEFT" prefWidth="699.0"  text="CAPTURE DE FLAG :" styleClass="titre" />
             <Label wrapText="true" prefWidth="760.0" >
-                <text>Chaque joueur aura un "drapeau" qu'il devra protéger. Un joueur gagne s'il récupère en premier le drapeau des autres joueurs (sans se faire tuer). Les joueurs éliminés peuvent continuer à poser des bombes, et donc éliminer d'autres joueurs ayant toujours leur drapeau. La position initiale du drapeau pourra être défini par chaque joueur en début de partie.</text>
+                <text>Chaque joueur aura un "drapeau" qu'il devra protéger. Un joueur gagne s'il récupère en premier le drapeau des autres joueurs (sans se faire tuer). Les joueurs éliminés peuvent continuer à poser des bombes, et donc éliminer d'autres joueurs ayant toujours leur drapeau.</text>
             </Label>
         </VBox>
+        <ImageView fitHeight="175.0"  pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <image>
+                <Image url="@menu/claveir.png" /> </image>
+        </ImageView>
 
     </VBox>
 
