@@ -22,7 +22,7 @@
 Button {
     -fx-background-color: transparent;
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
     -fx-padding: 10px 10px;
     -fx-cursor: hand;
     -fx-font-family: "Press Start 2P Regular";
@@ -62,8 +62,9 @@ Button:hover {
 }
 
 .vainqueur {
-    fx-font-size: 20;
+    -fx-font-size: 26;
     -fx-text-fill: white;
+    -fx-font-weight: bold
 }
 
 .commandeTitle{
@@ -86,4 +87,40 @@ Button:hover {
 .commandePause{
     -fx-font-size: 10;
     -fx-text-fill: #CECECE;
+}
+
+
+/* Styles pour le label principal de fin de partie (gameStatusLabel) */
+.game-status-label {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 40px;
+    -fx-background-radius: 20px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, black, 20, 0, 0, 0);
+}
+
+.game-status-label.victoire {
+    -fx-background-color: linear-gradient(to bottom, #228B22, #32CD32); /* Vert doré */
+}
+
+.game-status-label.defaite {
+    -fx-background-color: linear-gradient(to bottom, #DC143C, #B22222); /* Rouge */
+}
+
+/* Styles pour le label de résultat dans le menu de fin (resultLabel) */
+.result-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.result-label.victoire {
+    -fx-text-fill: gold;
+    -fx-effect: dropshadow(gaussian, green, 5, 0, 0, 0);
+}
+
+.result-label.defaite {
+    -fx-text-fill: red;
+    -fx-effect: dropshadow(gaussian, darkred, 5, 0, 0, 0);
 }

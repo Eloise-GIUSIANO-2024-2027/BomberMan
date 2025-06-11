@@ -56,6 +56,5 @@ public class ThemeController {
             System.err.println("Erreur lors de l'écriture : " + e.getMessage());
             throw e;
         }
-
     }
 }

@@ -61,20 +61,9 @@
                         <Image url="@menu/clavierSolo.png" /> </image>
                 </ImageView>
             </VBox>
-
-            <!-- NOUVEAU: Label de statut dynamique (Victoire/Défaite) -->
-            <Label fx:id="gameStatusLabel"
-                   text="GAME OVER"
-                   visible="false"
-                   managed="false"
-                   style="-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: white;
-                          -fx-padding: 40px; -fx-background-radius: 20px; -fx-alignment: center;
-                          -fx-effect: dropshadow(gaussian, black, 20, 0, 0, 0);"
-                   StackPane.alignment="CENTER" />
-
             <!-- Menu pause transparent -->
             <VBox fx:id="pauseMenuContainer" alignment="CENTER" spacing="20.0"
-                  styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
+                  styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.6);">
                 <Label text="~ PAUSE ~" styleClass="title"/>
                 <Button fx:id="resumeGameButton" text="REPRENDRE" onAction="#resumeGame" />
                 <Button fx:id="backToMainMenuButton" text="RETOUR AU MENU" onAction="#retourMenu" />
@@ -88,19 +77,14 @@
 
             <!-- MENU DE FIN avec Label dynamique -->
             <VBox fx:id="finMenuContainer" alignment="CENTER" spacing="20.0"
-                  styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.8);">
+                  styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.6);">
                 <Label text="~ FIN DE PARTIE ~" styleClass="title"/>
 
                 <!--  Label qui change selon victoire/défaite -->
-                <Label fx:id="resultLabel" text="Résultat de la partie" styleClass="vainqueur"
-                       style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-
-                <Button text="REJOUER" onAction="#replayGame"
-                        style="-fx-font-size: 16px; -fx-padding: 10px 20px;"/>
-                <Button text="RETOUR AU MENU" onAction="#retourMenu"
-                        style="-fx-font-size: 16px; -fx-padding: 10px 20px;"/>
-                <Button text="QUITTER LE JEU" onAction="#quittertout"
-                        style="-fx-font-size: 16px; -fx-padding: 10px 20px;"/>
+                <Label fx:id="resultLabel" text="Résultat de la partie" styleClass="vainqueur"/>
+                <Button text="REJOUER" onAction="#replayGame"/>
+                <Button text="RETOUR AU MENU" onAction="#retourMenu"/>
+                <Button text="QUITTER LE JEU" onAction="#quittertout"/>
             </VBox>
         </StackPane>
     </center>

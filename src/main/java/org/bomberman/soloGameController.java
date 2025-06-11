@@ -41,12 +41,13 @@ public class soloGameController {
     private boolean isPaused = false;
 
     @FXML
-    private VBox gameAreaStackPane; // Référence au StackPane dans FXML
+
+    private VBox gameAreaStackPane; // Référence au  FXML
     Game game = new Game();
     GameGrid gameGridDisplay = new GameGrid(game);
 
     @FXML
-    private Button startButton; // Référence au bouton démarrer
+    private Button startButton;
     @FXML
     private Label timerLabel;
     @FXML
@@ -86,7 +87,6 @@ public class soloGameController {
     public soloGameController() throws IOException {
     }
 
-
     @FXML
     public void startGame() throws URISyntaxException, IOException {
         lancerTimer(); // debut du timer
@@ -109,10 +109,8 @@ public class soloGameController {
         bot.add(bot3);
 
         gameGridDisplay.getChildren().addAll(pacman, bot1, bot2, bot3);
-        // Donne le focus à gameGridDisplay pour recevoir les touches
         gameGridDisplay.requestFocus();
 
-        // Ajoute le gestionnaire de touches sur la scène
         Scene scene = gameAreaStackPane.getScene();
         if (scene != null) {
             scene.setOnKeyPressed(event -> {
@@ -121,7 +119,6 @@ public class soloGameController {
                 }
 
                 if (!isPaused) {
-                    // Appelle ta méthode de déplacement
                     handlePlayerMovement(event, pacman);
                     verifierFinDePartie();
                 }
@@ -225,6 +222,7 @@ public class soloGameController {
 
         pauseMenuContainer.setVisible(isPaused);
         pauseMenuContainer.setManaged(isPaused);
+
         if (isPaused) {
             if (gameTimer != null) {
                 gameTimer.pause();
@@ -252,7 +250,6 @@ public class soloGameController {
         }
 
         try {
-            // Charger le FXML du menu
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
             Parent menuRoot = loader.load();
             Scene menuScene = new Scene(menuRoot, 820, 650);
@@ -309,7 +306,6 @@ public class soloGameController {
             int secondes = tempsRestant % 60;
             String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
 
-            // Met à jour le texte du Label dans l'interface
             Platform.runLater(() -> timerLabel.setText(tempsFormate));
             verifierFinDePartie();
 
@@ -391,39 +387,30 @@ public class soloGameController {
             gameStatusLabel.setVisible(true);
             gameStatusLabel.setManaged(true);
 
+            // Appliquer la classe de base
+            gameStatusLabel.getStyleClass().add("game-status-label");
+
             if (victoire) {
-                // Style pour la victoire (vert doré)
-                gameStatusLabel.setStyle(
-                        "-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: white; " +
-                                "-fx-background-color: linear-gradient(to bottom, #228B22, #32CD32); " +
-                                "-fx-padding: 40px; -fx-background-radius: 20px; -fx-alignment: center; " +
-                                "-fx-effect: dropshadow(gaussian, black, 20, 0, 0, 0);"
-                );
+                gameStatusLabel.getStyleClass().remove("defaite"); // S'assurer que l'autre classe est retirée
+                gameStatusLabel.getStyleClass().add("victoire");
             } else {
-                // Style pour la défaite (rouge)
-                gameStatusLabel.setStyle(
-                        "-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: white; " +
-                                "-fx-background-color: linear-gradient(to bottom, #DC143C, #B22222); " +
-                                "-fx-padding: 40px; -fx-background-radius: 20px; -fx-alignment: center; " +
-                                "-fx-effect: dropshadow(gaussian, black, 20, 0, 0, 0);"
-                );
+                gameStatusLabel.getStyleClass().remove("victoire"); // S'assurer que l'autre classe est retirée
+                gameStatusLabel.getStyleClass().add("defaite");
             }
         }
 
         // Configuration du label dans le menu de fin
         if (resultLabel != null) {
+            resultLabel.getStyleClass().add("result-label"); // Appliquer la classe de base
+
             if (victoire) {
                 resultLabel.setText("FÉLICITATIONS ! ");
-                resultLabel.setStyle(
-                        "-fx-font-size: 32px; -fx-font-weight: bold; " +
-                                "-fx-text-fill: gold; -fx-effect: dropshadow(gaussian, green, 5, 0, 0, 0);"
-                );
+                resultLabel.getStyleClass().remove("defaite");
+                resultLabel.getStyleClass().add("victoire");
             } else {
                 resultLabel.setText(" GAME OVER ");
-                resultLabel.setStyle(
-                        "-fx-font-size: 32px; -fx-font-weight: bold; " +
-                                "-fx-text-fill: red; -fx-effect: dropshadow(gaussian, darkred, 5, 0, 0, 0);"
-                );
+                resultLabel.getStyleClass().remove("victoire");
+                resultLabel.getStyleClass().add("defaite");
             }
         }
     }
@@ -462,23 +449,19 @@ public class soloGameController {
         tempsRestant = 120;
         timerLabel.setText("TIMEUR : 02:00");
 
-        // Masquer le menu de fin
         finMenuContainer.setVisible(false);
         finMenuContainer.setManaged(false);
 
-        // Réinitialiser le jeu
         game = new Game();
         gameGridDisplay = new GameGrid(game);
 
-        // Nettoyer l'affichage
         gameAreaStackPane.getChildren().clear();
         gameAreaStackPane.getChildren().add(gameGridDisplay);
 
-        // Créer les entités
-        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1,2);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2,3);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3,4);
+        PacMan_Personnage pacman = new Pacman(game, 0, 0, 1);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2, 3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4);
 
         joueurs.add(pacman);
         bot.add(bot1);
@@ -487,7 +470,6 @@ public class soloGameController {
 
         gameGridDisplay.getChildren().addAll(pacman, bot1, bot2, bot3);
 
-        // Focus et écouteur clavier
         gameGridDisplay.requestFocus();
         Scene scene = gameAreaStackPane.getScene();
         if (scene != null) {
@@ -502,7 +484,6 @@ public class soloGameController {
             });
         }
 
-        // Relancer le timer
         lancerTimer();
         lancerTimerBots();
     }
