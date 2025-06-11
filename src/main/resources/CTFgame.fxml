@@ -4,27 +4,20 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bomberman.gameController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bomberman.CTFcontroller">
 
     <top>
         <VBox styleClass="header">
             <children>
                 <HBox alignment="TOP_LEFT" spacing="50.0">
                     <children>
-                        <Label styleClass="controls" text="BOMBERMAN - MULTIJOUEUR LOCAL " />
+                        <Label styleClass="controls" text="BOMBERMAN - CAPTURE THE FLAG" />
                     </children>
                 </HBox>
                 <HBox alignment="CENTER" spacing="50.0">
                     <padding>
                         <Insets bottom="5.0" left="10.0" right="10.0" top="15.0" />
                     </padding>
-                    <children>
-<!--                        image des perso-->
-                    </children>
                 </HBox>
                 <HBox alignment="CENTER" spacing="30.0">
                     <padding>
@@ -47,37 +40,16 @@
     <center>
         <StackPane fx:id="gameContainer" alignment="CENTER">
             <!-- Jeu actif -->
-            <VBox fx:id="gameArea" alignment="CENTER">
-                <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
-
-                <HBox spacing="10" alignment="bottom_center">
-                    <VBox>
-                        <Label text="Nom Joueur 1 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ1"/>
-                    </VBox>
-                    <VBox>
-                        <Label text="Nom Joueur 2 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ2"/>
-                    </VBox>
-                    <VBox>
-                        <Label text="Nom Joueur 3 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ3"/>
-                    </VBox>
-                    <VBox>
-                        <Label text="Nom Joueur 4 : " styleClass="player-label"/>
-                        <TextField fx:id="saisiJ4"/>
-                    </VBox>
-                </HBox>
             <VBox fx:id="gameArea" alignment="CENTER" spacing="5.0">
                 <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame" styleClass="start-button"/>
                 <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
-                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>
-                <ImageView fitHeight="200.0" fitWidth="750.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <image>
-                    <Image url="@menu/claveir.png" /> </image>
-                </ImageView>
+                <Label text="LES COMMANDES DE JEU CAPTURE THE FLAG" styleClass="commandeTitle"/>
+                <Label text="Joueur 1 (En haut a gauche) = T: haut, G: bas, F: gauche, H: droite, U: Bombe" styleClass="commande"/>
+                <Label text="Joueur 2 (En bas a droite) = Z: haut, S: bas, Q: gauche, D: droite, A: Bombe" styleClass="commande"/>
+                <Label text="Joueur 3 (En haut a droite) = O: haut, L: bas, K: gauche, M: droite, P: Bombe" styleClass="commande"/>
+                <Label text="Joueur 4 (En bas a gauche) = 5: haut, 2: bas, 1: gauche, 3: droite, 4: Bombe" styleClass="commande"/>
             </VBox>
-                        <!-- Menu pause transparent -->
+            <!-- Menu pause transparent -->
             <VBox fx:id="pauseMenuContainer" alignment="CENTER" spacing="20.0"
                   styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
                 <Label text="~ PAUSE ~" styleClass="title"/>
@@ -85,11 +57,11 @@
                 <Button text="RETOUR AU MENU" onAction="#retourMenu" />
                 <Button text="QUITTER LE JEU" onAction="#quittertout"/>
 
-                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitlePause"/>
-                <ImageView fitHeight="200.0" fitWidth="750.0" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <image>
-                        <Image url="@menu/claveir.png" /> </image>
-                </ImageView>
+                <Label text="LES COMMANDES DE JEU EN MULTIJOUEUR" styleClass="commandeTitle"/>
+                <Label text="Joueur 1 (En haut a gauche) = T: haut, G: bas, F: gauche, H: droite, U: Bombe" styleClass="commande"/>
+                <Label text="Joueur 2 (En bas a droite) = Z: haut, S: bas, Q: gauche, D: droite, A: Bombe" styleClass="commande"/>
+                <Label text="Joueur 3 (En haut a droite) = O: haut, L: bas, K: gauche, M: droite, P: Bombe" styleClass="commande"/>
+                <Label text="Joueur 4 (En bas a gauche) = 5: haut, 2: bas, 1: gauche, 3: droite, 4: Bombe" styleClass="commande"/>
             </VBox>
             <!-- Menu pause fin -->
             <VBox fx:id="finMenuContainer" alignment="CENTER" spacing="20.0"

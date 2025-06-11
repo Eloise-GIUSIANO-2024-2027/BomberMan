@@ -5,10 +5,19 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import org.bomberman.entite.Bombe;
+import org.bomberman.entite.Bonus;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
-public class Bot_Personnage extends Group {
+public class Bot_Personnage extends PacMan_Personnage {
     private String direction = "bas";
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX;
@@ -19,306 +28,250 @@ public class Bot_Personnage extends Group {
     private int botId;
     private int botNumber;// Identifiant unique pour chaque bot
     private List<Bombe> listeBombesBot = new ArrayList<>();
+    private String theme = "default";
+    private Random random = new Random();
+    private String strategie = "AGGRESSIVE"; // AGGRESSIVE, DEFENSIVE, MIXED
+    private int rayonDetection = 3; // Distance à laquelle le bot détecte le joueur
+    private boolean enModePoursuiteJoueur = false;
+    private long dernierePlacementBombe = 0;
+    private long derniereCollecteBonus = 0;
+    private static final long COOLDOWN_BOMBE_BOT = 1000; // 2 secondes
+    private static final long COOLDOWN_BONUS = 1000; // 1 seconde
+    private PacMan_Personnage joueur;
 
-    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) {
+    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) throws IOException {
+        super(game, startX, startY, botNumber);
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
         this.botId = botId;
         this.botNumber = botNumber;
+        Path path = Paths.get("src/main/resources/data.txt");
+        System.out.println(Files.readString(path));
+        this.theme = Files.readString(path);
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
 
-    // Méthodes de déplacement inchangées...
-    public void deplacerAGauche() {
-        if (!estVivant) return;
-        int nouvellePositionX = gridX - 1;
 
-        if (isValidGridPosition(nouvellePositionX, gridY)) {
-            gridX = nouvellePositionX;
-            updatePixelPosition();
+    public void agir(PacMan_Personnage joueurPrincipal, List<PacMan_Personnage> tousJoueurs,
+                     GameGrid gameGrid, List<Bot_Personnage> autresBots) {
+
+
+        if (!this.estVivant() || joueurPrincipal == null || !joueurPrincipal.estVivant()) {
+            return; // Ne rien faire si mort ou pas de joueur à attaquer
         }
-
-        if (!direction.equals("gauche")) {
-            direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left"+botNumber+".gif")), 32, 32, false, false)));
-        }
-    }
-
-    public void deplacerADroite(double largeurJeu) {
-        if (!estVivant) return;
-        int nouvellePositionX = gridX + 1;
-
-        if (isValidGridPosition(nouvellePositionX, gridY)) {
-            gridX = nouvellePositionX;
-            updatePixelPosition();
-        }
-
-        if (!direction.equals("droite")) {
-            direction = "droite";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right"+botNumber+".gif")), 32, 32, false, false)));
-        }
-    }
-
-    public void deplacerEnBas(double hauteurJeu) {
-        if (!estVivant) return;
-        int nouvellePositionY = gridY + 1;
-
-        if (isValidGridPosition(gridX, nouvellePositionY)) {
-            gridY = nouvellePositionY;
-            updatePixelPosition();
-        }
-        if (!direction.equals("bas")) {
-            direction = "bas";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front"+botNumber+".gif")), 32, 32, false, false)));
-        }
-    }
-
-    public void deplacerEnHaut() {
-        if (!estVivant) return;
-        int nouvellePositionY = gridY - 1;
-
-        if (isValidGridPosition(gridX, nouvellePositionY)) {
-            gridY = nouvellePositionY;
-            updatePixelPosition();
-        }
-
-        if (!direction.equals("haut")) {
-            direction = "haut";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
-        }
-    }
-
-    private boolean isValidGridPosition(int x, int y) {
-        int[][] grid = game.getGrid();
-        return x >= 0 && y >= 0 && y < grid.length && x < grid[y].length && grid[y][x] == 0;
-    }
-
-    private void updatePixelPosition() {
-        setTranslateX(gridX * CELL_SIZE);
-        setTranslateY(gridY * CELL_SIZE);
-    }
-
-    public int getGridX() {
-        return gridX;
-    }
-
-    public int getGridY() {
-        return gridY;
-    }
-
-    public int getBotId() {
-        return botId;
-    }
-
-    // Méthode principale modifiée pour cibler tous les ennemis
-    public void agir(PacMan_Personnage joueur, List<PacMan_Personnage> tousLesJoueurs, GameGrid gameGrid, List<Bot_Personnage> bot) {
-        if (!estVivant) return;
-
-        int botX = getGridX();
-        int botY = getGridY();
-
-        // 1. FUITE SI BOMBE PROCHE (priorité absolue)
-        if (estDansZoneDanger(botX, botY)) {
-            for (int[] dir : new int[][]{{0,-1},{0,1},{-1,0},{1,0}}) {
-                int newX = botX + dir[0];
-                int newY = botY + dir[1];
-                if (!estDansZoneDanger(newX, newY) && isValid(newX, newY)) {
-                    seDeplacerVers(newX, newY);
-                    return;
-                }
-            }
-
-            // Plan B : fuir vers une case libre même si elle reste dans la zone danger
-            for (int[] dir : new int[][]{{0,-1},{0,1},{-1,0},{1,0}}) {
-                int newX = botX + dir[0];
-                int newY = botY + dir[1];
-                if (isValid(newX, newY)) {
-                    seDeplacerVers(newX, newY);
-                    return;
-                }
-            }
+        //  PRIORITÉ 1: Collecter des bonus si disponibles à proximité
+        if (chercherEtCollecterBonus()) {
+            System.out.println("Bot " + getPlayerNumber() + " - Collecte de bonus");
             return;
         }
 
-        // 2. RECHERCHE DE LA CIBLE LA PLUS PROCHE (joueur ou autres bots)
-        CibleInfo cibleLaPlusProche = trouverCibleLaPlusProche(joueur, bot);
-
-        if (cibleLaPlusProche != null) {
-            // 3. SI CIBLE À PORTÉE DE BOMBE → POSER UNE BOMBE
-            if (estAPorteeDeBombe(botX, botY, cibleLaPlusProche.x, cibleLaPlusProche.y)) {
-                if (game.getGrid()[botY][botX] == 0) {
-                    System.out.println("Bot " + botId + " pose une bombe pour attaquer la cible à (" + cibleLaPlusProche.x + "," + cibleLaPlusProche.y + ")");
-                    new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, listeBombesBot);
-                    game.getGrid()[botY][botX] = 3;
-                    return;
-                }
-            }
-
-            // 4. SINON → SE RAPPROCHER DE LA CIBLE
-            int dx = cibleLaPlusProche.x - botX;
-            int dy = cibleLaPlusProche.y - botY;
-
-            int[][] directions = Math.abs(dx) > Math.abs(dy) ?
-                    new int[][]{{Integer.signum(dx), 0}, {0, Integer.signum(dy)}} :
-                    new int[][]{{0, Integer.signum(dy)}, {Integer.signum(dx), 0}};
-
-            for (int[] dir : directions) {
-                int newX = botX + dir[0];
-                int newY = botY + dir[1];
-                if (isValid(newX, newY)) {
-                    seDeplacerVers(newX, newY);
-                    return;
-                }
-            }
+        //  PRIORITÉ 2: Attaquer le joueur s'il est proche
+        if (tentativeAttaqueJoueur(joueurPrincipal, gameGrid)) {
+            System.out.println("Bot " + getPlayerNumber() + " - Attaque du joueur !");
+            return;
         }
 
-        // 5. BLOQUÉ → POSER UNE BOMBE POUR DÉTRUIRE DES OBSTACLES
-        if (game.getGrid()[botY][botX] == 0) {
-            System.out.println("Bot " + botId + " pose une bombe pour détruire des obstacles");
-            new Bombe(botX, botY, 2, game, gameGrid, tousLesJoueurs, bot, listeBombesBot);
-            game.getGrid()[botY][botX] = 3;
-        }
+        // PRIORITÉ 3: Se rapprocher du joueur
+        if (seRapprocherDuJoueur(joueurPrincipal)) {
+            System.out.println("Bot " + getPlayerNumber() + " - Poursuite du joueur");
+            return;}
+
+            //  PRIORITÉ 4: Mouvement aléatoire si rien d'autre à faire
+            mouvementAleatoire();
+        System.out.println("Bot " + getPlayerNumber() + " - Mouvement aléatoire");
+
+
     }
 
-    // Classe interne pour stocker les informations de cible
-    private static class CibleInfo {
-        int x, y;
-        double distance;
+    private boolean tentativeAttaqueJoueur(PacMan_Personnage joueur, GameGrid gameGrid) {
+        int distanceX = Math.abs(this.getGridX() - joueur.getGridX());
+        int distanceY = Math.abs(this.getGridY() - joueur.getGridY());
+        int distanceTotale = distanceX + distanceY; // Distance de Manhattan
 
-        CibleInfo(int x, int y, double distance) {
-            this.x = x;
-            this.y = y;
-            this.distance = distance;
-        }
-    }
+        // Conditions pour attaquer :
+        boolean joueurAPortee = distanceTotale <= 2; // Joueur à 2 cases ou moins
+        boolean peutPoserBombe = peutPlacerBombeMaintenant();
+        boolean caseLibre = game.getGrid()[this.getGridY()][this.getGridX()] == 0;
 
-    // Trouve la cible la plus proche (joueur ou autres bots)
-    private CibleInfo trouverCibleLaPlusProche(PacMan_Personnage joueur, List<Bot_Personnage> autresBots) {
-        CibleInfo cibleLaPlusProche = null;
-        double distanceMin = Double.MAX_VALUE;
+        if (joueurAPortee && peutPoserBombe && caseLibre) {
+            System.out.println(" Bot " + getPlayerNumber() + " ATTAQUE le joueur ! Distance: " + distanceTotale);
 
-        // Vérifier le joueur principal
-        if (joueur != null) {
-            double distance = calculerDistance(getGridX(), getGridY(), joueur.getGridX(), joueur.getGridY());
-            if (distance < distanceMin) {
-                distanceMin = distance;
-                cibleLaPlusProche = new CibleInfo(joueur.getGridX(), joueur.getGridY(), distance);
+            // Calculer le rayon optimal
+            int rayon = this.aBonusRayon() ? 2 : 1;
+            if (this.aBonusRayon()) {
+                this.consommerBonusRayon();
+                System.out.println("Bot " + getPlayerNumber() + " utilise son bonus rayon !");
+            }
+
+            // POSER LA BOMBE
+            try {
+                List<Bombe> listeBombes = new ArrayList<>(); // Vous devriez récupérer la vraie liste
+                new Bombe(this.getGridX(), this.getGridY(), rayon, game, gameGrid,
+                        List.of(), List.of(this), this, listeBombes);
+
+                this.dernierePlacementBombe = System.currentTimeMillis();
+
+
+                fuirDeLaBombe();
+
+                return true;
+            } catch (Exception e) {
+                System.err.println("Erreur lors du placement de bombe par le bot: " + e.getMessage());
             }
         }
 
-        // Vérifier les autres bots
-        for (Bot_Personnage autreBot : autresBots) {
-            if (autreBot != this && autreBot.estVivant()) {
-                double distance = calculerDistance(getGridX(), getGridY(), autreBot.getGridX(), autreBot.getGridY());
-                if (distance < distanceMin) {
-                    distanceMin = distance;
-                    cibleLaPlusProche = new CibleInfo(autreBot.getGridX(), autreBot.getGridY(), distance);
-                }
-            }
-        }
-
-        return cibleLaPlusProche;
+        return false;
     }
 
-    // Calcule la distance de Manhattan entre deux points
-    private double calculerDistance(int x1, int y1, int x2, int y2) {
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-    }
 
-    // Vérifie si une cible est à portée de bombe
-    private boolean estAPorteeDeBombe(int bombeX, int bombeY, int cibleX, int cibleY) {
-        int rayon = 2;
+    private void fuirDeLaBombe() {
+        // Essayer de se déplacer dans une direction sûre
+        int[][] directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}}; // Haut, Bas, Gauche, Droite
 
-        // Même position
-        if (bombeX == cibleX && bombeY == cibleY) {
-            return true;
-        }
-
-        // Vérifier les 4 directions
-        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         for (int[] dir : directions) {
-            for (int i = 1; i <= rayon; i++) {
-                int nx = bombeX + dir[0] * i;
-                int ny = bombeY + dir[1] * i;
-                // Hors limites
-                if (nx < 0 || ny < 0 || ny >= game.getGrid().length || nx >= game.getGrid()[0].length) {
-                    break;
-                }
-                int cell = game.getGrid()[ny][nx];
-                // Cible trouvée
-                if (nx == cibleX && ny == cibleY) {
-                    return true;
-                }
-                // Obstacle → arrêter dans cette direction
-                if (cell == 1) { // Mur incassable
-                    break;
-                }
-                if (cell == 2) { // Bloc destructible → cible peut être atteinte mais propagation s'arrête
-                    if (nx == cibleX && ny == cibleY) {
-                        return true;
-                    }
-                    break;
-                }
+            int nouvelleX = this.getGridX() + dir[0];
+            int nouvelleY = this.getGridY() + dir[1];
+
+            if (positionValide(nouvelleX, nouvelleY)) {
+                if (dir[0] == -1) this.deplacerAGauche();
+                else if (dir[0] == 1) this.deplacerADroite(15); // Supposant une grille 15x15
+                else if (dir[1] == -1) this.deplacerEnHaut();
+                else if (dir[1] == 1) this.deplacerEnBas(15);
+
+                System.out.println("Bot " + getPlayerNumber() + " fuit vers (" + nouvelleX + "," + nouvelleY + ")");
+                break;
             }
         }
+    }
+
+
+    private boolean chercherEtCollecterBonus() {
+        if (System.currentTimeMillis() - derniereCollecteBonus < COOLDOWN_BONUS) {
+            return false; // Cooldown actif
+        }
+
+        List<Bonus> bonus = game.getActiveBonuses();
+
+        for (Bonus b : bonus) {
+            int distanceX = Math.abs(this.getGridX() - b.getBonusX());
+            int distanceY = Math.abs(this.getGridY() - b.getBonusY());
+
+            // Si un bonus est sur la même case
+            if (distanceX == 0 && distanceY == 0) {
+                b.appliquerBonus(this);
+                derniereCollecteBonus = System.currentTimeMillis();
+                System.out.println("✨ Bot " + getPlayerNumber() + " a collecté un bonus !");
+                return true;
+            }
+
+            // Si un bonus est à 1 case, se diriger vers lui
+            if (distanceX + distanceY == 1) {
+                if (distanceX == 1) {
+                    if (b.getBonusX() > this.getGridX()) {
+                        this.deplacerADroite(15);
+                    } else {
+                        this.deplacerAGauche();
+                    }
+                } else {
+                    if (b.getBonusY() > this.getGridY()) {
+                        this.deplacerEnBas(15);
+                    } else {
+                        this.deplacerEnHaut();
+                    }
+                }
+                System.out.println("Bot " + getPlayerNumber() + " se dirige vers un bonus");
+                return true;
+            }
+        }
+
         return false;
     }
 
-    // Méthodes utilitaires inchangées...
-    private boolean isValid(int x, int y) {
-        int[][] grid = game.getGrid();
-        return x >= 0 && y >= 0 && y < grid.length && x < grid[0].length && grid[y][x] == 0;
-    }
+    private boolean seRapprocherDuJoueur(PacMan_Personnage joueur) {
+        int deltaX = joueur.getGridX() - this.getGridX();
+        int deltaY = joueur.getGridY() - this.getGridY();
 
-    private boolean estDansZoneDanger(int x, int y) {
-        int[][] grid = game.getGrid();
-        int rayon = 2;
+        // Choisir la direction qui réduit le plus la distance
+        boolean bougerX = Math.abs(deltaX) >= Math.abs(deltaY);
 
-        for (int by = 0; by < grid.length; by++) {
-            for (int bx = 0; bx < grid[0].length; bx++) {
-                if (grid[by][bx] == 3) { // Bombe trouvée
-                    if (x == bx && y == by) return true; // Centre
-
-                    int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-                    for (int[] dir : directions) {
-                        for (int i = 1; i <= rayon; i++) {
-                            int nx = bx + dir[0] * i;
-                            int ny = by + dir[1] * i;
-
-                            if (nx < 0 || ny < 0 || ny >= grid.length || nx >= grid[0].length) break;
-
-                            int cell = grid[ny][nx];
-                            if (cell == 1) break; // Mur incassable → stop
-                            if (nx == x && ny == y) return true;
-                            if (cell == 2) break; // Bloc destructible → zone atteinte, mais stop propagation
-                        }
-                    }
-                }
+        if (bougerX && deltaX != 0) {
+            // Se déplacer horizontalement
+            if (deltaX > 0 && positionValide(this.getGridX() + 1, this.getGridY())) {
+                this.deplacerADroite(15);
+                return true;
+            } else if (deltaX < 0 && positionValide(this.getGridX() - 1, this.getGridY())) {
+                this.deplacerAGauche();
+                return true;
+            }
+        } else if (deltaY != 0) {
+            // Se déplacer verticalement
+            if (deltaY > 0 && positionValide(this.getGridX(), this.getGridY() + 1)) {
+                this.deplacerEnBas(15);
+                return true;
+            } else if (deltaY < 0 && positionValide(this.getGridX(), this.getGridY() - 1)) {
+                this.deplacerEnHaut();
+                return true;
             }
         }
+
         return false;
     }
 
-    private void seDeplacerVers(int x, int y) {
-        int dx = x - getGridX();
-        int dy = y - getGridY();
 
-        if (dx == 1) deplacerADroite(game.getGrid()[0].length * CELL_SIZE);
-        else if (dx == -1) deplacerAGauche();
-        else if (dy == 1) deplacerEnBas(game.getGrid().length * CELL_SIZE);
-        else if (dy == -1) deplacerEnHaut();
+    private void mouvementAleatoire() {
+        int direction = random.nextInt(4);
+
+        switch (direction) {
+            case 0 -> {
+                if (positionValide(getGridX(), getGridY() - 1)) {
+                    deplacerEnHaut();
+                }
+            }
+            case 1 -> {
+                if (positionValide(getGridX(), getGridY() + 1)) {
+                    deplacerEnBas(15);
+                }
+            }
+            case 2 -> {
+                if (positionValide(getGridX() - 1, getGridY())) {
+                    deplacerAGauche();
+                }
+            }
+            case 3 -> {
+                if (positionValide(getGridX() + 1, getGridY())) {
+                    deplacerADroite(15);
+                }
+            }
+        }
     }
 
-    public void disparait() {
-        this.estVivant = false;
-        this.setVisible(false);
+
+    private boolean peutPlacerBombeMaintenant() {
+        long maintenant = System.currentTimeMillis();
+        return (maintenant - dernierePlacementBombe) >= COOLDOWN_BOMBE_BOT && this.canPlaceBomb();
     }
 
-    public boolean estVivant() {
-        return this.estVivant;
+
+    private boolean positionValide(int x, int y) {
+        int[][] grid = game.getGrid();
+
+        if (y < 0 || x < 0 || y >= grid.length || x >= grid[0].length) {
+            return false;
+        }
+
+        return grid[y][x] == 0; // 0 = case libre
+    }
+
+    // GETTERS/SETTERS pour la configuration
+    public void setStrategie(String strategie) {
+        this.strategie = strategie;
+    }
+
+    public void setRayonDetection(int rayon) {
+        this.rayonDetection = rayon;
     }
 }
