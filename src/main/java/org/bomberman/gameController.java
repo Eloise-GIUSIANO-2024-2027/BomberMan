@@ -44,30 +44,21 @@ public class gameController {
     private VBox finMenuContainer;
     @FXML
     private Label messageFinPartieLabel;
-
     @FXML
     private Label gameStatusLabel;
-
     private Timeline gameTimer;
     private int tempsRestant = 120;
-
     private List<PacMan_Personnage> joueurs = new ArrayList<>();
     private List<Bot_Personnage> bot = new ArrayList<>();
     private List<Bombe> listeBombes = new ArrayList<>();
-
     private boolean paused = false;
-
     @FXML
     private VBox gameArea;
     Game game = new Game();
-
     private boolean partieTerminee = false;
-
     private GameGrid gameGridDisplay;
     @FXML
     private Button startButton; // Référence au bouton démarrer
-
-
     // affichge des scores :
     @FXML
     private Label labelJ1;
@@ -77,7 +68,6 @@ public class gameController {
     private Label labelJ3;
     @FXML
     private Label labelJ4;
-
 
     // Zone de saisi des pseudo
     @FXML
@@ -101,36 +91,17 @@ public class gameController {
     private int ligneJ4;
     private int scoreJ4 = 0;
 
-
     @FXML
     private Label resultLabel;
-
-
-    Game game = new Game();
-
-    private Timeline gameTimer;
-    private int tempsRestant = 120;
-
-    private List<PacMan_Personnage> joueurs = new ArrayList<>();
-    private List<Bot_Personnage> bot = new ArrayList<>();
-    private List<Bombe> listeBombes = new ArrayList<>();
-
-    private boolean paused = false;
     private boolean partieEstTerminee = false;
-    private GameGrid gameGridDisplay;
-
-
     // Obtention des scoresMulti.txt
     private List<String> scores;
     private int derID;
-
-
     // Partie modifiée de gameController.java
     @FXML
     private Label timerLabel;
 
     private Timer timer;
-
 
     public void initialize() {
         System.out.println("gameController initialisé.");
@@ -139,6 +110,7 @@ public class gameController {
             startButton.setManaged(true);
         }
     }
+
 
     @FXML
     public void retourMenu(ActionEvent event) {
@@ -166,6 +138,7 @@ public class gameController {
         }
     }
 
+
     @FXML
     public void resumeGame() {
         paused = false;
@@ -176,13 +149,13 @@ public class gameController {
         }
     }
 
+
     @FXML
     public void quittertout() {
         Platform.exit(); // Fait sortir l'application JavaFX
         System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
 
     }
-
 
     private void lancerTimer() {
         gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
@@ -218,6 +191,8 @@ public class gameController {
             }
         }
     }
+
+
 
     private void finDePartie(String message) {
         if (partieTerminee) return; // Empêcher la fin de partie multiple
@@ -417,14 +392,6 @@ public class gameController {
         }
 
         refreshScores();
-    }
-
-    public void initialize() {
-        System.out.println("gameController initialisé.");
-        if (startButton != null) {
-            startButton.setVisible(true);
-            startButton.setManaged(true);
-        }
     }
 
 
@@ -714,156 +681,6 @@ public class gameController {
         }
     }
 
-
-
-    @FXML
-    public void replayGame() throws IOException {
-        // Réinitialiser les listes de joueurs
-        joueurs.clear();
-        bot.clear(); // Même s'il n'y a pas de bots ici, garde-le pour la cohérence
-
-        // Réinitialiser le timer
-        if (gameTimer != null) {
-            gameTimer.stop();
-        }
-        tempsRestant = 120;
-        timerLabel.setText("TIMEUR : 02:00");
-
-        // Réinitialiser l'état de fin de partie
-        finMenuContainer.setVisible(false);
-        finMenuContainer.setManaged(false);
-
-        // Recréer le jeu
-        game = new Game(); // recrée la logique de jeu (grille, états, etc.)
-        gameGridDisplay = new GameGrid(game);
-        gameArea.getChildren().clear();
-
-        StackPane gameContainer = new StackPane();
-        gameContainer.getChildren().add(gameGridDisplay);
-        Pane entityLayer = gameGridDisplay.getEntityLayer();
-        gameContainer.getChildren().add(entityLayer);
-        gameArea.getChildren().add(gameContainer);
-
-        // Recréer les joueurs
-        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
-
-        joueurs.add(pacman);
-        joueurs.add(fantome);
-        joueurs.add(pacman2);
-        joueurs.add(pacman3);
-
-        gameGridDisplay.getChildren().addAll(joueurs);
-
-        // Focus
-        gameContainer.requestFocus();
-        gameContainer.setFocusTraversable(true);
-
-        // Gérer les touches
-        Scene scene = gameArea.getScene();
-        if (scene != null) {
-            scene.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ESCAPE) {
-                    togglePause();
-                }
-
-                if (!paused) {
-                    handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
-                }
-            });
-        }
-
-        // Redémarrer le timer
-        lancerTimer();
-    }
-
-    @FXML
-    public void retourMenu(ActionEvent event) {
-        try {
-            // Charger le FXML du menu
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
-            Parent menuRoot = loader.load();
-            Scene menuScene = new Scene(menuRoot, 820, 650);
-
-            String cssPath = getClass().getResource("/styleMenu.css").toExternalForm();
-            if (cssPath != null) {
-                menuScene.getStylesheets().add(cssPath);
-            } else {
-                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
-            }
-            //Obtenir le Stage actuel et changer la scène
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(menuScene);
-            stage.setTitle("Super Bomberman"); // Remettre le titre du menu
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erreur lors du chargement du menu : " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void resumeGame() {
-        paused = false;
-        pauseMenuContainer.setVisible(false);
-        pauseMenuContainer.setManaged(false);
-        if (gameTimer != null) {
-            gameTimer.play();
-        }
-    }
-
-    @FXML
-    public void quittertout() {
-        Platform.exit(); // Fait sortir l'application JavaFX
-        System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
-
-    }
-
-
-    private void lancerTimer() {
-        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            // Ne pas décrémenter ni vérifier si la partie est déjà terminée pour éviter des appels multiples
-            if (partieEstTerminee) {
-                return; // Sortir si la partie est déjà finie
-            }
-
-            tempsRestant--;
-            int minutes = tempsRestant / 60;
-            int secondes = tempsRestant % 60;
-            String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
-
-            Platform.runLater(() -> timerLabel.setText(tempsFormate));
-
-            // Toujours vérifier la fin de partie par élimination à chaque tic du timer
-            verifierFinDePartieParElimination();
-
-            // C'EST ICI QUE LA FIN DE PARTIE PAR TEMPS ÉCOULÉ DOIT ÊTRE GÉRÉE
-            if (tempsRestant <= 0) {
-                gameTimer.stop();
-                partieEstTerminee = true; // Marquez la partie comme terminée ici
-                timerLabel.setText("TIMEUR : 00:00");
-                finDePartieParTemps(); // Appelez la méthode spécifique pour la fin par temps
-            }
-        }));
-        gameTimer.setCycleCount(Timeline.INDEFINITE);
-        gameTimer.play();
-    }
-
-
-    private void checkBonusCollision(PacMan_Personnage joueur) {
-        List<Bonus> activeBonuses = game.getActiveBonuses();
-        for (int i = activeBonuses.size() - 1; i >= 0; i--) {
-            Bonus bonus = activeBonuses.get(i);
-            if (bonus.getBonusX() == joueur.getGridX() && bonus.getBonusY() == joueur.getGridY()) {
-                // Utiliser la nouvelle méthode générique
-                bonus.appliquerBonus(joueur);
-                break;
-            }
-        }
-    }
 
 
     // NOUVELLE MÉTHODE: Vérification de l'état des joueurs pendant le jeu (fin par élimination)
