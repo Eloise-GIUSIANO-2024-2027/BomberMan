@@ -20,11 +20,11 @@ public class PacMan_Personnage extends Group {
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)
     private int gridY = 0; // Position Y dans la grille (ligne)
-    private static final int CELL_SIZE = 51; // Taille d'une case (48x48 comme dans GameGrid)
+    private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
     private Game game;
     private boolean estVivant = true;
     private int playerNumber =1;// Initialise le joueur comme vivant par défaut
-    private String theme = "wix";
+    private String theme = "defaut";
 
     // Pour le mode Capture The Flag
     private Drapeau monDrapeau; // Le drapeau appartenant à ce joueur
@@ -38,7 +38,6 @@ public class PacMan_Personnage extends Group {
         this.gridY = startY;
         this.playerNumber = playerNumber;
         Path path = Paths.get("src/main/resources/data.txt");
-        System.out.println(Files.readString(path));
         this.theme = Files.readString(path);
 
         rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-"+theme+"-"+this.playerNumber+".gif")), 32, 32, false, false)));

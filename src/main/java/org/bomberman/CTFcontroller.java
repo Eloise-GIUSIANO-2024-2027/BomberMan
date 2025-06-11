@@ -393,7 +393,7 @@ public class CTFcontroller {
     }
 
     @FXML
-    public void replayGame() {
+    public void replayGame() throws IOException {
         // Réinitialiser les listes et l'état
         joueurs.clear();
         bot.clear();
