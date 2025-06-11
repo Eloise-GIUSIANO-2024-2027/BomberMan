@@ -8,7 +8,7 @@ import javafx.application.Platform;
 import org.bomberman.Bot_Personnage;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
-import org.bomberman.PacMan_Personnage;
+import org.bomberman.PacMan_Personnage; // Importez la classe PacMan_Personnage
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +28,7 @@ public class Bombe extends ImageView {
     private boolean estPresent = true;
     private boolean aExplose = false;
     private Timer timer;
+    private int scoreJoueur;
 
     public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> botList, PacMan_Personnage poseurJoueur, List<Bombe> bombes) {
         this.x = x;
@@ -61,9 +62,9 @@ public class Bombe extends ImageView {
             // Ajouter à la grille
             Platform.runLater(() -> {
                 gameGrid.getChildren().add(this);
-                GridPane.setColumnIndex(this, x);
+                GridPane.setColumnIndex(this, x); // x est la colonne
                 GridPane.setRowIndex(this, y);
-                this.toFront();
+                this.toFront(); // Assurer que la bombe est visible
             });
 
             startTimer();
@@ -84,7 +85,7 @@ public class Bombe extends ImageView {
 
     public void exploserImmediatement() {
         if (timer != null) {
-            timer.cancel();
+            timer.cancel(); // Annuler le timer normal
         }
         Platform.runLater(() -> explode());
     }
@@ -106,14 +107,14 @@ public class Bombe extends ImageView {
             int dy = dir[0];
             int dx = dir[1];
 
-            for (int i = 1; i <= rayon; i++) {
+            for (int i = 1; i <= rayon; i++) { // Itérer vers l'extérieur jusqu'au rayon
                 int ny = y + dy * i;
                 int nx = x + dx * i;
 
                 // Vérifier les limites de la grille
                 if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length) {
                     if (grid[ny][nx] == 1) { // Mur incassable
-                        break;
+                        break; // Arrêter l'explosion dans cette direction
                     } else if (grid[ny][nx] == 2) { // Bloc cassable
                         System.out.println("Mur destructible détruit à (" + nx + ", " + ny + ")");
 
@@ -122,12 +123,12 @@ public class Bombe extends ImageView {
 
                         grid[ny][nx] = 0; // Casser le bloc
                         affectedCells.add(new int[]{ny, nx});
-                        break;
+                        break; // Arrêter l'explosion dans cette direction après avoir cassé le bloc
                     } else { // Espace vide
                         affectedCells.add(new int[]{ny, nx});
                     }
                 } else { // Hors des limites de la grille
-                    break;
+                    break; // Arrêter l'explosion dans cette direction
                 }
             }
         }
@@ -167,19 +168,22 @@ public class Bombe extends ImageView {
 
         // Vérifier les dégâts sur les joueurs
         for (PacMan_Personnage joueur : joueurs) {
+            // Vérifier si le joueur est toujours vivant
             if (joueur.estVivant()) {
-                int joueurGridX = joueur.getGridX();
-                int joueurGridY = joueur.getGridY();
+                int joueurGridX = joueur.getGridX(); // Colonne du joueur
+                int joueurGridY = joueur.getGridY(); // Ligne du joueur
 
+                // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
                 for (int[] cell : affectedCells) {
                     int affectedRow = cell[0];
                     int affectedCol = cell[1];
 
                     if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
-                        joueur.disparait();
-                        gameGrid.getEntityLayer().getChildren().remove(joueur);
+                        joueur.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
+                        gameGrid.getEntityLayer().getChildren().remove(joueur); // Supprimer visuellement le joueur
+                        scoreJoueur += 250; // Ajout des points pour le kill
                         System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
-                        break;
+                        break; // Un joueur ne peut être tué qu'une fois par explosion, pas besoin de vérifier d'autres cellules
                     }
                 }
             }
@@ -191,13 +195,15 @@ public class Bombe extends ImageView {
                 int botGridX = bot.getGridX();
                 int botGridY = bot.getGridY();
 
+                // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
                 for (int[] cell : affectedCells) {
                     int affectedRow = cell[0];
                     int affectedCol = cell[1];
 
                     if (botGridY == affectedRow && botGridX == affectedCol) {
                         bot.disparait();
-                        gameGrid.getEntityLayer().getChildren().remove(bot);
+                        gameGrid.getEntityLayer().getChildren().remove(bot); // Supprimer visuellement le joueur
+                        scoreJoueur += 250; // Ajout des points pour le kill
                         System.out.println("Bot à la position (" + botGridX + ", " + botGridY + ") a été tué par la bombe !");
                         break;
                     }
@@ -230,8 +236,10 @@ public class Bombe extends ImageView {
             bombeEnChaine.exploserImmediatement();
         }
 
+
+
         game.setGrid(grid);
-        gameGrid.refresh();
+        gameGrid.refresh(); // Recréer seulement la grille de terrain
 
         // Supprimer visuellement la bombe
         Platform.runLater(() -> {
@@ -285,5 +293,9 @@ public class Bombe extends ImageView {
         } else {
             System.out.println(" Pas de bonus généré à (" + bonusX + ", " + bonusY + ")");
         }
+    }
+
+    public int getScoreJoueur() {
+        return scoreJoueur;
     }
 }

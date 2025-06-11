@@ -1,5 +1,6 @@
 package org.bomberman;
 
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
@@ -20,9 +22,16 @@ import org.bomberman.entite.Bombe;
 import org.bomberman.entite.Bonus;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class soloGameController {
 
@@ -32,13 +41,12 @@ public class soloGameController {
     private boolean isPaused = false;
 
     @FXML
-
-    private VBox gameAreaStackPane; // Référence au  FXML
+    private VBox gameAreaStackPane; // Référence au StackPane dans FXML
     Game game = new Game();
     GameGrid gameGridDisplay = new GameGrid(game);
 
     @FXML
-    private Button startButton;
+    private Button startButton; // Référence au bouton démarrer
     @FXML
     private Label timerLabel;
     @FXML
@@ -60,33 +68,48 @@ public class soloGameController {
     private List<Bot_Personnage> bot = new ArrayList<>();
     private List<Bombe> listeBombes = new ArrayList<>();
 
-    public soloGameController() throws IOException {
-    }
+    // Zone de saisi des pseudo
+    @FXML
+    private Label labelJoueur;
 
     @FXML
-    public void startGame() throws IOException {
+    private TextField saisiJoueur;
+    private String nomJoueur;
+    private int ligneJoueur;
+    private int scoreJoueur = 0;
+
+    // Obtention des scoresSolo.txt
+    private List<String> scores;
+    private int derID;
+    private Timer timer;
+
+
+    @FXML
+    public void startGame() throws URISyntaxException, IOException {
         lancerTimer(); // debut du timer
         lancerTimerBots();
-
+        // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
 
-        gameAreaStackPane.getChildren().clear();
+        // Ajoute la GameGrid au StackPane central
+        gameAreaStackPane.getChildren().clear(); // Vide le StackPane
         gameAreaStackPane.getChildren().add(gameGridDisplay);
 
         //Acteurs du jeu
-        PacMan_Personnage pacman = new Pacman(game, 12, 0, 1);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2, 3);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4);
-
+        PacMan_Personnage pacman = new Pacman(game, 12, 0,1);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1,2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2,3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3,4);
         joueurs.add(pacman);
         bot.add(bot1);
         bot.add(bot2);
         bot.add(bot3);
 
         gameGridDisplay.getChildren().addAll(pacman, bot1, bot2, bot3);
+        // Donne le focus à gameGridDisplay pour recevoir les touches
         gameGridDisplay.requestFocus();
 
+        // Ajoute le gestionnaire de touches sur la scène
         Scene scene = gameAreaStackPane.getScene();
         if (scene != null) {
             scene.setOnKeyPressed(event -> {
@@ -95,11 +118,38 @@ public class soloGameController {
                 }
 
                 if (!isPaused) {
+                    // Appelle ta méthode de déplacement
                     handlePlayerMovement(event, pacman);
                     verifierFinDePartie();
                 }
             });
         }
+
+        // ----- Traitement des pseudos ------
+        // Chargement du fichier des scores
+        URL resource = getClass().getResource("/scoresMulti.txt");
+        if (resource != null) {
+            scores = Files.readAllLines(Paths.get(resource.toURI()));
+        }
+        derID = Integer.parseInt(scores.get(1))+1;
+
+
+
+        if (saisiJoueur.getLength() != 0) {
+            nomJoueur = saisiJoueur.getText();
+            ligneJoueur = getLigneNom(nomJoueur);
+            scoreJoueur = getScoreLigne(ligneJoueur);
+            ajouterScore(nomJoueur, 0, ligneJoueur);
+            updateFile(scores);
+        } else {
+            nomJoueur = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJoueur = getLigneNom(nomJoueur);
+            ajouterScore(nomJoueur, 0, ligneJoueur);
+            updateFile(scores);
+        }
+        refreshScores();
     }
 
     private void lancerTimerBots() {
@@ -139,8 +189,8 @@ public class soloGameController {
                 checkBonusCollision(j1);
             }
             case A -> {
-                int px = j1.getGridX();
-                int py = j1.getGridY();
+                int px = j1.getGridX(); // px is the column
+                int py = j1.getGridY(); // py is the row
 
                 if (game.getGrid()[py][px] == 0 && j1.estVivant() && j1.peutPlacerBombe()) {
                     System.out.println("Bombe posée par le joueur");
@@ -150,6 +200,8 @@ public class soloGameController {
                     }
                     new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
                     j1.marquerBombePlacee();
+                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes); // Création de la bombe
+                    startTimer(bomb, 4); // Traitement des cores de la bombe
                     gameGridDisplay.refresh();
                 } else if (!j1.peutPlacerBombe()) {
                     long tempsRestant = j1.getTempsRestantCooldown();
@@ -157,6 +209,8 @@ public class soloGameController {
                 }
             }
         }
+
+
     }
 
     public void initialize() {
@@ -172,7 +226,6 @@ public class soloGameController {
 
         pauseMenuContainer.setVisible(isPaused);
         pauseMenuContainer.setManaged(isPaused);
-
         if (isPaused) {
             if (gameTimer != null) {
                 gameTimer.pause();
@@ -200,6 +253,7 @@ public class soloGameController {
         }
 
         try {
+            // Charger le FXML du menu
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
             Parent menuRoot = loader.load();
             Scene menuScene = new Scene(menuRoot, 820, 650);
@@ -210,10 +264,10 @@ public class soloGameController {
             } else {
                 System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé.");
             }
-
+            //Obtenir le Stage actuel et changer la scène
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(menuScene);
-            stage.setTitle("Super Bomberman");
+            stage.setTitle("Super Bomberman"); // Remettre le titre du menu
             stage.show();
 
         } catch (IOException e) {
@@ -256,6 +310,7 @@ public class soloGameController {
             int secondes = tempsRestant % 60;
             String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
 
+            // Met à jour le texte du Label dans l'interface
             Platform.runLater(() -> timerLabel.setText(tempsFormate));
             verifierFinDePartie();
 
@@ -408,19 +463,23 @@ public class soloGameController {
         tempsRestant = 120;
         timerLabel.setText("TIMEUR : 02:00");
 
+        // Masquer le menu de fin
         finMenuContainer.setVisible(false);
         finMenuContainer.setManaged(false);
 
+        // Réinitialiser le jeu
         game = new Game();
         gameGridDisplay = new GameGrid(game);
 
+        // Nettoyer l'affichage
         gameAreaStackPane.getChildren().clear();
         gameAreaStackPane.getChildren().add(gameGridDisplay);
 
-        PacMan_Personnage pacman = new Pacman(game, 0, 0, 1);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2, 3);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4);
+        // Créer les entités
+        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1,2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 12, 0, 2,3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3,4);
 
         joueurs.add(pacman);
         bot.add(bot1);
@@ -429,6 +488,7 @@ public class soloGameController {
 
         gameGridDisplay.getChildren().addAll(pacman, bot1, bot2, bot3);
 
+        // Focus et écouteur clavier
         gameGridDisplay.requestFocus();
         Scene scene = gameAreaStackPane.getScene();
         if (scene != null) {
@@ -443,6 +503,7 @@ public class soloGameController {
             });
         }
 
+        // Relancer le timer
         lancerTimer();
         lancerTimerBots();
     }
@@ -456,5 +517,77 @@ public class soloGameController {
                 break;
             }
         }
+    }
+
+    public int getLigneNom(String nom){
+        String nomLigne;
+        for (int i = 0; i < scores.size(); i++) {
+            String ligne = scores.get(i);
+            nomLigne = "";
+            if (ligne.charAt(0) != '#') {
+                for (int j = 0; j < ligne.length() && ligne.charAt(j) != ' '; j++) {
+                    nomLigne += ligne.charAt(j);
+                }
+            }
+            if (nomLigne.equals(nom)) return i;
+        }
+        return scores.size()-1;
+    }
+
+    public int getScoreLigne(int numLigne) {
+        String ligne = scores.get(numLigne);
+        String scoresLigne = "";
+        for (int j = ligne.length()-1; ligne.charAt(j) != ' '; j--) {
+            scoresLigne = ligne.charAt(j) + scoresLigne;
+        }
+        return Integer.parseInt(scoresLigne);
+    }
+
+    public void ajouterScore(String nom, int score, int ligne) {
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+        if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
+        else if (score > getScoreLigne(ligne)){ // si le pseudo est déjà enregistré et que le score est superieur à celui enregistré
+            scores.set(ligne, nom + " " + score);
+        }
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+    }
+
+    public void updateFile(List<String> lignes) throws IOException {
+        Path cheminFichier = Paths.get("src/main/resources/scoresSolo.txt");
+
+        if (!Files.exists(cheminFichier)) {
+            throw new IOException("Le fichier n'existe pas : " + cheminFichier.toAbsolutePath());
+        }
+
+        Files.write(cheminFichier, lignes);
+    }
+
+    public void refreshScores() {
+        // Maj des pseudos
+        labelJoueur.setText(nomJoueur + " : " + scoreJoueur);
+    }
+
+    private void startTimer(Bombe bomb, int joueur) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {                       // Attend que la bombe ait exploser pour
+                    try {                                       // mettre à jour le score des joueurs
+                        ajoutScoreExplosion(bomb, joueur);      //
+                    } catch (IOException e) {                   //
+                        throw new RuntimeException(e);          //
+                    }
+                });
+            }
+        }, 2010); // 2.01 secondes
+    }
+
+    private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
+        scoreJoueur += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreZ
+//                ajouterScore(nomJoueur, scoreJoueur, ligneJoueur);      // Maj de la variable scores
+//                updateFile(scores);                         // sauvegarde du nouveau score
+//                //System.out.println(scoreJoueur + " " + bomb.getScoreJoueur());
+        refreshScores();    // Maj du bandeau des scores
     }
 }

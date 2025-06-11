@@ -33,6 +33,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class gameController {
 
@@ -96,28 +98,21 @@ public class gameController {
     private int ligneJ4;
     private int scoreJ4 = 0;
 
-    // Obtention des scores.txt
+    // Obtention des scoresMulti.txt
     private List<String> scores;
     private int derID;
 
 
     // Partie modifiée de gameController.java
-
-    // Partie modifiée de gameController.java
-
-    // Partie modifiée de gameController.java
     @FXML
     private Label timerLabel;
 
-    @FXML
-    public void startGame() throws IOException {
-        lancerTimer(); // debut du timer
+    private Timer timer;
 
-        // Crée une instance de ta GameGrid personnalisée
+    @FXML // Crée une instance de ta GameGrid personnalisée
     public void startGame() throws IOException, URISyntaxException {
-        game.startGame();
         gameGridDisplay = new GameGrid(game);
-
+            lancerTimer(); // debut du timer
         gameArea.getChildren().clear();
 
         // Créer un conteneur avec couches
@@ -166,11 +161,11 @@ public class gameController {
 
         // ----- Traitement des pseudos ------
         // Chargement du fichier des scores
-        URL resource = getClass().getResource("/scores.txt");
+        URL resource = getClass().getResource("/scoresMulti.txt");
         if (resource != null) {
             scores = Files.readAllLines(Paths.get(resource.toURI()));
         }
-        derID = Integer.parseInt(scores.get(1));
+        derID = Integer.parseInt(scores.get(1))+1;
 
 
 
@@ -233,9 +228,6 @@ public class gameController {
         }
 
         refreshScores();
-
-        System.out.println("Nom de j1 : " + nomJ1 + ", " + getScoreLigne(ligneJ1) + ", " + ligneJ1);
-        System.out.println("Nom de j2 : " + nomJ2 + ", " + ligneJ2);
     }
 
     private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
@@ -254,7 +246,8 @@ public class gameController {
 
                 if (game.getGrid()[px][py] == 0 && j1.estVivant()) {
                     System.out.println("Bombe");
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    startTimer(bomb, 1);
                     gameGridDisplay.refresh();
                 }
             }
@@ -271,7 +264,8 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j2.estVivant()) {
                     System.out.println("Bombe");
                     // Le constructeur de Bombe attend (x, y) où x est la colonne et y est la ligne, donc (px, py) est correct ici
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot, listeBombes);
+                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs,bot, listeBombes);
+                    startTimer(bomb, 2);
                     gameGridDisplay.refresh();
                 }
             }
@@ -287,8 +281,8 @@ public class gameController {
 
                 if (game.getGrid()[py][px] == 0 && j3.estVivant()) {
                     System.out.println("Bombe");
-
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
+                    startTimer(bomb, 3);
                     gameGridDisplay.refresh();
                 }
             }
@@ -304,8 +298,8 @@ public class gameController {
 
                 if (game.getGrid()[py][px] == 0 && j4.estVivant()) {
                     System.out.println("Bombe");
-
-                    new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes);
+                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes); // Création de la bombe
+                    startTimer(bomb, 4); // Traitement des cores de la bombe
                     gameGridDisplay.refresh();
                 }
             }
@@ -588,16 +582,16 @@ public class gameController {
     }
 
     public void ajouterScore(String nom, int score, int ligne) {
-        System.out.println(scores.size() + " " + ligne);
-        if (ligne == scores.size()-1) scores.add(nom + " " + score);
-        else if (score < getScoreLigne(ligne)){
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+        if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
+        else if (score > getScoreLigne(ligne)){ // si le pseudo est déjà enregistré et que le score est superieur à celui enregistré
             scores.set(ligne, nom + " " + score);
-        } else scores.set(ligne, nom + " " + score);
-        System.out.println(scores.size() + " " + ligne);
+        }
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
     }
 
     public void updateFile(List<String> lignes) throws IOException {
-        Path cheminFichier = Paths.get("src/main/resources/scores.txt");
+        Path cheminFichier = Paths.get("src/main/resources/scoresMulti.txt");
 
         if (!Files.exists(cheminFichier)) {
             throw new IOException("Le fichier n'existe pas : " + cheminFichier.toAbsolutePath());
@@ -612,6 +606,52 @@ public class gameController {
         labelJ2.setText(nomJ2 + " : " + scoreJ2);
         labelJ3.setText(nomJ3 + " : " + scoreJ3);
         labelJ4.setText(nomJ4 + " : " + scoreJ4);
+    }
+
+    private void startTimer(Bombe bomb, int joueur) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {                       // Attend que la bombe ait exploser pour
+                    try {                                       // mettre à jour le score des joueurs
+                        ajoutScoreExplosion(bomb, joueur);      //
+                    } catch (IOException e) {                   //
+                        throw new RuntimeException(e);          //
+                    }
+                });
+            }
+        }, 2010); // 2.01 secondes
+    }
+
+    private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
+        switch (Joueur){
+            case 1:
+                scoreJ1 += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreJ1
+                ajouterScore(nomJ1, scoreJ1, ligneJ1);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+//                //System.out.println(scoreJ1 + " " + bomb.getScoreJoueur());
+                break;
+            case 2:
+                scoreJ2 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ2
+                ajouterScore(nomJ2, scoreJ2, ligneJ2);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println("Joueur 2 : " + scoreJ2);
+                break;
+            case 3:
+                scoreJ3 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ3
+                ajouterScore(nomJ3, scoreJ3, ligneJ3);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println(scoreJ3 + " " + bomb.getScoreJoueur());
+                break;
+            case 4:
+                scoreJ4 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ4
+                ajouterScore(nomJ4, scoreJ4, ligneJ4);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println(scoreJ4 + " " + bomb.getScoreJoueur());
+                break;
+        }
+        refreshScores();    // Maj du bandeau des scores
     }
 }
 

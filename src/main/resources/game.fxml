@@ -31,11 +31,11 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="15.0" />
                     </padding>
                     <children>
-                        <Label styleClass="player-label" text="JOUEUR 1 : 000"  />
-                        <Label styleClass="player-label" text="JOUEUR 2 : 000" />
-                        <Label fx:id="timerLabel" styleClass="controls" text="TIMEUR : 02:00" />
-                        <Label styleClass="player-label" text="JOUEUR 3 : 000" />
-                        <Label styleClass="player-label" text="JOUEUR 4 : 000" />
+                        <Label styleClass="player-label" text="JOUEUR 1 : 000"  fx:id="labelJ1"/>
+                        <Label styleClass="player-label" text="JOUEUR 2 : 000" fx:id="labelJ2"/>
+                        <Label styleClass="controls" text="TIMEUR : 00:00" fx:id="timerLabel"/>
+                        <Label styleClass="player-label" text="JOUEUR 3 : 000" fx:id="labelJ3"/>
+                        <Label styleClass="player-label" text="JOUEUR 4 : 000" fx:id="labelJ4"/>
                     </children>
                 </HBox>
             </children>
