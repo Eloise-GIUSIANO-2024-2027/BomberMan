@@ -188,23 +188,20 @@ public class soloGameController {
                 checkBonusCollision(j1);
             }
             case A -> {
-                int px = j1.getGridX(); // px is the column
-                int py = j1.getGridY(); // py is the row
+                int px = j1.getGridX();
+                int py = j1.getGridY();
 
-                if (game.getGrid()[py][px] == 0 && j1.estVivant() && j1.peutPlacerBombe()) {
-                    System.out.println("Bombe posée par le joueur");
+                if (game.getGrid()[py][px] == 0 && j1.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                     int rayon = j1.aBonusRayon() ? 2 : 1;
                     if (j1.aBonusRayon()) {
-                        j1.consommerBonusRayon();
+                        j1.consommerBonusRayon(); // Consommer le bonus
                     }
-                    new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
+                    Bombe bomb = new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
+                    startTimer(bomb, 1);
                     j1.marquerBombePlacee();
-                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
-                    startTimer(bomb, 1); // Traitement des cores de la bombe
                     gameGridDisplay.refresh();
-                } else if (!j1.peutPlacerBombe()) {
-                    long tempsRestant = j1.getTempsRestantCooldown();
-                    System.out.println("Cooldown actif - attendez " + (tempsRestant/1000.0) + " secondes");
                 }
             }
         }

@@ -44,7 +44,15 @@ public class gameController {
     @FXML
     private VBox finMenuContainer;
     @FXML
+    private Label messageFinPartieLabel;
+    @FXML
     private Label gameStatusLabel;
+    private Timeline gameTimer;
+    private int tempsRestant = 120;
+    private List<PacMan_Personnage> joueurs = new ArrayList<>();
+    private List<Bot_Personnage> bot = new ArrayList<>();
+    private List<Bombe> listeBombes = new ArrayList<>();
+    private boolean paused = false;
     @FXML
     private VBox gameArea;
     Game game = new Game();
@@ -93,17 +101,7 @@ public class gameController {
     @FXML
     private Label resultLabel;
 
-    private Timeline gameTimer;
-    private int tempsRestant = 120;
-
-    private List<PacMan_Personnage> joueurs = new ArrayList<>();
-    private List<Bot_Personnage> bot = new ArrayList<>();
-    private List<Bombe> listeBombes = new ArrayList<>();
-
-    private boolean paused = false;
     private boolean partieEstTerminee = false;
-
-
     // Obtention des scoresMulti.txt
     private List<String> scores;
     private int derID;
@@ -239,11 +237,16 @@ public class gameController {
         refreshScores();
     }
 
-    public void initialize() {
-        System.out.println("gameController initialisé.");
-        if (startButton != null) {
-            startButton.setVisible(true);
-            startButton.setManaged(true);
+
+    private void checkBonusCollision(PacMan_Personnage joueur) {
+        List<Bonus> activeBonuses = game.getActiveBonuses();
+        for (int i = activeBonuses.size() - 1; i >= 0; i--) {
+            Bonus bonus = activeBonuses.get(i);
+            if (bonus.getBonusX() == joueur.getGridX() && bonus.getBonusY() == joueur.getGridY()) {
+                // Utiliser la nouvelle méthode générique
+                bonus.appliquerBonus(joueur);
+                break;
+            }
         }
     }
 
@@ -396,7 +399,7 @@ public class gameController {
                     if (j1.aBonusRayon()) {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
-                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
                     startTimer(bomb, 1); // Traitement des cores de la bombe
                     j1.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -432,7 +435,7 @@ public class gameController {
                     if (j2.aBonusRayon()) {
                         j2.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px2, py2, 2, game, gameGridDisplay, joueurs, bot, j2, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes); // Création de la bombe
                     startTimer(bomb, 2); // Traitement des cores de la bombe
                     j2.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -467,7 +470,7 @@ public class gameController {
                     if (j3.aBonusRayon()) {
                         j3.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px3, py3, 2, game, gameGridDisplay, joueurs, bot, j3, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes); // Création de la bombe
                     startTimer(bomb, 3); // Traitement des cores de la bombe
                     j3.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -502,13 +505,16 @@ public class gameController {
                     if (j4.aBonusRayon()) {
                         j4.consommerBonusRayon();
                     }
-                    new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes);
+                    Bombe bomb = new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes); // Création de la bombe
+                    startTimer(bomb, 4); // Traitement des cores de la bombe
                     j4.marquerBombePlacee();
                     gameGridDisplay.refresh();
                 }
             }
         }
     }
+
+
 
     @FXML
     public void replayGame() throws IOException {
@@ -644,19 +650,6 @@ public class gameController {
         }));
         gameTimer.setCycleCount(Timeline.INDEFINITE);
         gameTimer.play();
-    }
-
-
-    private void checkBonusCollision(PacMan_Personnage joueur) {
-        List<Bonus> activeBonuses = game.getActiveBonuses();
-        for (int i = activeBonuses.size() - 1; i >= 0; i--) {
-            Bonus bonus = activeBonuses.get(i);
-            if (bonus.getBonusX() == joueur.getGridX() && bonus.getBonusY() == joueur.getGridY()) {
-                // Utiliser la nouvelle méthode générique
-                bonus.appliquerBonus(joueur);
-                break;
-            }
-        }
     }
 
 
@@ -799,4 +792,5 @@ public class gameController {
             }
         }
     }
-   }
+
+}

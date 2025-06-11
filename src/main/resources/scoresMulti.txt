@@ -1,4 +1,36 @@
 # derID :
-0
+31
 # Pseudo : meilleur score
 intiPseudo 0
+Joueur_1 550
+Joueur_1 0
+Joueur_2 0
+Joueur_4 750
+Joueur_4 0
+Joueur_5 0
+Joueur_6 0
+Joueur_8 700
+Joueur_9 700
+Joueur_9 0
+Joueur_11 250
+Joueur_12 1000
+Joueur_13 1950
+Joueur_13 0
+Joueur_14 0
+Joueur_15 0
+Joueur_17 5700
+Joueur_17 0
+Joueur_18 0
+Joueur_19 0
+Joueur_21 1150
+Joueur_21 0
+Joueur_22 0
+Joueur_23 0
+Joueur_25 400
+Joueur_25 0
+Joueur_26 0
+Joueur_27 0
+Joueur_29 1250
+Joueur_29 0
+Joueur_30 0
+Joueur_31 0

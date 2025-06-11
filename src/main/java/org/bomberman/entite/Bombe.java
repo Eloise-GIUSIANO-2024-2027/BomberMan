@@ -8,12 +8,13 @@ import javafx.application.Platform;
 import org.bomberman.Bot_Personnage;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
-import org.bomberman.PacMan_Personnage; // Importez la classe PacMan_Personnage
+import org.bomberman.PacMan_Personnage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.bomberman.entite.Bonus;
 
 public class Bombe extends ImageView {
     private int x, y;
@@ -22,6 +23,7 @@ public class Bombe extends ImageView {
     private GameGrid gameGrid;
     private List<PacMan_Personnage> joueurs;
     private List<Bot_Personnage> botList;
+    // SUPPRIMÉ : List<int[]> positionsBonusPotentiels = new ArrayList<>();
     private PacMan_Personnage poseurJoueur;
     private Bot_Personnage poseurBot;
     private List<Bombe> bombes;
@@ -94,6 +96,9 @@ public class Bombe extends ImageView {
         int[][] grid = game.getGrid();
         aExplose = true;
 
+        // AJOUTÉ : Liste pour stocker les positions où générer des bonus plus tard
+        List<int[]> positionsBonusPotentiels = new ArrayList<>();
+
         // Centre - retirer la bombe
         grid[y][x] = 0;
         List<int[]> affectedCells = new ArrayList<>();
@@ -118,8 +123,8 @@ public class Bombe extends ImageView {
                     } else if (grid[ny][nx] == 2) { // Bloc cassable
                         System.out.println("Mur destructible détruit à (" + nx + ", " + ny + ")");
 
-                        // ✅ CORRECTION : Appeler generateBonusChance AVANT de modifier la grille
-                        generateBonusChance(nx, ny);
+                        // MODIFIÉ : Stocker la position pour génération de bonus plus tard
+                        positionsBonusPotentiels.add(new int[]{nx, ny});
 
                         grid[ny][nx] = 0; // Casser le bloc
                         scoreJoueur += 100; // Points pour le cassage du mur
@@ -134,7 +139,7 @@ public class Bombe extends ImageView {
             }
         }
 
-        // ✅ CORRECTION : Une seule boucle pour afficher les explosions
+        // CORRECTION : Une seule boucle pour afficher les explosions
         for (int[] cell : affectedCells) {
             int currentY = cell[0];
             int currentX = cell[1];
@@ -212,6 +217,40 @@ public class Bombe extends ImageView {
             }
         }
 
+        List<Bonus> bonusADetruire = new ArrayList<>();
+        List<Bonus> bonusActifs = game.getActiveBonuses(); // Récupérer tous les bonus actifs
+
+        for (Bonus bonus : bonusActifs) {
+            int bonusGridX = bonus.getBonusX();
+            int bonusGridY = bonus.getBonusY();
+
+            // Vérifier si la position du bonus est dans les cellules affectées par l'explosion
+            for (int[] cell : affectedCells) {
+                int affectedRow = cell[0];
+                int affectedCol = cell[1];
+
+                if (bonusGridY == affectedRow && bonusGridX == affectedCol) {
+                    bonusADetruire.add(bonus);
+                    System.out.println("Bonus " + bonus.getTypeBonusString() +
+                            " détruit par l'explosion à (" + bonusGridX + ", " + bonusGridY + ")");
+                    break; // Un bonus ne peut être détruit qu'une fois
+                }
+            }
+        }
+
+        // Détruire les bonus touchés
+        for (Bonus bonus : bonusADetruire) {
+            // Supprimer visuellement le bonus
+            Platform.runLater(() -> {
+                if (bonus.getImageView().getParent() != null) {
+                    ((Pane) bonus.getImageView().getParent()).getChildren().remove(bonus.getImageView());
+                }
+            });
+
+            // Retirer le bonus de la liste des bonus actifs du jeu
+            game.removeBonus(bonus);
+        }
+
         // EXPLOSION EN CHAÎNE : Vérifier l'impact sur les autres bombes
         List<Bombe> bombesToExplode = new ArrayList<>();
         for (Bombe autreBombe : bombes) {
@@ -237,8 +276,6 @@ public class Bombe extends ImageView {
             bombeEnChaine.exploserImmediatement();
         }
 
-
-
         game.setGrid(grid);
         gameGrid.refresh(); // Recréer seulement la grille de terrain
 
@@ -252,6 +289,13 @@ public class Bombe extends ImageView {
                 poseurJoueur.activerCooldownBombe();
             }
         });
+
+        // AJOUTÉ : Générer les nouveaux bonus APRÈS que l'explosion soit terminée
+        for (int[] position : positionsBonusPotentiels) {
+            int bonusX = position[0];
+            int bonusY = position[1];
+            generateBonusChance(bonusX, bonusY);
+        }
     }
 
     public void disparait() {
