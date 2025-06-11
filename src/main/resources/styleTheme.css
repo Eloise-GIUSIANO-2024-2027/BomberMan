@@ -47,7 +47,7 @@ Button:pressed {
     -fx-background-color: #FF7000; /* Rouge-orangé vibrant, comme une bombe ou le feu */
     -fx-text-fill: white;
     -fx-font-family: "Press Start 2P", "Consolas", monospace;
-    -fx-font-size: 6px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */
+    -fx-font-size: 5px; /* <<< Changé : Légèrement augmenté (anciennement 10px) */
     -fx-padding: 9px 13px; /* Ajuste le padding pour la nouvelle taille du texte */
     -fx-border-color: #FFA500; /* Bordure orange plus claire */
     -fx-border-width: 2px;
