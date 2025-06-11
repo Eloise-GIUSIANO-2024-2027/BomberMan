@@ -1,4 +1,3 @@
-// src/main/java/org/bomberman/gameController.java
 package org.bomberman;
 
 import javafx.event.ActionEvent;
@@ -8,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
@@ -23,9 +23,16 @@ import java.io.IOException;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class gameController {
 
@@ -55,8 +62,51 @@ public class gameController {
     @FXML
     private Button startButton; // Référence au bouton démarrer
 
+
+    // affichge des scores :
+    @FXML
+    private Label labelJ1;
+    @FXML
+    private Label labelJ2;
+    @FXML
+    private Label labelJ3;
+    @FXML
+    private Label labelJ4;
+
+
+    // Zone de saisi des pseudo
+    @FXML
+    private TextField saisiJ1;
+    private String nomJ1;
+    private int ligneJ1;
+    private int scoreJ1 = 0;
+    @FXML
+    private TextField saisiJ2;
+    private String nomJ2;
+    private int ligneJ2;
+    private int scoreJ2 = 0;
+    @FXML
+    private TextField saisiJ3;
+    private String nomJ3;
+    private int ligneJ3;
+    private int scoreJ3 = 0;
+    @FXML
+    private TextField saisiJ4;
+    private String nomJ4;
+    private int ligneJ4;
+    private int scoreJ4 = 0;
+
+    // Obtention des scoresMulti.txt
+    private List<String> scores;
+    private int derID;
+
+
+    // Partie modifiée de gameController.java
     @FXML
     private Label timerLabel;
+
+    private Timer timer;
+
 
     public void initialize() {
         System.out.println("gameController initialisé.");
@@ -222,7 +272,7 @@ public class gameController {
     }
 
     @FXML
-    public void startGame() throws IOException {
+    public void startGame() throws IOException, URISyntaxException {
         lancerTimer(); // debut du timer
 
         // Crée une instance de ta GameGrid personnalisée
@@ -273,6 +323,76 @@ public class gameController {
                 }
             });
         }
+
+        // ----- Traitement des pseudos ------
+        // Chargement du fichier des scores
+        URL resource = getClass().getResource("/scoresMulti.txt");
+        if (resource != null) {
+            scores = Files.readAllLines(Paths.get(resource.toURI()));
+        }
+        derID = Integer.parseInt(scores.get(1))+1;
+
+
+
+        if (saisiJ1.getLength() != 0) {
+            nomJ1 = saisiJ1.getText();
+            ligneJ1 = getLigneNom(nomJ1);
+            scoreJ1 = getScoreLigne(ligneJ1);
+            ajouterScore(nomJ1, 0, ligneJ1);
+            updateFile(scores);
+        } else {
+            nomJ1 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ1 = getLigneNom(nomJ1);
+            ajouterScore(nomJ1, 0, ligneJ1);
+            updateFile(scores);
+
+        }
+        if (saisiJ2.getLength() != 0) {
+            nomJ2 = saisiJ2.getText();
+            ligneJ2 = getLigneNom(nomJ2);
+            scoreJ2 = getScoreLigne(ligneJ2);
+            ajouterScore(nomJ2, 0, ligneJ2);
+            updateFile(scores);
+        } else {
+            nomJ2 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ2 = getLigneNom(nomJ2);
+            ajouterScore(nomJ2, 0, ligneJ2);
+            updateFile(scores);
+        }
+        if (saisiJ3.getLength() != 0) {
+            nomJ3 = saisiJ3.getText();
+            ligneJ3 = getLigneNom(nomJ3);
+            scoreJ3 = getScoreLigne(ligneJ3);
+            ajouterScore(nomJ3, 0, ligneJ3);
+            updateFile(scores);
+        } else {
+            nomJ3 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ3 = getLigneNom(nomJ3);
+            ajouterScore(nomJ3, 0, ligneJ3);
+            updateFile(scores);
+        }
+        if (saisiJ4.getLength() != 0) {
+            nomJ4 = saisiJ4.getText();
+            ligneJ4 = getLigneNom(nomJ4);
+            scoreJ4 = getScoreLigne(ligneJ4);
+            ajouterScore(nomJ4, 0, ligneJ4);
+            updateFile(scores);
+        } else {
+            nomJ4 = "Joueur_" + derID;
+            scores.set(1, derID + "");
+            ++derID;
+            ligneJ4 = getLigneNom(nomJ4);
+            ajouterScore(nomJ4, 0, ligneJ4);
+            updateFile(scores);
+        }
+
+        refreshScores();
     }
 
     private void checkBonusCollision(PacMan_Personnage joueur) {
@@ -289,6 +409,102 @@ public class gameController {
 
 
 
+    public int getLigneNom(String nom){
+        String nomLigne;
+        for (int i = 0; i < scores.size(); i++) {
+            String ligne = scores.get(i);
+            nomLigne = "";
+            if (ligne.charAt(0) != '#') {
+                for (int j = 0; j < ligne.length() && ligne.charAt(j) != ' '; j++) {
+                    nomLigne += ligne.charAt(j);
+                }
+            }
+            if (nomLigne.equals(nom)) return i;
+        }
+        return scores.size()-1;
+    }
+
+    public int getScoreLigne(int numLigne) {
+        String ligne = scores.get(numLigne);
+        String scoresLigne = "";
+        for (int j = ligne.length()-1; ligne.charAt(j) != ' '; j--) {
+            scoresLigne = ligne.charAt(j) + scoresLigne;
+        }
+        return Integer.parseInt(scoresLigne);
+    }
+
+    public void ajouterScore(String nom, int score, int ligne) {
+        System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+        if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
+        else if (score > getScoreLigne(ligne)){ // si le pseudo est déjà enregistré et que le score est superieur à celui enregistré
+            scores.set(ligne, nom + " " + score);
+        }
+        System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+    }
+
+    public void updateFile(List<String> lignes) throws IOException {
+        Path cheminFichier = Paths.get("src/main/resources/scoresMulti.txt");
+
+        if (!Files.exists(cheminFichier)) {
+            throw new IOException("Le fichier n'existe pas : " + cheminFichier.toAbsolutePath());
+        }
+
+        Files.write(cheminFichier, lignes);
+    }
+
+    public void refreshScores() {
+        // Maj des pseudos
+        labelJ1.setText(nomJ1 + " : " + scoreJ1);
+        labelJ2.setText(nomJ2 + " : " + scoreJ2);
+        labelJ3.setText(nomJ3 + " : " + scoreJ3);
+        labelJ4.setText(nomJ4 + " : " + scoreJ4);
+    }
+
+    private void startTimer(Bombe bomb, int joueur) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {                       // Attend que la bombe ait exploser pour
+                    try {                                       // mettre à jour le score des joueurs
+                        ajoutScoreExplosion(bomb, joueur);      //
+                    } catch (IOException e) {                   //
+                        throw new RuntimeException(e);          //
+                    }
+                });
+            }
+        }, 2010); // 2.01 secondes
+    }
+
+    private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
+        switch (Joueur){
+            case 1:
+                scoreJ1 += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreJ1
+                ajouterScore(nomJ1, scoreJ1, ligneJ1);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println(scoreJ1 + " " + bomb.getScoreJoueur());
+                break;
+            case 2:
+                scoreJ2 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ2
+                ajouterScore(nomJ2, scoreJ2, ligneJ2);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println("Joueur 2 : " + scoreJ2);
+                break;
+            case 3:
+                scoreJ3 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ3
+                ajouterScore(nomJ3, scoreJ3, ligneJ3);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println(scoreJ3 + " " + bomb.getScoreJoueur());
+                break;
+            case 4:
+                scoreJ4 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ4
+                ajouterScore(nomJ4, scoreJ4, ligneJ4);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println(scoreJ4 + " " + bomb.getScoreJoueur());
+                break;
+        }
+        refreshScores();    // Maj du bandeau des scores
+    }
 
     private void togglePause() {
         paused = !paused;
@@ -350,114 +566,118 @@ public class gameController {
                     if (j1.aBonusRayon()) {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
-                    new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
+                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
+                    startTimer(bomb, 1); // Traitement des cores de la bombe
                     j1.marquerBombePlacee();
                     gameGridDisplay.refresh();
                 }
             }
 
-                //Joueur 2
-                case Z -> {
-                    j2.deplacerEnHaut();
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
+            //Joueur 2
+            case Z -> {
+                j2.deplacerEnHaut();
+                checkBonusCollision(j2); // ← AJOUTER
+            }
 
-                case S -> {
-                    j2.deplacerEnBas(k.getHeight());
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
-                case D -> {
-                    j2.deplacerADroite(k.getWidth());
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
-                case Q -> {
-                    j2.deplacerAGauche();
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
-                case A -> {
-                    int px2 = j2.getGridX();
-                    int py2 = j2.getGridY();
+            case S -> {
+                j2.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case D -> {
+                j2.deplacerADroite(k.getWidth());
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case Q -> {
+                j2.deplacerAGauche();
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case A -> {
+                int px2 = j2.getGridX();
+                int py2 = j2.getGridY();
 
-                    if (game.getGrid()[py2][px2] == 0 && j2.peutPlacerBombe()) {
-                        System.out.println("Bombe");
-                        // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j2.aBonusRayon() ? 2 : 1;
-                        if (j2.aBonusRayon()) {
-                            j2.consommerBonusRayon();
-                        }
-                        new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes);
-                        j2.marquerBombePlacee();
-                        gameGridDisplay.refresh();
+                if (game.getGrid()[py2][px2] == 0 && j2.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
+                    int rayon = j2.aBonusRayon() ? 2 : 1;
+                    if (j2.aBonusRayon()) {
+                        j2.consommerBonusRayon();
                     }
+                    Bombe bomb = new Bombe(px2, py2, 2, game, gameGridDisplay, joueurs, bot, j2, listeBombes); // Création de la bombe
+                    startTimer(bomb, 2); // Traitement des cores de la bombe
+                    j2.marquerBombePlacee();
+                    gameGridDisplay.refresh();
                 }
+            }
 
-                //Joueur 3
-                case O -> {
-                    j3.deplacerEnHaut();
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case L -> {
-                    j3.deplacerEnBas(k.getHeight());
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case M -> {
-                    j3.deplacerADroite(k.getWidth());
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case K -> {
-                    j3.deplacerAGauche();
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case P -> {
-                    int px3 = j3.getGridX();
-                    int py3 = j3.getGridY();
+            //Joueur 3
+            case O -> {
+                j3.deplacerEnHaut();
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case L -> {
+                j3.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case M -> {
+                j3.deplacerADroite(k.getWidth());
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case K -> {
+                j3.deplacerAGauche();
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case P -> {
+                int px3 = j3.getGridX();
+                int py3 = j3.getGridY();
 
-                    if (game.getGrid()[py3][px3] == 0 && j3.peutPlacerBombe()) {
-                        System.out.println("Bombe");
-                        // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j3.aBonusRayon() ? 2 : 1;
-                        if (j3.aBonusRayon()) {
-                            j3.consommerBonusRayon();
-                        }
-                        new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes);
-                        j3.marquerBombePlacee();
-                        gameGridDisplay.refresh();
+                if (game.getGrid()[py3][px3] == 0 && j3.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
+                    int rayon = j3.aBonusRayon() ? 2 : 1;
+                    if (j3.aBonusRayon()) {
+                        j3.consommerBonusRayon();
                     }
+                    Bombe bomb = new Bombe(px3, py3, 2, game, gameGridDisplay, joueurs, bot, j3, listeBombes); // Création de la bombe
+                    startTimer(bomb, 3); // Traitement des cores de la bombe
+                    j3.marquerBombePlacee();
+                    gameGridDisplay.refresh();
                 }
+            }
 
-                //Joueur 4
-                case NUMPAD5 -> {
-                    j4.deplacerEnHaut();
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD2 -> {
-                    j4.deplacerEnBas(k.getHeight());
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD3 -> {
-                    j4.deplacerADroite(k.getWidth());
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD1 -> {
-                    j4.deplacerAGauche();
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD4 -> {
-                    int px4 = j4.getGridX();
-                    int py4 = j4.getGridY();
+            //Joueur 4
+            case NUMPAD5 -> {
+                j4.deplacerEnHaut();
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD2 -> {
+                j4.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD3 -> {
+                j4.deplacerADroite(k.getWidth());
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD1 -> {
+                j4.deplacerAGauche();
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD4 -> {
+                int px4 = j4.getGridX();
+                int py4 = j4.getGridY();
 
-                    if (game.getGrid()[py4][px4] == 0 && j4.peutPlacerBombe()) {
-                        System.out.println("Bombe");
-                        // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j4.aBonusRayon() ? 2 : 1;
-                        if (j4.aBonusRayon()) {
-                            j4.consommerBonusRayon();
-                        }
-                        new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes);
-                        j4.marquerBombePlacee();
-                        gameGridDisplay.refresh();
+                if (game.getGrid()[py4][px4] == 0 && j4.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
+                    int rayon = j4.aBonusRayon() ? 2 : 1;
+                    if (j4.aBonusRayon()) {
+                        j4.consommerBonusRayon();
                     }
+                    Bombe bomb = new Bombe(px4, py4, 2, game, gameGridDisplay, joueurs, bot, j4, listeBombes); // Création de la bombe
+                    startTimer(bomb, 4); // Traitement des cores de la bombe
+                    j4.marquerBombePlacee();
+                    gameGridDisplay.refresh();
                 }
             }
         }
     }
+}
