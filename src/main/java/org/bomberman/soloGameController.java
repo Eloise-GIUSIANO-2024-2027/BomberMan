@@ -32,7 +32,7 @@ public class soloGameController {
     private boolean isPaused = false;
 
     @FXML
-    private VBox gameAreaStackPane; // Référence au StackPane dans FXML
+    private VBox gameAreaStackPane; // Référence au  FXML
     Game game = new Game();
     GameGrid gameGridDisplay = new GameGrid(game);
 

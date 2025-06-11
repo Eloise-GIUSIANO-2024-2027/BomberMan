@@ -123,6 +123,36 @@ public class Bombe extends ImageView {
             }
         }
 
+        for (int[] cell : affectedCells) {
+            int currentY = cell[0];
+            int currentX = cell[1];
+
+            // Créer une nouvelle ImageView pour l'explosion
+            ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/fxs/explosion.gif")), 48, 48, false, false));
+            explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+            explosionFx.setFitHeight(48);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(explosionFx);
+                GridPane.setColumnIndex(explosionFx, currentX);
+                GridPane.setRowIndex(explosionFx, currentY);
+                explosionFx.toFront(); // Assurer que l'explosion est visible
+            });
+
+            // Timer pour retirer l'image d'explosion après un court délai
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        if (explosionFx.getParent() instanceof Pane pane) {
+                            pane.getChildren().remove(explosionFx);
+                        }
+                    });
+                }
+            }, 300);
+        }
+
         for (PacMan_Personnage joueur : joueurs) {
             // Vérifier si le joueur est toujours vivant
             if (joueur.estVivant()) {

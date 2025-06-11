@@ -31,6 +31,8 @@ public class gameController {
     private VBox pauseMenuContainer;
     @FXML
     private VBox finMenuContainer;
+    @FXML
+    private Label messageFinPartieLabel;
 
     private Timeline gameTimer;
     private int tempsRestant = 120;
@@ -44,6 +46,8 @@ public class gameController {
     @FXML
     private VBox gameArea;
     Game game = new Game();
+
+    private boolean partieTerminee = false;
 
     private GameGrid gameGridDisplay;
     @FXML
@@ -273,11 +277,14 @@ public class gameController {
     private void verifierFinDePartie() {
         long joueursEnVie = joueurs.stream().filter(PacMan_Personnage::estVivant).count();
 
-        if (joueursEnVie <= 1) {
-            if (gameTimer != null) {
-                gameTimer.stop();
+        for (PacMan_Personnage joueur : joueurs) {
+            if (joueursEnVie <= 1) {
+                if (gameTimer != null) {
+                    gameTimer.stop();
+                    finDePartie("Le joueur " + joueur.getPlayerNumber() + " a GAGNE LA PARTIE !");
+
+                }
             }
-            finDePartie();
         }
     }
 
@@ -286,6 +293,20 @@ public class gameController {
         System.out.println("Temps écoulé ! Partie terminée.");
         Platform.runLater(() -> {
             // afficher un message ou recharger la scène
+            finMenuContainer.setVisible(true);
+            finMenuContainer.setManaged(true);
+        });
+    }
+
+    private void finDePartie(String message) {
+        if (partieTerminee) return; // Empêcher la fin de partie multiple
+        partieTerminee = true;
+
+        if (gameTimer != null) {
+            gameTimer.stop(); // Arrêter le timer
+        }
+        Platform.runLater(() -> {
+            messageFinPartieLabel.setText(message); // Affiche le message de fin de partie
             finMenuContainer.setVisible(true);
             finMenuContainer.setManaged(true);
         });

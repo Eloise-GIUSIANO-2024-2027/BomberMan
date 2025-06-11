@@ -30,7 +30,7 @@
                 <Insets top="250.0" /> </padding>
             <Button text="MULTIJOUEUR GAME" onAction="#startMultiGame"  />
             <Button text="SOLO GAME" onAction="#startSoloMode"  />
-            <Button text="CAPTURE THE FLAG GAME" onAction="#changementTheme" />
+            <Button text="CAPTURE THE FLAG GAME" onAction="#startCTF" />
             <Button text="THEME" onAction="#changementTheme" />
             <Button fx:id="regleCommande" text="CONSIGNE ET COMMANDE" onAction="#regleCommande" />
             <Button text="EXIT" onAction="#quittertout" />
