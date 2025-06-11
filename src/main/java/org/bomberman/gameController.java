@@ -24,8 +24,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class gameController {
 
@@ -34,7 +36,18 @@ public class gameController {
     @FXML
     private VBox finMenuContainer;
     @FXML
-    private Label messageFinPartieLabel;
+    private Label gameStatusLabel;
+    @FXML
+    private VBox gameArea;
+    @FXML
+    private Button startButton; // Référence au bouton démarrer
+    @FXML
+    private Label timerLabel;
+    @FXML
+    private Label resultLabel;
+
+
+    Game game = new Game();
 
     private Timeline gameTimer;
     private int tempsRestant = 120;
@@ -44,19 +57,63 @@ public class gameController {
     private List<Bombe> listeBombes = new ArrayList<>();
 
     private boolean paused = false;
-
-    @FXML
-    private VBox gameArea;
-    Game game = new Game();
-
-    private boolean partieTerminee = false;
-
+    private boolean partieEstTerminee = false;
     private GameGrid gameGridDisplay;
-    @FXML
-    private Button startButton; // Référence au bouton démarrer
+
 
     @FXML
-    private Label timerLabel;
+    public void startGame() throws IOException {
+        lancerTimer(); // debut du timer
+
+        // Crée une instance de ta GameGrid personnalisée
+        gameGridDisplay = new GameGrid(game);
+
+        gameArea.getChildren().clear();
+
+        // Créer un conteneur avec couches
+        StackPane gameContainer = new StackPane();
+
+        // Ajouter la grille de terrain
+        gameContainer.getChildren().add(gameGridDisplay);
+
+        // Ajouter la couche pour les entités (personnages + bombes)
+        Pane entityLayer = gameGridDisplay.getEntityLayer();
+        gameContainer.getChildren().add(entityLayer);
+
+        gameArea.getChildren().add(gameContainer);
+
+        // Créer les personnages
+        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
+        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
+        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
+        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
+
+        joueurs.add(pacman);
+        joueurs.add(fantome);
+        joueurs.add(pacman2);
+        joueurs.add(pacman3);
+
+        // Ajouter les personnages DIRECTEMENT à la grille comme avant
+        gameGridDisplay.getChildren().addAll(joueurs);
+
+        // Focus et événements
+        gameContainer.requestFocus();
+        gameContainer.setFocusTraversable(true);
+
+        Scene scene = gameArea.getScene();
+        if (scene != null) {
+            scene.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    togglePause();
+                }
+
+                if (!paused) {
+                    // Appelle ta méthode de déplacement
+                    handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
+                }
+            });
+        }
+    }
 
     public void initialize() {
         System.out.println("gameController initialisé.");
@@ -66,97 +123,170 @@ public class gameController {
         }
     }
 
-    @FXML
-    public void retourMenu(ActionEvent event) {
-        try {
-            // Charger le FXML du menu
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
-            Parent menuRoot = loader.load();
-            Scene menuScene = new Scene(menuRoot, 820, 650);
 
-            String cssPath = getClass().getResource("/styleMenu.css").toExternalForm();
-            if (cssPath != null) {
-                menuScene.getStylesheets().add(cssPath);
-            } else {
-                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+
+    private void togglePause() {
+        paused = !paused;
+
+        pauseMenuContainer.setVisible(paused);
+        pauseMenuContainer.setManaged(paused);
+
+        if (paused) {
+            if (gameTimer != null) {
+                gameTimer.pause();
             }
-            //Obtenir le Stage actuel et changer la scène
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(menuScene);
-            stage.setTitle("Super Bomberman"); // Remettre le titre du menu
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erreur lors du chargement du menu : " + e.getMessage());
+        } else {
+            if (gameTimer != null) {
+                gameTimer.play();
+            }
         }
     }
 
-    @FXML
-    public void resumeGame() {
-        paused = false;
-        pauseMenuContainer.setVisible(false);
-        pauseMenuContainer.setManaged(false);
-        if (gameTimer != null) {
-            gameTimer.play();
-        }
-    }
 
-    @FXML
-    public void quittertout() {
-        Platform.exit(); // Fait sortir l'application JavaFX
-        System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
+    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
+        GameGrid k = gameGridDisplay;
 
-    }
-
-
-    private void lancerTimer() {
-        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            tempsRestant--;
-            int minutes = tempsRestant / 60;
-            int secondes = tempsRestant % 60;
-            String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
-
-            // Met à jour le texte du Label dans l'interface
-            Platform.runLater(() -> timerLabel.setText(tempsFormate));
-            verifierFinDePartie();
-
-            if (tempsRestant <= 0) {
-                gameTimer.stop();
-                partieTerminee = true;
-                timerLabel.setText("TIMEUR : 00:00");
+        switch (event.getCode()) {
+            //Joueur 1
+            case T -> {
+                j1.deplacerEnHaut();
+                checkBonusCollision(j1);
             }
-        }));
-        gameTimer.setCycleCount(Timeline.INDEFINITE);
-        gameTimer.play();
-    }
+            case G -> {
+                j1.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j1);
+            }
+            case H -> {
+                j1.deplacerADroite(k.getWidth());
+                checkBonusCollision(j1); // ← AJOUTER
+            }
+            case F -> {
+                j1.deplacerAGauche();
+                checkBonusCollision(j1); // ← AJOUTER
+            }
+            case U -> {
+                int px = j1.getGridX();
+                int py = j1.getGridY();
 
-    private void verifierFinDePartie() {
-        long joueursEnVie = joueurs.stream().filter(PacMan_Personnage::estVivant).count();
+                if (game.getGrid()[px][py] == 0 && j1.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
+                    int rayon = j1.aBonusRayon() ? 2 : 1;
+                    if (j1.aBonusRayon()) {
+                        j1.consommerBonusRayon(); // Consommer le bonus
+                    }
+                    new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
+                    j1.marquerBombePlacee();
+                    gameGridDisplay.refresh();
+                }
+            }
 
-        for (PacMan_Personnage joueur : joueurs) {
-            if (joueursEnVie <= 1) {
-                if (gameTimer != null) {
-                    gameTimer.stop();
-                    finDePartie("Le joueur " + joueur.getPlayerNumber() + " a GAGNE LA PARTIE !");
+            //Joueur 2
+            case Z -> {
+                j2.deplacerEnHaut();
+                checkBonusCollision(j2); // ← AJOUTER
+            }
 
+            case S -> {
+                j2.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case D -> {
+                j2.deplacerADroite(k.getWidth());
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case Q -> {
+                j2.deplacerAGauche();
+                checkBonusCollision(j2); // ← AJOUTER
+            }
+            case A -> {
+                int px2 = j2.getGridX();
+                int py2 = j2.getGridY();
+
+                if (game.getGrid()[py2][px2] == 0 && j2.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
+                    int rayon = j2.aBonusRayon() ? 2 : 1;
+                    if (j2.aBonusRayon()) {
+                        j2.consommerBonusRayon();
+                    }
+                    new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes);
+                    j2.marquerBombePlacee();
+                    gameGridDisplay.refresh();
+                }
+            }
+
+            //Joueur 3
+            case O -> {
+                j3.deplacerEnHaut();
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case L -> {
+                j3.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case M -> {
+                j3.deplacerADroite(k.getWidth());
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case K -> {
+                j3.deplacerAGauche();
+                checkBonusCollision(j3); // ← AJOUTER
+            }
+            case P -> {
+                int px3 = j3.getGridX();
+                int py3 = j3.getGridY();
+
+                if (game.getGrid()[py3][px3] == 0 && j3.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
+                    int rayon = j3.aBonusRayon() ? 2 : 1;
+                    if (j3.aBonusRayon()) {
+                        j3.consommerBonusRayon();
+                    }
+                    new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes);
+                    j3.marquerBombePlacee();
+                    gameGridDisplay.refresh();
+                }
+            }
+
+            //Joueur 4
+            case NUMPAD5 -> {
+                j4.deplacerEnHaut();
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD2 -> {
+                j4.deplacerEnBas(k.getHeight());
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD3 -> {
+                j4.deplacerADroite(k.getWidth());
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD1 -> {
+                j4.deplacerAGauche();
+                checkBonusCollision(j4); // ← AJOUTER
+            }
+            case NUMPAD4 -> {
+                int px4 = j4.getGridX();
+                int py4 = j4.getGridY();
+
+                if (game.getGrid()[py4][px4] == 0 && j4.peutPlacerBombe()) {
+                    System.out.println("Bombe");
+                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
+                    int rayon = j4.aBonusRayon() ? 2 : 1;
+                    if (j4.aBonusRayon()) {
+                        j4.consommerBonusRayon();
+                    }
+                    new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes);
+                    j4.marquerBombePlacee();
+                    gameGridDisplay.refresh();
                 }
             }
         }
     }
 
-    private void finDePartie(String message) {
-        if (partieTerminee) return; // Empêcher la fin de partie multiple
 
-        if (gameTimer != null) {
-            gameTimer.stop(); // Arrêter le timer
-        }
-        Platform.runLater(() -> {
-            messageFinPartieLabel.setText(message); // Affiche le message de fin de partie
-            finMenuContainer.setVisible(true);
-            finMenuContainer.setManaged(true);
-        });
-    }
 
     @FXML
     public void replayGame() throws IOException {
@@ -222,58 +352,78 @@ public class gameController {
     }
 
     @FXML
-    public void startGame() throws IOException {
-        lancerTimer(); // debut du timer
+    public void retourMenu(ActionEvent event) {
+        try {
+            // Charger le FXML du menu
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
+            Parent menuRoot = loader.load();
+            Scene menuScene = new Scene(menuRoot, 820, 650);
 
-        // Crée une instance de ta GameGrid personnalisée
-        gameGridDisplay = new GameGrid(game);
+            String cssPath = getClass().getResource("/styleMenu.css").toExternalForm();
+            if (cssPath != null) {
+                menuScene.getStylesheets().add(cssPath);
+            } else {
+                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
+            }
+            //Obtenir le Stage actuel et changer la scène
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(menuScene);
+            stage.setTitle("Super Bomberman"); // Remettre le titre du menu
+            stage.show();
 
-        gameArea.getChildren().clear();
-
-        // Créer un conteneur avec couches
-        StackPane gameContainer = new StackPane();
-
-        // Ajouter la grille de terrain
-        gameContainer.getChildren().add(gameGridDisplay);
-
-        // Ajouter la couche pour les entités (personnages + bombes)
-        Pane entityLayer = gameGridDisplay.getEntityLayer();
-        gameContainer.getChildren().add(entityLayer);
-
-        gameArea.getChildren().add(gameContainer);
-
-        // Créer les personnages
-        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
-
-        joueurs.add(pacman);
-        joueurs.add(fantome);
-        joueurs.add(pacman2);
-        joueurs.add(pacman3);
-
-        // Ajouter les personnages DIRECTEMENT à la grille comme avant
-        gameGridDisplay.getChildren().addAll(joueurs);
-
-        // Focus et événements
-        gameContainer.requestFocus();
-        gameContainer.setFocusTraversable(true);
-
-        Scene scene = gameArea.getScene();
-        if (scene != null) {
-            scene.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ESCAPE) {
-                    togglePause();
-                }
-
-                if (!paused) {
-                    // Appelle ta méthode de déplacement
-                    handlePlayerMovement(event, pacman, fantome, pacman2, pacman3);
-                }
-            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors du chargement du menu : " + e.getMessage());
         }
     }
+
+    @FXML
+    public void resumeGame() {
+        paused = false;
+        pauseMenuContainer.setVisible(false);
+        pauseMenuContainer.setManaged(false);
+        if (gameTimer != null) {
+            gameTimer.play();
+        }
+    }
+
+    @FXML
+    public void quittertout() {
+        Platform.exit(); // Fait sortir l'application JavaFX
+        System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
+
+    }
+
+
+    private void lancerTimer() {
+        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            // Ne pas décrémenter ni vérifier si la partie est déjà terminée pour éviter des appels multiples
+            if (partieEstTerminee) {
+                return; // Sortir si la partie est déjà finie
+            }
+
+            tempsRestant--;
+            int minutes = tempsRestant / 60;
+            int secondes = tempsRestant % 60;
+            String tempsFormate = String.format("TIMEUR : %02d:%02d", minutes, secondes);
+
+            Platform.runLater(() -> timerLabel.setText(tempsFormate));
+
+            // Toujours vérifier la fin de partie par élimination à chaque tic du timer
+            verifierFinDePartieParElimination();
+
+            // C'EST ICI QUE LA FIN DE PARTIE PAR TEMPS ÉCOULÉ DOIT ÊTRE GÉRÉE
+            if (tempsRestant <= 0) {
+                gameTimer.stop();
+                partieEstTerminee = true; // Marquez la partie comme terminée ici
+                timerLabel.setText("TIMEUR : 00:00");
+                finDePartieParTemps(); // Appelez la méthode spécifique pour la fin par temps
+            }
+        }));
+        gameTimer.setCycleCount(Timeline.INDEFINITE);
+        gameTimer.play();
+    }
+
 
     private void checkBonusCollision(PacMan_Personnage joueur) {
         List<Bonus> activeBonuses = game.getActiveBonuses();
@@ -288,176 +438,144 @@ public class gameController {
     }
 
 
+    // NOUVELLE MÉTHODE: Vérification de l'état des joueurs pendant le jeu (fin par élimination)
+    private void verifierFinDePartieParElimination() {
+        if (partieEstTerminee) { // S'assurer que la logique ne s'exécute pas si déjà terminé
+            return;
+        }
 
+        List<PacMan_Personnage> joueursHumainsEnVie = joueurs.stream()
+                .filter(PacMan_Personnage::estVivant)
+                .collect(Collectors.toList());
 
-    private void togglePause() {
-        paused = !paused;
+        if (joueursHumainsEnVie.size() <= 1) { // Il ne reste plus qu'un ou aucun joueur humain
+            arreterJeu(); // Arrêter le timer du jeu (ceci mettra 'partieEstTerminee' à true via finDePartie... ou devrait)
 
-        pauseMenuContainer.setVisible(paused);
-        pauseMenuContainer.setManaged(paused);
+            // Définir le message de fin de partie basé sur le nombre de survivants
+            String mainMessage;
+            String resultDetailsMessage;
+            boolean victoireGlobale;
 
-        if (paused) {
-            if (gameTimer != null) {
-                gameTimer.pause();
+            if (joueursHumainsEnVie.size() == 1) {
+                // Un seul joueur est vivant : c'est le vainqueur par élimination
+                PacMan_Personnage vainqueur = joueursHumainsEnVie.get(0);
+                mainMessage = "JOUEUR " + vainqueur.getPlayerNumber() + " A GAGNÉ !";
+                resultDetailsMessage = "FÉLICITATIONS JOUEUR " + vainqueur.getPlayerNumber() + " !";
+                victoireGlobale = true;
+            } else {
+                // Aucun joueur humain n'est vivant : défaite générale
+                mainMessage = "GAME OVER !";
+                resultDetailsMessage = "AUCUN GAGNANT. Tout le monde a été éliminé.";
+                victoireGlobale = false;
             }
+
+            // Déclencher l'affichage du menu de fin avec le message approprié
+            Platform.runLater(() -> {
+                configurerAffichageFinDePartie(mainMessage, resultDetailsMessage, victoireGlobale);
+                finMenuContainer.setVisible(true);
+                finMenuContainer.setManaged(true);
+            });
+            partieEstTerminee = true; // Marquez la partie comme terminée ici après avoir déclenché l'affichage
+        }
+        // Si plus d'un joueur est en vie, la partie continue.
+    }
+
+
+    // NOUVELLE MÉTHODE: Gérer la fin de partie quand le temps est écoulé
+    private void finDePartieParTemps() {
+        if (partieEstTerminee) { // S'assurer que la logique ne s'exécute pas si déjà terminé
+            return;
+        }
+
+        // Le timer a déjà été arrêté par 'lancerTimer()'
+        partieEstTerminee = true; // Marquez la partie comme terminée ici
+
+        List<PacMan_Personnage> joueursVivants = joueurs.stream()
+                .filter(PacMan_Personnage::estVivant)
+                .collect(Collectors.toList());
+
+        String mainMessage;
+        String resultMenuMessage;
+        boolean victoireGlobale = false;
+
+        if (joueursVivants.isEmpty()) {
+            // Personne n'a survécu avant la fin du temps
+            mainMessage = "TEMPS ÉCOULÉ !";
+            resultMenuMessage = "AUCUN GAGNANT.";
+            victoireGlobale = false; // Considéré comme une défaite générale
+        } else if (joueursVivants.size() == 1) {
+            // Un seul joueur a survécu jusqu'à la fin du temps
+            PacMan_Personnage vainqueur = joueursVivants.get(0);
+            mainMessage = "TEMPS ÉCOULÉ ! JOUEUR " + vainqueur.getPlayerNumber() + " EST LE DERNIER SURVIVANT !";
+            resultMenuMessage = "FÉLICITATIONS JOUEUR " + vainqueur.getPlayerNumber() + " !";
+            victoireGlobale = true;
         } else {
-            if (gameTimer != null) {
-                gameTimer.play();
+            // Plusieurs joueurs sont encore vivants à la fin du temps : CLASSEMENT !
+            // Assurez-vous d'avoir une méthode getScore() dans PacMan_Personnage
+//            // Si vous n'avez pas de score, vous pouvez les lister sans ordre ou par numéro de joueur
+//            joueursVivants.sort(Comparator.comparingInt(PacMan_Personnage::getScore).reversed());
+
+            StringBuilder classement = new StringBuilder("TEMPS ÉCOULÉ ! CLASSEMENT FINAL :\n");
+            for (int i = 0; i < joueursVivants.size(); i++) {
+                PacMan_Personnage j = joueursVivants.get(i);
+                classement.append((i + 1)).append(". Joueur ").append(j.getPlayerNumber());
+                // Si getScore() existe :
+//                if (j.getScore() != 0) { // Vérifiez si getScore() est pertinent
+//                    classement.append(" (Score: ").append(j.getScore()).append(")");
+//                }
+                classement.append("\n");
+            }
+            mainMessage = "TEMPS ÉCOULÉ !";
+            resultMenuMessage = classement.toString();
+            victoireGlobale = true; // Ceux qui sont encore vivants sont considérés comme des "survivants"
+        }
+
+        boolean finalVictoireGlobale = victoireGlobale;
+        Platform.runLater(() -> {
+            configurerAffichageFinDePartie(mainMessage, resultMenuMessage, finalVictoireGlobale);
+            finMenuContainer.setVisible(true);
+            finMenuContainer.setManaged(true);
+        });
+    }
+
+    // MÉTHODE Arrêter le jeu immédiatement
+    private void arreterJeu() {
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+    }
+
+    // MÉTHODE Accepte les messages et le statut de victoire (cette méthode est bonne)
+    private void configurerAffichageFinDePartie(String mainMessage, String resultDetailsMessage, boolean estVictoireGlobale) {
+        // ... (votre code existant pour configurer les labels)
+        if (gameStatusLabel != null) {
+            gameStatusLabel.setText(mainMessage);
+            gameStatusLabel.setVisible(true);
+            gameStatusLabel.setManaged(true);
+
+            gameStatusLabel.getStyleClass().add("game-status-label");
+            gameStatusLabel.getStyleClass().remove("victoire");
+            gameStatusLabel.getStyleClass().remove("defaite");
+
+            if (estVictoireGlobale) {
+                gameStatusLabel.getStyleClass().add("victoire");
+            } else {
+                gameStatusLabel.getStyleClass().add("defaite");
+            }
+        }
+
+        if (resultLabel != null) {
+            resultLabel.setText(resultDetailsMessage);
+            resultLabel.getStyleClass().add("result-label");
+            resultLabel.getStyleClass().remove("victoire");
+            resultLabel.getStyleClass().remove("defaite");
+
+            if (estVictoireGlobale) {
+                resultLabel.getStyleClass().add("victoire");
+            } else {
+                resultLabel.getStyleClass().add("defaite");
             }
         }
     }
 
-
-//    private void finDePartie() {
-//        System.out.println("Temps écoulé ! Partie terminée.");
-//        Platform.runLater(() -> {
-//            // afficher un message ou recharger la scène
-//            finMenuContainer.setVisible(true);
-//            finMenuContainer.setManaged(true);
-//        });
-//    }
-
-
-    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
-        GameGrid k = gameGridDisplay;
-
-        switch (event.getCode()) {
-            //Joueur 1
-            case T -> {
-                j1.deplacerEnHaut();
-                checkBonusCollision(j1);
-            }
-            case G -> {
-                j1.deplacerEnBas(k.getHeight());
-                checkBonusCollision(j1);
-            }
-            case H -> {
-                j1.deplacerADroite(k.getWidth());
-                checkBonusCollision(j1); // ← AJOUTER
-            }
-            case F -> {
-                j1.deplacerAGauche();
-                checkBonusCollision(j1); // ← AJOUTER
-            }
-            case U -> {
-                int px = j1.getGridX();
-                int py = j1.getGridY();
-
-                if (game.getGrid()[px][py] == 0 && j1.peutPlacerBombe()) {
-                    System.out.println("Bombe");
-                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                    int rayon = j1.aBonusRayon() ? 2 : 1;
-                    if (j1.aBonusRayon()) {
-                        j1.consommerBonusRayon(); // Consommer le bonus
-                    }
-                    new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
-                    j1.marquerBombePlacee();
-                    gameGridDisplay.refresh();
-                }
-            }
-
-                //Joueur 2
-                case Z -> {
-                    j2.deplacerEnHaut();
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
-
-                case S -> {
-                    j2.deplacerEnBas(k.getHeight());
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
-                case D -> {
-                    j2.deplacerADroite(k.getWidth());
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
-                case Q -> {
-                    j2.deplacerAGauche();
-                    checkBonusCollision(j2); // ← AJOUTER
-                }
-                case A -> {
-                    int px2 = j2.getGridX();
-                    int py2 = j2.getGridY();
-
-                    if (game.getGrid()[py2][px2] == 0 && j2.peutPlacerBombe()) {
-                        System.out.println("Bombe");
-                        // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j2.aBonusRayon() ? 2 : 1;
-                        if (j2.aBonusRayon()) {
-                            j2.consommerBonusRayon();
-                        }
-                        new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes);
-                        j2.marquerBombePlacee();
-                        gameGridDisplay.refresh();
-                    }
-                }
-
-                //Joueur 3
-                case O -> {
-                    j3.deplacerEnHaut();
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case L -> {
-                    j3.deplacerEnBas(k.getHeight());
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case M -> {
-                    j3.deplacerADroite(k.getWidth());
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case K -> {
-                    j3.deplacerAGauche();
-                    checkBonusCollision(j3); // ← AJOUTER
-                }
-                case P -> {
-                    int px3 = j3.getGridX();
-                    int py3 = j3.getGridY();
-
-                    if (game.getGrid()[py3][px3] == 0 && j3.peutPlacerBombe()) {
-                        System.out.println("Bombe");
-                        // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j3.aBonusRayon() ? 2 : 1;
-                        if (j3.aBonusRayon()) {
-                            j3.consommerBonusRayon();
-                        }
-                        new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes);
-                        j3.marquerBombePlacee();
-                        gameGridDisplay.refresh();
-                    }
-                }
-
-                //Joueur 4
-                case NUMPAD5 -> {
-                    j4.deplacerEnHaut();
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD2 -> {
-                    j4.deplacerEnBas(k.getHeight());
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD3 -> {
-                    j4.deplacerADroite(k.getWidth());
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD1 -> {
-                    j4.deplacerAGauche();
-                    checkBonusCollision(j4); // ← AJOUTER
-                }
-                case NUMPAD4 -> {
-                    int px4 = j4.getGridX();
-                    int py4 = j4.getGridY();
-
-                    if (game.getGrid()[py4][px4] == 0 && j4.peutPlacerBombe()) {
-                        System.out.println("Bombe");
-                        // ← MODIFIER : Vérifier si le joueur a le bonus rayon
-                        int rayon = j4.aBonusRayon() ? 2 : 1;
-                        if (j4.aBonusRayon()) {
-                            j4.consommerBonusRayon();
-                        }
-                        new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes);
-                        j4.marquerBombePlacee();
-                        gameGridDisplay.refresh();
-                    }
-                }
-            }
-        }
-    }
+}

@@ -423,9 +423,9 @@ public class CTFcontroller {
         PacMan_Personnage pacman3 = new Pacman(game, player4StartX, player4StartY, 4);
 
         Drapeau drapeau1 = new Drapeau(player1StartX, player1StartY, pacman, Color.YELLOW);
-        Drapeau drapeau2 = new Drapeau(player2StartX, player2StartY, fantome, Color.BLUE);
-        Drapeau drapeau3 = new Drapeau(player3StartX, player3StartY, pacman2, Color.RED);
-        Drapeau drapeau4 = new Drapeau(player4StartX, player4StartY, pacman3, Color.GREEN);
+        Drapeau drapeau2 = new Drapeau(player2StartX, player2StartY, fantome, Color.CYAN);
+        Drapeau drapeau3 = new Drapeau(player3StartX, player3StartY, pacman2, Color.LIGHTGREEN);
+        Drapeau drapeau4 = new Drapeau(player4StartX, player4StartY, pacman3, Color.RED);
 
         listeDrapeaux.add(drapeau1);
         listeDrapeaux.add(drapeau2);

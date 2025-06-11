@@ -28,29 +28,24 @@ public class soloGameController {
 
     @FXML
     private VBox pauseMenuContainer;
-
-    private boolean isPaused = false;
-
     @FXML
-
     private VBox gameAreaStackPane; // Référence au  FXML
-    Game game = new Game();
-    GameGrid gameGridDisplay = new GameGrid(game);
-
     @FXML
     private Button startButton;
     @FXML
     private Label timerLabel;
     @FXML
     private VBox finMenuContainer;
-
     // NOUVEAU: Label pour afficher le statut de la partie
     @FXML
     private Label gameStatusLabel;
-
     //  NOUVEAU: Label pour le résultat dans le menu de fin
     @FXML
     private Label resultLabel;
+
+    Game game = new Game();
+    GameGrid gameGridDisplay = new GameGrid(game);
+    private boolean isPaused = false;
 
     private Timeline gameTimer;
     private Timeline botTimer;
@@ -331,45 +326,36 @@ public class soloGameController {
     private void configurerAffichageFinDePartie(String message) {
         boolean victoire = message.contains("GAGNÉ") || message.contains("VICTOIRE");
 
-        //  Configuration du label principal
+        // Configuration du label principal (gameStatusLabel)
         if (gameStatusLabel != null) {
             gameStatusLabel.setText(message);
             gameStatusLabel.setVisible(true);
             gameStatusLabel.setManaged(true);
 
+            // Appliquer la classe de base
+            gameStatusLabel.getStyleClass().add("game-status-label");
+
             if (victoire) {
-                // Style pour la victoire (vert doré)
-                gameStatusLabel.setStyle(
-                        "-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: white; " +
-                                "-fx-background-color: linear-gradient(to bottom, #228B22, #32CD32); " +
-                                "-fx-padding: 40px; -fx-background-radius: 20px; -fx-alignment: center; " +
-                                "-fx-effect: dropshadow(gaussian, black, 20, 0, 0, 0);"
-                );
+                gameStatusLabel.getStyleClass().remove("defaite"); // S'assurer que l'autre classe est retirée
+                gameStatusLabel.getStyleClass().add("victoire");
             } else {
-                // Style pour la défaite (rouge)
-                gameStatusLabel.setStyle(
-                        "-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: white; " +
-                                "-fx-background-color: linear-gradient(to bottom, #DC143C, #B22222); " +
-                                "-fx-padding: 40px; -fx-background-radius: 20px; -fx-alignment: center; " +
-                                "-fx-effect: dropshadow(gaussian, black, 20, 0, 0, 0);"
-                );
+                gameStatusLabel.getStyleClass().remove("victoire"); // S'assurer que l'autre classe est retirée
+                gameStatusLabel.getStyleClass().add("defaite");
             }
         }
 
-        // Configuration du label dans le menu de fin
+        // Configuration du label dans le menu de fin (resultLabel)
         if (resultLabel != null) {
+            resultLabel.getStyleClass().add("result-label"); // Appliquer la classe de base
+
             if (victoire) {
                 resultLabel.setText("FÉLICITATIONS ! ");
-                resultLabel.setStyle(
-                        "-fx-font-size: 32px; -fx-font-weight: bold; " +
-                                "-fx-text-fill: gold; -fx-effect: dropshadow(gaussian, green, 5, 0, 0, 0);"
-                );
+                resultLabel.getStyleClass().remove("defaite");
+                resultLabel.getStyleClass().add("victoire");
             } else {
                 resultLabel.setText(" GAME OVER ");
-                resultLabel.setStyle(
-                        "-fx-font-size: 32px; -fx-font-weight: bold; " +
-                                "-fx-text-fill: red; -fx-effect: dropshadow(gaussian, darkred, 5, 0, 0, 0);"
-                );
+                resultLabel.getStyleClass().remove("victoire");
+                resultLabel.getStyleClass().add("defaite");
             }
         }
     }
