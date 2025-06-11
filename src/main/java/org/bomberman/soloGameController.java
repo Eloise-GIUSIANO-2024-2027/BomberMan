@@ -455,6 +455,7 @@ public class soloGameController {
         game = new Game();
         gameGridDisplay = new GameGrid(game);
 
+
         gameAreaStackPane.getChildren().clear();
         gameAreaStackPane.getChildren().add(gameGridDisplay);
 

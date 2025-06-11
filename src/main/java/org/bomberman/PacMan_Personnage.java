@@ -37,13 +37,15 @@ public class PacMan_Personnage extends Group  {
     public boolean bonusRayonActif = false;
 
     private long dernierePlacementBombe = 0;
-    private static final long COOLDOWN_BOMBE = 1000;
+    private static final long COOLDOWN_BOMBE = 350;
 
     private boolean aBonusRayon = false; // Pour le bonus de rayon
     private boolean canPlaceBomb = true;
 
     public String nom;
     public int score;
+
+    public int getScore() {return this.score;}
 
     // ← AJOUTER ces méthodes
     public void setVitesse(double vitesse) {

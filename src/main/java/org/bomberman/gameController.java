@@ -43,10 +43,6 @@ public class gameController {
     private VBox pauseMenuContainer;
     @FXML
     private VBox finMenuContainer;
-    @FXML
-    private Label messageFinPartieLabel;
-    @FXML
-    private Label gameStatusLabel;
     private Timeline gameTimer;
     private int tempsRestant = 120;
     private List<PacMan_Personnage> joueurs = new ArrayList<>();
@@ -56,13 +52,7 @@ public class gameController {
     @FXML
     private VBox gameArea;
     Game game = new Game();
-
-    private boolean partieTerminee = false;
-
     private GameGrid gameGridDisplay;
-    @FXML
-    private Button startButton; // Référence au bouton démarrer
-
 
     // affichge des scores :
     @FXML
@@ -99,6 +89,8 @@ public class gameController {
 
 
     @FXML
+    private Label messageFinPartieLabel;
+    @FXML
     private Label resultLabel;
 
     private boolean partieEstTerminee = false;
@@ -106,15 +98,13 @@ public class gameController {
     private List<String> scores;
     private int derID;
 
-
-    // Partie modifiée de gameController.java
     @FXML
     private Label timerLabel;
-
     private Timer timer;
 
     @FXML
     public void startGame() throws IOException, URISyntaxException {
+        arreterJeu();
         lancerTimer(); // debut du timer
 
         // Crée une instance de ta GameGrid personnalisée
@@ -195,14 +185,14 @@ public class gameController {
         }
         if (saisiJ2.getLength() != 0) {
             nomJ2 = saisiJ2.getText();
-            joueurs.get(1).nom = nomJ1;
+            joueurs.get(1).nom = nomJ2;
             ligneJ2 = getLigneNom(nomJ2);
             scoreJ2 = getScoreLigne(ligneJ2);
             ajouterScore(nomJ2, 0, ligneJ2);
             updateFile(scores);
         } else {
             nomJ2 = "Joueur_" + derID;
-            joueurs.get(1).nom = nomJ1;
+            joueurs.get(1).nom = nomJ2;
             scores.set(1, derID + "");
             ++derID;
             ligneJ2 = getLigneNom(nomJ2);
@@ -211,14 +201,14 @@ public class gameController {
         }
         if (saisiJ3.getLength() != 0) {
             nomJ3 = saisiJ3.getText();
-            joueurs.get(2).nom = nomJ1;
+            joueurs.get(2).nom = nomJ3;
             ligneJ3 = getLigneNom(nomJ3);
             scoreJ3 = getScoreLigne(ligneJ3);
             ajouterScore(nomJ3, 0, ligneJ3);
             updateFile(scores);
         } else {
             nomJ3 = "Joueur_" + derID;
-            joueurs.get(2).nom = nomJ1;
+            joueurs.get(2).nom = nomJ3;
             scores.set(1, derID + "");
             ++derID;
             ligneJ3 = getLigneNom(nomJ3);
@@ -227,14 +217,14 @@ public class gameController {
         }
         if (saisiJ4.getLength() != 0) {
             nomJ4 = saisiJ4.getText();
-            joueurs.get(3).nom = nomJ1;
+            joueurs.get(3).nom = nomJ4;
             ligneJ4 = getLigneNom(nomJ4);
             scoreJ4 = getScoreLigne(ligneJ4);
             ajouterScore(nomJ4, 0, ligneJ4);
             updateFile(scores);
         } else {
             nomJ4 = "Joueur_" + derID;
-            joueurs.get(3).nom = nomJ1;
+            joueurs.get(3).nom = nomJ4;
             scores.set(1, derID + "");
             ++derID;
             ligneJ4 = getLigneNom(nomJ4);
@@ -330,35 +320,31 @@ public class gameController {
     private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
         switch (Joueur){
             case 1:
-                scoreJ1 += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreJ1
-                joueurs.get(0).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
-                ajouterScore(nomJ1, scoreJ1, ligneJ1);      // Maj de la variable scores
-                updateFile(scores);                         // sauvegarde du nouveau score
-                //System.out.println(scoreJ1 + " " + bomb.getScoreJoueur());
+                scoreJ1 += bomb.getScoreJoueur();
+                joueurs.get(0).score = scoreJ1; // ← Correction: était scoreJ1 au lieu de scoreJ1
+                ajouterScore(nomJ1, scoreJ1, ligneJ1);
+                updateFile(scores);
                 break;
             case 2:
-                scoreJ2 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ2
-                joueurs.get(1).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
-                ajouterScore(nomJ2, scoreJ2, ligneJ2);      // Maj de la variable scores
-                updateFile(scores);                         // sauvegarde du nouveau score
-                //System.out.println("Joueur 2 : " + scoreJ2);
+                scoreJ2 += bomb.getScoreJoueur();
+                joueurs.get(1).score = scoreJ2; // ← Correction: était scoreJ1 au lieu de scoreJ2
+                ajouterScore(nomJ2, scoreJ2, ligneJ2);
+                updateFile(scores);
                 break;
             case 3:
-                scoreJ3 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ3
-                joueurs.get(2).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
-                ajouterScore(nomJ3, scoreJ3, ligneJ3);      // Maj de la variable scores
-                updateFile(scores);                         // sauvegarde du nouveau score
-                //System.out.println(scoreJ3 + " " + bomb.getScoreJoueur());
+                scoreJ3 += bomb.getScoreJoueur();
+                joueurs.get(2).score = scoreJ3; // ← Correction: était scoreJ1 au lieu de scoreJ3
+                ajouterScore(nomJ3, scoreJ3, ligneJ3);
+                updateFile(scores);
                 break;
             case 4:
-                scoreJ4 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ4
-                joueurs.get(3).score = scoreJ1;           // Maj du score de pacman1 dans la classe PacMan_Personnage
-                ajouterScore(nomJ4, scoreJ4, ligneJ4);      // Maj de la variable scores
-                updateFile(scores);                         // sauvegarde du nouveau score
-                //System.out.println(scoreJ4 + " " + bomb.getScoreJoueur());
+                scoreJ4 += bomb.getScoreJoueur();
+                joueurs.get(3).score = scoreJ4; // ← Correction: était scoreJ1 au lieu de scoreJ4
+                ajouterScore(nomJ4, scoreJ4, ligneJ4);
+                updateFile(scores);
                 break;
         }
-        refreshScores();    // Maj du bandeau des scores
+        refreshScores();
     }
 
     private void togglePause() {
@@ -411,7 +397,7 @@ public class gameController {
                     if (j1.aBonusRayon()) {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
-                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe( px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
                     startTimer(bomb, 1); // Traitement des cores de la bombe
                     j1.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -531,8 +517,9 @@ public class gameController {
     @FXML
     public void replayGame() throws IOException {
         // Réinitialiser les listes de joueurs
+        arreterJeu();
         joueurs.clear();
-        bot.clear(); // Même s'il n'y a pas de bots ici, garde-le pour la cohérence
+        partieEstTerminee = false;
 
         // Réinitialiser le timer
         if (gameTimer != null) {
@@ -650,15 +637,14 @@ public class gameController {
             Platform.runLater(() -> timerLabel.setText(tempsFormate));
 
             // Toujours vérifier la fin de partie par élimination à chaque tic du timer
-            verifierFinDePartieParElimination();
 
             // C'EST ICI QUE LA FIN DE PARTIE PAR TEMPS ÉCOULÉ DOIT ÊTRE GÉRÉE
             if (tempsRestant <= 0) {
-                gameTimer.stop();
-                partieEstTerminee = true; // Marquez la partie comme terminée ici
                 timerLabel.setText("TIMEUR : 00:00");
                 finDePartieParTemps(); // Appelez la méthode spécifique pour la fin par temps
             }
+
+            verifierFinDePartieParElimination();
         }));
         gameTimer.setCycleCount(Timeline.INDEFINITE);
         gameTimer.play();
@@ -686,8 +672,8 @@ public class gameController {
             if (joueursHumainsEnVie.size() == 1) {
                 // Un seul joueur est vivant : c'est le vainqueur par élimination
                 PacMan_Personnage vainqueur = joueursHumainsEnVie.get(0);
-                mainMessage = "JOUEUR " + vainqueur.getPlayerNumber() + " A GAGNÉ !";
-                resultDetailsMessage = "FÉLICITATIONS JOUEUR " + vainqueur.getPlayerNumber() + " !";
+                mainMessage = vainqueur.nom + " GAGNE !";
+                resultDetailsMessage = "FÉLICITATIONS " + vainqueur.nom + " !";
                 victoireGlobale = true;
             } else {
                 // Aucun joueur humain n'est vivant : défaite générale
@@ -707,16 +693,12 @@ public class gameController {
         // Si plus d'un joueur est en vie, la partie continue.
     }
 
-
-    // NOUVELLE MÉTHODE: Gérer la fin de partie quand le temps est écoulé
     private void finDePartieParTemps() {
-        if (partieEstTerminee) { // S'assurer que la logique ne s'exécute pas si déjà terminé
+        if (partieEstTerminee) {
             return;
         }
-
-        // Le timer a déjà été arrêté par 'lancerTimer()'
-        partieEstTerminee = true; // Marquez la partie comme terminée ici
-
+        partieEstTerminee = true;
+        arreterJeu();
         List<PacMan_Personnage> joueursVivants = joueurs.stream()
                 .filter(PacMan_Personnage::estVivant)
                 .collect(Collectors.toList());
@@ -733,23 +715,20 @@ public class gameController {
         } else if (joueursVivants.size() == 1) {
             // Un seul joueur a survécu jusqu'à la fin du temps
             PacMan_Personnage vainqueur = joueursVivants.get(0);
-            mainMessage = "TEMPS ÉCOULÉ ! JOUEUR " + vainqueur.getPlayerNumber() + " EST LE DERNIER SURVIVANT !";
-            resultMenuMessage = "FÉLICITATIONS JOUEUR " + vainqueur.getPlayerNumber() + " !";
+            mainMessage = "TEMPS ÉCOULÉ ! " + vainqueur.nom + " EST LE DERNIER SURVIVANT !";
+            resultMenuMessage = "FÉLICITATIONS " + vainqueur.nom + " !";
             victoireGlobale = true;
         } else {
             // Plusieurs joueurs sont encore vivants à la fin du temps : CLASSEMENT !
-            // Assurez-vous d'avoir une méthode getScore() dans PacMan_Personnage
-//            // Si vous n'avez pas de score, vous pouvez les lister sans ordre ou par numéro de joueur
-//            joueursVivants.sort(Comparator.comparingInt(PacMan_Personnage::getScore).reversed());
+            joueursVivants.sort(Comparator.comparingInt(PacMan_Personnage::getScore).reversed());
 
             StringBuilder classement = new StringBuilder("TEMPS ÉCOULÉ ! CLASSEMENT FINAL :\n");
             for (int i = 0; i < joueursVivants.size(); i++) {
                 PacMan_Personnage j = joueursVivants.get(i);
-                classement.append((i + 1)).append(". Joueur ").append(j.getPlayerNumber());
-                // Si getScore() existe :
-//                if (j.getScore() != 0) { // Vérifiez si getScore() est pertinent
-//                    classement.append(" (Score: ").append(j.getScore()).append(")");
-//                }
+                classement.append((i + 1)).append(".").append(j.nom);
+                if (j.getScore() != 0) { // Vérifiez si getScore() est pertinent
+                    classement.append(" (Score: ").append(j.getScore()).append(")");
+                }
                 classement.append("\n");
             }
             mainMessage = "TEMPS ÉCOULÉ !";
@@ -765,6 +744,7 @@ public class gameController {
         });
     }
 
+
     // MÉTHODE Arrêter le jeu immédiatement
     private void arreterJeu() {
         if (gameTimer != null) {
@@ -775,19 +755,19 @@ public class gameController {
     // MÉTHODE Accepte les messages et le statut de victoire (cette méthode est bonne)
     private void configurerAffichageFinDePartie(String mainMessage, String resultDetailsMessage, boolean estVictoireGlobale) {
         // ... (votre code existant pour configurer les labels)
-        if (gameStatusLabel != null) {
-            gameStatusLabel.setText(mainMessage);
-            gameStatusLabel.setVisible(true);
-            gameStatusLabel.setManaged(true);
+        if (messageFinPartieLabel != null) {
+            messageFinPartieLabel.setText(mainMessage);
+            messageFinPartieLabel.setVisible(true);
+            messageFinPartieLabel.setManaged(true);
 
-            gameStatusLabel.getStyleClass().add("game-status-label");
-            gameStatusLabel.getStyleClass().remove("victoire");
-            gameStatusLabel.getStyleClass().remove("defaite");
+            messageFinPartieLabel.getStyleClass().add("game-status-label");
+            messageFinPartieLabel.getStyleClass().remove("victoire");
+            messageFinPartieLabel.getStyleClass().remove("defaite");
 
             if (estVictoireGlobale) {
-                gameStatusLabel.getStyleClass().add("victoire");
+                messageFinPartieLabel.getStyleClass().add("victoire");
             } else {
-                gameStatusLabel.getStyleClass().add("defaite");
+                messageFinPartieLabel.getStyleClass().add("defaite");
             }
         }
 

@@ -69,7 +69,7 @@
             <!-- Menu pause fin -->
             <VBox fx:id="finMenuContainer" alignment="CENTER" spacing="20.0"
                   styleClass="menu" visible="false" managed="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
-                <Label text="~ FIN ~" styleClass="title"/>
+                <Label text="~ FIN DE PARTIE~" styleClass="title"/>
                 <Label fx:id="messageFinPartieLabel" text=" " styleClass="vainqueur"/>
                 <Button  text="REJOUER" onAction="#replayGame" />
                 <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
