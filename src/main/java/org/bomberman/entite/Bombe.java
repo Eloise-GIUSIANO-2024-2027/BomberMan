@@ -122,6 +122,7 @@ public class Bombe extends ImageView {
                         generateBonusChance(nx, ny);
 
                         grid[ny][nx] = 0; // Casser le bloc
+                        scoreJoueur += 100; // Points pour le cassage du mur
                         affectedCells.add(new int[]{ny, nx});
                         break; // Arrêter l'explosion dans cette direction après avoir cassé le bloc
                     } else { // Espace vide

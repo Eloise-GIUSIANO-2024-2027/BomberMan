@@ -83,6 +83,9 @@ public class soloGameController {
     private int derID;
     private Timer timer;
 
+    public soloGameController() throws IOException {
+    }
+
 
     @FXML
     public void startGame() throws URISyntaxException, IOException {
@@ -96,10 +99,10 @@ public class soloGameController {
         gameAreaStackPane.getChildren().add(gameGridDisplay);
 
         //Acteurs du jeu
-        PacMan_Personnage pacman = new Pacman(game, 12, 0,1);
-        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1,2);
-        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2,3);
-        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3,4);
+        PacMan_Personnage pacman = new Pacman(game, 12, 0, 1);
+        Bot_Personnage bot1 = new Bot_Personnage(game, 12, 10, 1, 2);
+        Bot_Personnage bot2 = new Bot_Personnage(game, 0, 0, 2, 3);
+        Bot_Personnage bot3 = new Bot_Personnage(game, 0, 10, 3, 4);
         joueurs.add(pacman);
         bot.add(bot1);
         bot.add(bot2);
@@ -131,8 +134,7 @@ public class soloGameController {
         if (resource != null) {
             scores = Files.readAllLines(Paths.get(resource.toURI()));
         }
-        derID = Integer.parseInt(scores.get(1))+1;
-
+        derID = Integer.parseInt(scores.get(1)) + 1;
 
 
         if (saisiJoueur.getLength() != 0) {
@@ -200,8 +202,8 @@ public class soloGameController {
                     }
                     new Bombe(px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes);
                     j1.marquerBombePlacee();
-                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes); // Création de la bombe
-                    startTimer(bomb, 4); // Traitement des cores de la bombe
+                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
+                    startTimer(bomb, 1); // Traitement des cores de la bombe
                     gameGridDisplay.refresh();
                 } else if (!j1.peutPlacerBombe()) {
                     long tempsRestant = j1.getTempsRestantCooldown();
@@ -584,10 +586,10 @@ public class soloGameController {
     }
 
     private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
-        scoreJoueur += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreZ
-//                ajouterScore(nomJoueur, scoreJoueur, ligneJoueur);      // Maj de la variable scores
-//                updateFile(scores);                         // sauvegarde du nouveau score
-//                //System.out.println(scoreJoueur + " " + bomb.getScoreJoueur());
+        scoreJoueur += bomb.getScoreJoueur();  // Ajout des scores de la bombe à scoreZ
+        ajouterScore(nomJoueur, scoreJoueur, ligneJoueur);    // Maj de la variable scores
+        updateFile(scores);     // sauvegarde du nouveau score
+        //System.out.println(scoreJoueur + " " + bomb.getScoreJoueur());
         refreshScores();    // Maj du bandeau des scores
     }
 }
