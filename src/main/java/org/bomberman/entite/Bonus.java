@@ -93,18 +93,18 @@ public class Bonus {
 
     // Méthode spécifique pour PacMan_Personnage
 // Dans la classe Bonus, méthode appliquerBonus(PacMan_Personnage joueur)
+    
     public void appliquerBonus(PacMan_Personnage joueur) {
         System.out.println("=== DÉBUT APPLICATION BONUS ===");
         System.out.println("Type de bonus : " + typeBonusString);
         System.out.println("Joueur : " + joueur.getPlayerNumber());
-        System.out.println("Classe du joueur : " + joueur.getClass().getName());
 
         if (typeBonusString.equals("VITESSE")) {
             System.out.println("Vitesse AVANT : " + joueur.vitesse);
             appliquerBonusVitesse(joueur);
             System.out.println("Vitesse APRÈS : " + joueur.vitesse);
         } else if (typeBonusString.equals("RAYON")) {
-            System.out.println("Tentative d'activation bonus rayon...");
+            System.out.println("Activation bonus rayon...");
             try {
                 joueur.activerBonusRayon();
                 System.out.println("Bonus rayon activé avec succès !");

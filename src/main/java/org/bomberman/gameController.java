@@ -566,7 +566,7 @@ public class gameController {
                     if (j1.aBonusRayon()) {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
-                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe( px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
                     startTimer(bomb, 1); // Traitement des cores de la bombe
                     j1.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -602,7 +602,7 @@ public class gameController {
                     if (j2.aBonusRayon()) {
                         j2.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px2, py2, 2, game, gameGridDisplay, joueurs, bot, j2, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes); // Création de la bombe
                     startTimer(bomb, 2); // Traitement des cores de la bombe
                     j2.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -637,7 +637,7 @@ public class gameController {
                     if (j3.aBonusRayon()) {
                         j3.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px3, py3, 2, game, gameGridDisplay, joueurs, bot, j3, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes); // Création de la bombe
                     startTimer(bomb, 3); // Traitement des cores de la bombe
                     j3.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -672,7 +672,7 @@ public class gameController {
                     if (j4.aBonusRayon()) {
                         j4.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px4, py4, 2, game, gameGridDisplay, joueurs, bot, j4, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes); // Création de la bombe
                     startTimer(bomb, 4); // Traitement des cores de la bombe
                     j4.marquerBombePlacee();
                     gameGridDisplay.refresh();
