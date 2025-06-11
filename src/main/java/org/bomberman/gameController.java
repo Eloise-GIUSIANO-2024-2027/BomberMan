@@ -93,9 +93,6 @@ public class gameController {
     @FXML
     private Label resultLabel;
 
-
-    Game game = new Game();
-
     private Timeline gameTimer;
     private int tempsRestant = 120;
 
@@ -105,7 +102,6 @@ public class gameController {
 
     private boolean paused = false;
     private boolean partieEstTerminee = false;
-    private GameGrid gameGridDisplay;
 
 
     // Obtention des scoresMulti.txt
@@ -394,38 +390,13 @@ public class gameController {
                 int py = j1.getGridY();
 
                 if (game.getGrid()[px][py] == 0 && j1.peutPlacerBombe()) {
-
-    @FXML
-    public void retourMenu(ActionEvent event) {
-        try {
-            // Charger le FXML du menu
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
-            Parent menuRoot = loader.load();
-            Scene menuScene = new Scene(menuRoot, 820, 650);
-
-            String cssPath = getClass().getResource("/styleMenu.css").toExternalForm();
-            if (cssPath != null) {
-                menuScene.getStylesheets().add(cssPath);
-            } else {
-                System.err.println("Erreur: Le fichier CSS 'styleMenu.css' n'a pas été trouvé. Vérifiez le chemin '/org/bomberman/styleMenu.css'.");
-            }
-            //Obtenir le Stage actuel et changer la scène
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(menuScene);
-            stage.setTitle("Super Bomberman"); // Remettre le titre du menu
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erreur lors du chargement du menu : " + e.getMessage());
-        }
-    }                System.out.println("Bombe");
+                    System.out.println("Bombe");
                     // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                     int rayon = j1.aBonusRayon() ? 2 : 1;
                     if (j1.aBonusRayon()) {
                         j1.consommerBonusRayon(); // Consommer le bonus
                     }
-                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
+                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
                     startTimer(bomb, 1); // Traitement des cores de la bombe
                     j1.marquerBombePlacee();
                     gameGridDisplay.refresh();
@@ -520,7 +491,9 @@ public class gameController {
                 j4.deplacerAGauche();
                 checkBonusCollision(j4); // ← AJOUTER
             }
-
+            case NUMPAD4 -> {
+                int px4 = j4.getGridX();
+                int py4 = j4.getGridY();
 
                 if (game.getGrid()[py4][px4] == 0 && j4.peutPlacerBombe()) {
                     System.out.println("Bombe");
@@ -536,8 +509,6 @@ public class gameController {
             }
         }
     }
-
-
 
     @FXML
     public void replayGame() throws IOException {
@@ -828,5 +799,4 @@ public class gameController {
             }
         }
     }
-
-}
+   }

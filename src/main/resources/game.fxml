@@ -47,10 +47,8 @@
     <center>
         <StackPane fx:id="gameContainer" alignment="CENTER">
             <!-- Jeu actif -->
-            <VBox fx:id="gameArea" alignment="CENTER">
+            <VBox fx:id="gameArea" alignment="CENTER" spacing="10">
                 <Button fx:id="startButton" text="Démarrer le jeu" onAction="#startGame"/>
-                <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
-
                 <HBox spacing="10" alignment="bottom_center">
                     <VBox>
                         <Label text="Nom Joueur 1 : " styleClass="player-label"/>
@@ -74,6 +72,8 @@
                 <image>
                     <Image url="@menu/claveir.png" /> </image>
                 </ImageView>
+
+                <Button  text="RETOUR AU MENU" onAction="#retourMenu" />
             </VBox>
                         <!-- Menu pause transparent -->
             <VBox fx:id="pauseMenuContainer" alignment="CENTER" spacing="20.0"
