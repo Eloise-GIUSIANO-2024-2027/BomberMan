@@ -86,29 +86,36 @@ public class Bonus {
         imageView.setX(bonusX * 48);
         imageView.setY(bonusY * 48);
 
+        game.addBonus(this);
+
         System.out.println("Bonus " + typeBonusString + " créé à la position (" + bonusX + ", " + bonusY + ")");
     }
 
     // Méthode spécifique pour PacMan_Personnage
+// Dans la classe Bonus, méthode appliquerBonus(PacMan_Personnage joueur)
     public void appliquerBonus(PacMan_Personnage joueur) {
+        System.out.println("=== DÉBUT APPLICATION BONUS ===");
+        System.out.println("Type de bonus : " + typeBonusString);
+        System.out.println("Joueur : " + joueur.getPlayerNumber());
+        System.out.println("Classe du joueur : " + joueur.getClass().getName());
+
         if (typeBonusString.equals("VITESSE")) {
+            System.out.println("Vitesse AVANT : " + joueur.vitesse);
             appliquerBonusVitesse(joueur);
+            System.out.println("Vitesse APRÈS : " + joueur.vitesse);
         } else if (typeBonusString.equals("RAYON")) {
-            joueur.activerBonusRayon();
+            System.out.println("Tentative d'activation bonus rayon...");
+            try {
+                joueur.activerBonusRayon();
+                System.out.println("Bonus rayon activé avec succès !");
+            } catch (Exception e) {
+                System.err.println("Erreur lors de l'activation du bonus rayon : " + e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         supprimerBonus();
-    }
-
-    // Méthode spécifique pour Bot_Personnage
-    public void appliquerBonus(Bot_Personnage bot) {
-        if (typeBonusString.equals("VITESSE")) {
-            appliquerBonusVitesse(bot);
-        } else if (typeBonusString.equals("RAYON")) {
-            bot.activerBonusRayon();
-        }
-
-        supprimerBonus();
+        System.out.println("=== FIN APPLICATION BONUS ===");
     }
 
     private void appliquerBonusVitesse(PacMan_Personnage joueur) {
@@ -126,20 +133,6 @@ public class Bonus {
         pause.play();
     }
 
-    private void appliquerBonusVitesse(Bot_Personnage bot) {
-        System.out.println("Bonus de vitesse activé pour le bot ! Vitesse augmentée pour 15 secondes.");
-        double vitesseInitiale = bot.vitesse;
-        bot.vitesse = vitesseInitiale / 2.0;
-
-        PauseTransition pause = new PauseTransition(Duration.seconds(15));
-        pause.setOnFinished(event -> {
-            Platform.runLater(() -> {
-                bot.vitesse = vitesseInitiale;
-                System.out.println("Bonus de vitesse terminé pour le bot. Vitesse rétablie.");
-            });
-        });
-        pause.play();
-    }
 
     private void supprimerBonus() {
         // Supprimer l'affichage du bonus

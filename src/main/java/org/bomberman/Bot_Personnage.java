@@ -38,6 +38,7 @@ public class Bot_Personnage extends PacMan_Personnage {
     private static final long COOLDOWN_BOMBE_BOT = 1000; // 2 secondes
     private static final long COOLDOWN_BONUS = 1000; // 1 seconde
     private PacMan_Personnage joueur;
+    private int scoreBot = 0;
 
     public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) throws IOException {
         super(game, startX, startY, botNumber);
