@@ -3,6 +3,7 @@ package org.bomberman;
 
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;

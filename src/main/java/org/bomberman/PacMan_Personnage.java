@@ -6,6 +6,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.Group;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.application.Platform;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,22 +22,62 @@ import java.util.Objects;
 import java.util.Objects;
 import java.util.List;
 
-public class PacMan_Personnage extends Group {
+public class PacMan_Personnage extends Group  {
     private String direction = "bas";
-    private Rectangle rectangle = new Rectangle(48, 48);
+    protected Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)
     private int gridY = 0; // Position Y dans la grille (ligne)
     private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
-    private Game game;
+    protected Game game;
     private boolean estVivant = true;
-    private int playerNumber =1;// Initialise le joueur comme vivant par défaut
-    private String theme = "defaut";
+
+    protected int playerNumber =1;// Initialise le joueur comme vivant par défaut
+    private String theme = "default";
+    public double vitesse = 0.1;
+    public boolean bonusRayonActif = false;
+
+    private long dernierePlacementBombe = 0;
+    private static final long COOLDOWN_BOMBE = 1000;
+
+    private boolean aBonusRayon = false; // Pour le bonus de rayon
+    private boolean canPlaceBomb = true;
+
+    // ← AJOUTER ces méthodes
+    public void setVitesse(double vitesse) {
+        this.vitesse = vitesse;
+    }
+
+    public double getVitesse() {
+        return vitesse;
+    }
+
 
     // Pour le mode Capture The Flag
     private Drapeau monDrapeau; // Le drapeau appartenant à ce joueur
     private boolean aEteCapture = false; // Vrai si le drapeau de ce joueur a été capturé
     private int drapeauxCaptures = 0; // Compteur des drapeaux ennemis capturés par ce joueur
 
+    public boolean canPlaceBomb() {
+        return canPlaceBomb;
+    }
+
+    public void setCanPlaceBomb(boolean canPlaceBomb) {
+        this.canPlaceBomb = canPlaceBomb;
+    }
+
+    public void activerBonusRayon() {
+        this.aBonusRayon = true;
+        System.out.println("Joueur a reçu le bonus Rayon !");
+    }
+
+    public boolean aBonusRayon() {
+        return aBonusRayon;
+    }
+
+    public void consommerBonusRayon() {
+        this.aBonusRayon = false;
+        System.out.println("Bonus Rayon consommé.");
+    }
 
     public PacMan_Personnage(Game game, int startX, int startY,int playerNumber) throws IOException {
         this.game = game;
@@ -124,6 +171,43 @@ public class PacMan_Personnage extends Group {
         }
     }
 
+    public boolean peutPlacerBombe() {
+        long maintenant = System.currentTimeMillis();
+        boolean cooldownOK = (maintenant - dernierePlacementBombe) >= COOLDOWN_BOMBE;
+        return canPlaceBomb && cooldownOK && estVivant;
+    }
+
+    public void marquerBombePlacee() {
+        this.dernierePlacementBombe = System.currentTimeMillis();
+        this.canPlaceBomb = false;
+
+        System.out.println("Joueur " + playerNumber + " - Cooldown de bombe activé pour 1 seconde");
+    }
+
+
+    public void activerCooldownBombe() {
+        this.canPlaceBomb = false;
+        this.dernierePlacementBombe = System.currentTimeMillis();
+
+        // Timer pour réactiver automatiquement après le cooldown
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    canPlaceBomb = true;
+                    System.out.println("Joueur " + playerNumber + " peut de nouveau poser une bombe (cooldown terminé)");
+                });
+            }
+        }, COOLDOWN_BOMBE);
+    }
+
+    public long getTempsRestantCooldown() {
+        long maintenant = System.currentTimeMillis();
+        long tempsEcoule = maintenant - dernierePlacementBombe;
+        return Math.max(0, COOLDOWN_BOMBE - tempsEcoule);
+    }
+
     public void disparait() {
         this.estVivant = false;
         this.setVisible(false);
@@ -142,6 +226,12 @@ public class PacMan_Personnage extends Group {
 
     public int getGridY() {
         return gridY;
+    }
+
+    public interface Joueur {
+        double vitesse = 0.1; // vitesse par défaut
+        void setVitesse(double vitesse);
+        double getVitesse();
     }
 
     //Pour le catch the flagh

@@ -8,7 +8,7 @@ import javafx.application.Platform;
 import org.bomberman.Bot_Personnage;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
-import org.bomberman.PacMan_Personnage; // Importez la classe PacMan_Personnage
+import org.bomberman.PacMan_Personnage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,20 +21,24 @@ public class Bombe extends ImageView {
     private Game game;
     private GameGrid gameGrid;
     private List<PacMan_Personnage> joueurs;
-    private List<Bot_Personnage> bot;
-    private List<Bombe> bombes ;
+    private List<Bot_Personnage> botList;
+    private PacMan_Personnage poseurJoueur;
+    private Bot_Personnage poseurBot;
+    private List<Bombe> bombes;
     private boolean estPresent = true;
     private boolean aExplose = false;
     private Timer timer;
 
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> bot,  List<Bombe> bombes) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> botList, PacMan_Personnage poseurJoueur, List<Bombe> bombes) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
         this.game = game;
         this.gameGrid = gameGrid;
         this.joueurs = joueurs;
-        this.bot = bot;
+        this.botList = botList;
+        this.poseurJoueur = poseurJoueur;
+        this.poseurBot = poseurBot;
         this.bombes = bombes;
 
         // Charger l'image de la bombe
@@ -57,9 +61,9 @@ public class Bombe extends ImageView {
             // Ajouter à la grille
             Platform.runLater(() -> {
                 gameGrid.getChildren().add(this);
-                GridPane.setColumnIndex(this, x); // x est la colonne
+                GridPane.setColumnIndex(this, x);
                 GridPane.setRowIndex(this, y);
-                this.toFront(); // Assurer que la bombe est visible
+                this.toFront();
             });
 
             startTimer();
@@ -73,14 +77,14 @@ public class Bombe extends ImageView {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> explode() );
+                Platform.runLater(() -> explode());
             }
         }, 2000); // 2 secondes
     }
 
     public void exploserImmediatement() {
         if (timer != null) {
-            timer.cancel(); // Annuler le timer normal
+            timer.cancel();
         }
         Platform.runLater(() -> explode());
     }
@@ -102,42 +106,50 @@ public class Bombe extends ImageView {
             int dy = dir[0];
             int dx = dir[1];
 
-            for (int i = 1; i <= rayon; i++) { // Itérer vers l'extérieur jusqu'au rayon
+            for (int i = 1; i <= rayon; i++) {
                 int ny = y + dy * i;
                 int nx = x + dx * i;
 
                 // Vérifier les limites de la grille
                 if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length) {
                     if (grid[ny][nx] == 1) { // Mur incassable
-                        break; // Arrêter l'explosion dans cette direction
+                        break;
                     } else if (grid[ny][nx] == 2) { // Bloc cassable
+                        System.out.println("Mur destructible détruit à (" + nx + ", " + ny + ")");
+
+                        // ✅ CORRECTION : Appeler generateBonusChance AVANT de modifier la grille
+                        generateBonusChance(nx, ny);
+
                         grid[ny][nx] = 0; // Casser le bloc
                         affectedCells.add(new int[]{ny, nx});
-                        break; // Arrêter l'explosion dans cette direction après avoir cassé le bloc
+                        break;
                     } else { // Espace vide
                         affectedCells.add(new int[]{ny, nx});
                     }
                 } else { // Hors des limites de la grille
-                    break; // Arrêter l'explosion dans cette direction
+                    break;
                 }
             }
         }
 
+        // ✅ CORRECTION : Une seule boucle pour afficher les explosions
         for (int[] cell : affectedCells) {
             int currentY = cell[0];
             int currentX = cell[1];
 
             // Créer une nouvelle ImageView pour l'explosion
+
             ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
                     getClass().getResourceAsStream("/fxs/explosion.gif")), 48, 48, false, false));
             explosionFx.setFitWidth(48); // Assurez-vous que la taille correspond à votre grille
+
             explosionFx.setFitHeight(48);
 
             Platform.runLater(() -> {
                 gameGrid.getChildren().add(explosionFx);
                 GridPane.setColumnIndex(explosionFx, currentX);
                 GridPane.setRowIndex(explosionFx, currentY);
-                explosionFx.toFront(); // Assurer que l'explosion est visible
+                explosionFx.toFront();
             });
 
             // Timer pour retirer l'image d'explosion après un court délai
@@ -153,40 +165,40 @@ public class Bombe extends ImageView {
             }, 300);
         }
 
+        // Vérifier les dégâts sur les joueurs
         for (PacMan_Personnage joueur : joueurs) {
-            // Vérifier si le joueur est toujours vivant
             if (joueur.estVivant()) {
-                int joueurGridX = joueur.getGridX(); // Colonne du joueur
-                int joueurGridY = joueur.getGridY(); // Ligne du joueur
+                int joueurGridX = joueur.getGridX();
+                int joueurGridY = joueur.getGridY();
 
-                // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
                 for (int[] cell : affectedCells) {
                     int affectedRow = cell[0];
                     int affectedCol = cell[1];
 
                     if (joueurGridY == affectedRow && joueurGridX == affectedCol) {
-                        joueur.disparait(); // Appeler la méthode pour marquer le joueur comme non-vivant
-                        gameGrid.getEntityLayer().getChildren().remove(joueur); // Supprimer visuellement le joueur
+                        joueur.disparait();
+                        gameGrid.getEntityLayer().getChildren().remove(joueur);
                         System.out.println("Le joueur à la position (" + joueurGridX + ", " + joueurGridY + ") a été tué par la bombe !");
-                        break; // Un joueur ne peut être tué qu'une fois par explosion, pas besoin de vérifier d'autres cellules
+                        break;
                     }
                 }
             }
         }
 
-        for (Bot_Personnage bot : bot) {
+        // Vérifier les dégâts sur les bots
+        for (Bot_Personnage bot : botList) {
             if (bot.estVivant()) {
                 int botGridX = bot.getGridX();
                 int botGridY = bot.getGridY();
 
-                // Vérifier si la position du joueur est dans les cellules affectées par l'explosion
                 for (int[] cell : affectedCells) {
                     int affectedRow = cell[0];
                     int affectedCol = cell[1];
 
                     if (botGridY == affectedRow && botGridX == affectedCol) {
                         bot.disparait();
-                        gameGrid.getEntityLayer().getChildren().remove(bot); // Supprimer visuellement le joueur
+                        gameGrid.getEntityLayer().getChildren().remove(bot);
+                        System.out.println("Bot à la position (" + botGridX + ", " + botGridY + ") a été tué par la bombe !");
                         break;
                     }
                 }
@@ -218,15 +230,17 @@ public class Bombe extends ImageView {
             bombeEnChaine.exploserImmediatement();
         }
 
-
-
         game.setGrid(grid);
-        gameGrid.refresh(); // Recréer seulement la grille de terrain
+        gameGrid.refresh();
 
         // Supprimer visuellement la bombe
         Platform.runLater(() -> {
             if (this.getParent() instanceof Pane pane) {
                 pane.getChildren().remove(this);
+            }
+            if (poseurJoueur != null) {
+                //  CORRECTION : Utiliser le nouveau système de cooldown
+                poseurJoueur.activerCooldownBombe();
             }
         });
     }
@@ -246,5 +260,30 @@ public class Bombe extends ImageView {
 
     public int getGridY() {
         return y;
+    }
+
+    //  CORRECTION : Méthode generateBonusChance avec debug
+    private void generateBonusChance(int bonusX, int bonusY) {
+        double randomValue = Math.random();
+        System.out.println("Tentative de génération de bonus à (" + bonusX + ", " + bonusY + ") - Valeur aléatoire: " + randomValue);
+
+        if (randomValue < 0.25) { // 1 chance sur 4
+            // Choisir aléatoirement le type de bonus (50% vitesse, 50% rayon)
+            Bonus.TypeBonus type = Math.random() < 0.5 ? Bonus.TypeBonus.VITESSE : Bonus.TypeBonus.RAYON;
+
+            Bonus bonus = new Bonus(game, bonusX, bonusY, gameGrid, type);
+            game.addBonus(bonus);
+
+            Platform.runLater(() -> {
+                gameGrid.getChildren().add(bonus.getImageView());
+                GridPane.setColumnIndex(bonus.getImageView(), bonusX);
+                GridPane.setRowIndex(bonus.getImageView(), bonusY);
+                bonus.getImageView().toFront();
+            });
+
+            System.out.println("Bonus " + type + " généré à la position: " + bonusX + ", " + bonusY);
+        } else {
+            System.out.println(" Pas de bonus généré à (" + bonusX + ", " + bonusY + ")");
+        }
     }
 }
