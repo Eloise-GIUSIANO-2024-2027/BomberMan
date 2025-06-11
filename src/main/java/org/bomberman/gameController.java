@@ -291,7 +291,7 @@ public class gameController {
         });
     }
     @FXML
-    public void replayGame() {
+    public void replayGame() throws IOException {
         // Réinitialiser les listes de joueurs
         joueurs.clear();
         bot.clear(); // Même s'il n'y a pas de bots ici, garde-le pour la cohérence

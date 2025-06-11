@@ -7,6 +7,10 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class PacMan_Personnage extends Group {
@@ -14,18 +18,21 @@ public class PacMan_Personnage extends Group {
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)
     private int gridY = 0; // Position Y dans la grille (ligne)
-    private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
+    private static final int CELL_SIZE = 51; // Taille d'une case (48x48 comme dans GameGrid)
     private Game game;
     private boolean estVivant = true;
     private int playerNumber =1;// Initialise le joueur comme vivant par défaut
     private String theme = "wix";
 
 
-    public PacMan_Personnage(Game game, int startX, int startY,int playerNumber) {
+    public PacMan_Personnage(Game game, int startX, int startY,int playerNumber) throws IOException {
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
         this.playerNumber = playerNumber;
+        Path path = Paths.get("src/main/resources/data.txt");
+        System.out.println(Files.readString(path));
+        this.theme = Files.readString(path);
 
         rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-"+theme+"-"+this.playerNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(this.rectangle);

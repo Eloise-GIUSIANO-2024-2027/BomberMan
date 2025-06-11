@@ -49,8 +49,11 @@ public class soloGameController {
     private List<Bot_Personnage> bot = new ArrayList<>();
     private List<Bombe> listeBombes = new ArrayList<>();
 
+    public soloGameController() throws IOException {
+    }
+
     @FXML
-    public void startGame() {
+    public void startGame() throws IOException {
         lancerTimer(); // debut du timer
         // Crée une instance de ta GameGrid personnalisée
         gameGridDisplay = new GameGrid(game);
@@ -233,7 +236,7 @@ public class soloGameController {
     }
 
     @FXML
-    public void replayGame() {
+    public void replayGame() throws IOException {
         // Réinitialiser les listes
         joueurs.clear();
         bot.clear();

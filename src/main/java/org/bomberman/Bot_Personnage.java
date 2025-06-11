@@ -6,6 +6,10 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import org.bomberman.entite.Bombe;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class Bot_Personnage extends Group {
@@ -19,15 +23,19 @@ public class Bot_Personnage extends Group {
     private int botId;
     private int botNumber;// Identifiant unique pour chaque bot
     private List<Bombe> listeBombesBot = new ArrayList<>();
+    private String theme = "default";
 
-    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) {
+    public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) throws IOException {
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;
         this.botId = botId;
         this.botNumber = botNumber;
+        Path path = Paths.get("src/main/resources/data.txt");
+        System.out.println(Files.readString(path));
+        this.theme = Files.readString(path);
 
-        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+        rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
         super.getChildren().add(rectangle);
         updatePixelPosition();
     }
@@ -44,7 +52,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("gauche")) {
             direction = "gauche";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-left-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -59,7 +67,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("droite")) {
             direction = "droite";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-right-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -73,7 +81,7 @@ public class Bot_Personnage extends Group {
         }
         if (!direction.equals("bas")) {
             direction = "bas";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-front-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 
@@ -88,7 +96,7 @@ public class Bot_Personnage extends Group {
 
         if (!direction.equals("haut")) {
             direction = "haut";
-            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back"+botNumber+".gif")), 32, 32, false, false)));
+            rectangle.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/character/idle-back-"+theme+"-"+botNumber+".gif")), 32, 32, false, false)));
         }
     }
 

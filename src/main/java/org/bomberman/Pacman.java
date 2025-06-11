@@ -3,10 +3,12 @@ package org.bomberman;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
+import java.io.IOException;
+
 public class Pacman extends PacMan_Personnage {
 
 
-    public Pacman(Game game, int startX, int startY, int playerNumber) {
+    public Pacman(Game game, int startX, int startY, int playerNumber) throws IOException {
         super(game,startX,startY,playerNumber);
         setLayoutX(5);  // Position X de départ
         setLayoutY(5);
