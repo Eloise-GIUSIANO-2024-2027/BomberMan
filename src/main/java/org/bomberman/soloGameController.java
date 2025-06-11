@@ -28,6 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class soloGameController {
 
@@ -68,6 +70,7 @@ public class soloGameController {
     // Obtention des scoresSolo.txt
     private List<String> scores;
     private int derID;
+    private Timer timer;
 
 
     @FXML
@@ -113,9 +116,9 @@ public class soloGameController {
             });
         }
 
-    // ----- Traitement des pseudos ------
+        // ----- Traitement des pseudos ------
         // Chargement du fichier des scores
-        URL resource = getClass().getResource("/scoresSolo.txt");
+        URL resource = getClass().getResource("/scoresMulti.txt");
         if (resource != null) {
             scores = Files.readAllLines(Paths.get(resource.toURI()));
         }
@@ -136,6 +139,7 @@ public class soloGameController {
             ligneJoueur = getLigneNom(nomJoueur);
             ajouterScore(nomJoueur, 0, ligneJoueur);
             updateFile(scores);
+
         }
         
         refreshScores();
@@ -157,9 +161,8 @@ public class soloGameController {
                 if (game.getGrid()[py][px] == 0 && Joueur.estVivant()) { // This access is correct: [row][column]
                     System.out.println("Bombe");
                     // THE FIX IS HERE: Pass px (column) first, then py (row)
-                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
-                    scoreJoueur += bomb.getScoreJoueur();
-                    refreshScores();
+                    Bombe bomb = new Bombe( px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes); // Création de la bombe
+                    startTimer(bomb, 4); // Traitement des cores de la bombe
                     gameGridDisplay.refresh();
                 }
             }
@@ -367,10 +370,12 @@ public class soloGameController {
     }
 
     public void ajouterScore(String nom, int score, int ligne) {
-        if (ligne == scores.size()-1) scores.add(nom + " " + score);
-        else if (score < getScoreLigne(ligne)){
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+        if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
+        else if (score > getScoreLigne(ligne)){ // si le pseudo est déjà enregistré et que le score est superieur à celui enregistré
             scores.set(ligne, nom + " " + score);
-        } else scores.set(ligne, nom + " " + score);
+        }
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
     }
 
     public void updateFile(List<String> lignes) throws IOException {
@@ -386,5 +391,29 @@ public class soloGameController {
     public void refreshScores() {
         // Maj des pseudos
         labelJoueur.setText(nomJoueur + " : " + scoreJoueur);
+    }
+
+    private void startTimer(Bombe bomb, int joueur) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {                       // Attend que la bombe ait exploser pour
+                    try {                                       // mettre à jour le score des joueurs
+                        ajoutScoreExplosion(bomb, joueur);      //
+                    } catch (IOException e) {                   //
+                        throw new RuntimeException(e);          //
+                    }
+                });
+            }
+        }, 2010); // 2.01 secondes
+    }
+
+    private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
+        scoreJoueur += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreZ
+//                ajouterScore(nomJoueur, scoreJoueur, ligneJoueur);      // Maj de la variable scores
+//                updateFile(scores);                         // sauvegarde du nouveau score
+//                //System.out.println(scoreJoueur + " " + bomb.getScoreJoueur());
+        refreshScores();    // Maj du bandeau des scores
     }
 }

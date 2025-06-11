@@ -220,8 +220,6 @@ public class gameController {
             updateFile(scores);
         }
 
-        ajouterScore(nomJ1, 657, ligneJ1);
-
         refreshScores();
     }
 
@@ -242,9 +240,7 @@ public class gameController {
                 if (game.getGrid()[px][py] == 0 && j1.estVivant()) {
                     System.out.println("Bombe");
                     Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
-                    scoreJ1 += bomb.getScoreJoueur();
-                    System.out.println(scoreJ1);
-                    refreshScores();
+                    startTimer(bomb, 1);
                     gameGridDisplay.refresh();
                 }
             }
@@ -279,8 +275,7 @@ public class gameController {
                 if (game.getGrid()[py][px] == 0 && j3.estVivant()) {
                     System.out.println("Bombe");
                     Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot, listeBombes);
-                    scoreJ3 += bomb.getScoreJoueur();
-                    refreshScores();
+                    startTimer(bomb, 3);
                     gameGridDisplay.refresh();
                 }
             }
@@ -296,10 +291,8 @@ public class gameController {
 
                 if (game.getGrid()[py][px] == 0 && j4.estVivant()) {
                     System.out.println("Bombe");
-
-                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes);
-                    scoreJ4 = bomb.getScoreJoueur();
-                    refreshScores();
+                    Bombe bomb = new Bombe(px, py, 2, game, gameGridDisplay, joueurs, bot,listeBombes); // Création de la bombe
+                    startTimer(bomb, 4); // Traitement des cores de la bombe
                     gameGridDisplay.refresh();
                 }
             }
@@ -410,10 +403,6 @@ public class gameController {
 
 
     private void finDePartie() {
-        ajouterScore(nomJ1, scoreJ1, ligneJ1);
-        ajouterScore(nomJ2, scoreJ2, ligneJ2);
-        ajouterScore(nomJ3, scoreJ3, ligneJ3);
-        ajouterScore(nomJ4, scoreJ4, ligneJ4);
         System.out.println("Temps écoulé ! Partie terminée.");
         Platform.runLater(() -> {
             // afficher un message ou recharger la scène
@@ -510,12 +499,12 @@ public class gameController {
     }
 
     public void ajouterScore(String nom, int score, int ligne) {
-        System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
         if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
         else if (score > getScoreLigne(ligne)){ // si le pseudo est déjà enregistré et que le score est superieur à celui enregistré
             scores.set(ligne, nom + " " + score);
         }
-        System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
+        //System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
     }
 
     public void updateFile(List<String> lignes) throws IOException {
@@ -541,41 +530,44 @@ public class gameController {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    try {
-                        ajoutScoreExplosion(bomb, joueur);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                Platform.runLater(() -> {                       // Attend que la bombe ait exploser pour
+                    try {                                       // mettre à jour le score des joueurs
+                        ajoutScoreExplosion(bomb, joueur);      //
+                    } catch (IOException e) {                   //
+                        throw new RuntimeException(e);          //
                     }
                 });
             }
-        }, 2010); // 2 secondes
+        }, 2010); // 2.01 secondes
     }
 
     private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
         switch (Joueur){
             case 1:
-                scoreJ1 += bomb.getScoreJoueur();
-                ajouterScore(nomJ1, scoreJ1, ligneJ1);
-                System.out.println(scoreJ1 + " " + bomb.getScoreJoueur());
+                scoreJ1 += bomb.getScoreJoueur();    // Ajout des scores de la bombe à scoreJ1
+                ajouterScore(nomJ1, scoreJ1, ligneJ1);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+//                //System.out.println(scoreJ1 + " " + bomb.getScoreJoueur());
                 break;
             case 2:
-                scoreJ2 += bomb.getScoreJoueur();
-                ajouterScore(nomJ2, scoreJ2, ligneJ2);
-                updateFile(scores);
-                System.out.println("Joueur 2 : " + scoreJ2);
+                scoreJ2 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ2
+                ajouterScore(nomJ2, scoreJ2, ligneJ2);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println("Joueur 2 : " + scoreJ2);
                 break;
             case 3:
-                scoreJ3 += bomb.getScoreJoueur();
-                ajouterScore(nomJ3, scoreJ3, ligneJ3);
-                System.out.println(scoreJ3 + " " + bomb.getScoreJoueur());
+                scoreJ3 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ3
+                ajouterScore(nomJ3, scoreJ3, ligneJ3);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println(scoreJ3 + " " + bomb.getScoreJoueur());
                 break;
             case 4:
-                scoreJ4 += bomb.getScoreJoueur();
-                ajouterScore(nomJ4, scoreJ4, ligneJ4);
-                System.out.println(scoreJ4 + " " + bomb.getScoreJoueur());
+                scoreJ4 += bomb.getScoreJoueur();   // Ajout des scores de la bombe à scoreJ4
+                ajouterScore(nomJ4, scoreJ4, ligneJ4);      // Maj de la variable scores
+                updateFile(scores);                         // sauvegarde du nouveau score
+                //System.out.println(scoreJ4 + " " + bomb.getScoreJoueur());
                 break;
         }
-        refreshScores();
+        refreshScores();    // Maj du bandeau des scores
     }
 }
