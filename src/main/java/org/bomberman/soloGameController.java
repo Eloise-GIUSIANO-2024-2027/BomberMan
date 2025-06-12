@@ -329,7 +329,6 @@ public class soloGameController {
 
         // CAS 1: Le joueur est mort = DÉFAITE
         if (joueursEnVie == 0) {
-            System.out.println("Le joueur est mort ! Défaite !");
             arreterJeu();
             finDePartie("VOUS AVEZ PERDU !");
             return;
@@ -337,9 +336,8 @@ public class soloGameController {
 
         // CAS 2: Tous les bots sont morts = VICTOIRE
         if (botsEnVie == 0) {
-            System.out.println("Tous les bots sont morts ! Victoire !");
             arreterJeu();
-            finDePartie("VOUS AVEZ GAGNÉ !");
+            finDePartie("Tous les bots sont morts ! \n VOUS AVEZ GAGNÉ !");
             return;
         }
 
@@ -366,8 +364,6 @@ public class soloGameController {
 
     // MÉTHODE MODIFIÉE: Accepte un message personnalisé et type de résultat
     private void finDePartie(String message) {
-        System.out.println("Fin de partie: " + message);
-
         Platform.runLater(() -> {
             // Configurer l'affichage selon le type de message
             configurerAffichageFinDePartie(message);
