@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.bomberman.entite.Bombe;
 import org.bomberman.entite.Bonus;
+import java.util.Comparator;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -762,7 +763,7 @@ public class CTFcontroller {
 
             if (tempsRestant <= 0 && !partieTerminee) {
                 gameTimer.stop();
-                finDePartie("Le temps est écoulé ! Aucun vainqueur.");
+                verifierFinDePartie();
             }
         }));
         gameTimer.setCycleCount(Timeline.INDEFINITE);
@@ -776,41 +777,174 @@ public class CTFcontroller {
     private void verifierFinDePartie() {
         if (partieTerminee) return;
 
-        int nombreDeJoueursVivants = (int) joueurs.stream().filter(Joueur_Personnage::estVivant).count();
+        // --- Priorité 1: Victoire par capture de drapeaux ennemis ---
+        // Un joueur gagne s'il a capturé tous les drapeaux ennemis
+        // Le nombre de drapeaux ennemis à capturer est (nombre total de joueurs - 1)
         int nombreDeDrapeauxEnnemisACapturer = joueurs.size() - 1;
 
         for (Joueur_Personnage joueur : joueurs) {
             if (joueur.estVivant() && joueur.getDrapeauxCaptures() >= nombreDeDrapeauxEnnemisACapturer) {
-                finDePartie("Le joueur " + joueur.getPlayerNumber() + " a capturé tous les drapeaux ennemis et GAGNE LA PARTIE !");
+                // Appelle finDePartie qui gère l'arrêt du jeu et l'affichage du menu
+                finDePartie("VICTOIRE !",  joueur.nom + " a capturé tous les drapeaux.", true);
                 return;
             }
         }
 
+        // --- Priorité 2: Victoire par élimination (un seul joueur ou aucun joueur vivant) ---
+        long joueursVivantsCount = joueurs.stream().filter(Joueur_Personnage::estVivant).count();
+        if (joueursVivantsCount <= 1) {
+            Joueur_Personnage dernierJoueurVivant = null;
+            if (joueursVivantsCount == 1) {
+                dernierJoueurVivant = joueurs.stream().filter(Joueur_Personnage::estVivant).findFirst().orElse(null);
+            }
+
+            if (dernierJoueurVivant != null) {
+                finDePartie("VICTOIRE !", dernierJoueurVivant.nom + " est le dernier survivant.", true);
+            } else {
+                finDePartie("MATCH NUL", "Tous les joueurs ont été éliminés.", false);
+            }
+            return;
+        }
+
+        // --- Priorité 3: Temps écoulé ---
         if (tempsRestant <= 0) {
-            finDePartie("Le temps est écoulé ! Aucun vainqueur.");
+            Joueur_Personnage ctfWinner = determineCTFWinner(); // Détermine le gagnant par drapeaux au moment T
+            if (ctfWinner != null) {
+                finDePartie("VICTOIRE !", "Le temps est écoulé. " + ctfWinner.nom + " a capturé le plus de drapeaux.", true);
+            } else {
+                finDePartie("MATCH NUL", "Le temps est écoulé. Aucun joueur n'a capturé le plus de drapeaux ou égalité.", false);
+            }
             return;
         }
     }
 
     /**
-     * Termine la partie et affiche le message de fin correspondant.
-     * Arrête le timer de jeu et affiche le menu de fin de partie.
+     * Termine la partie et déclenche l'affichage du menu de fin.
+     * Cette méthode ne gère PAS directement les messages affichés, elle les reçoit en paramètres.
      *
-     * @param message le message à afficher expliquant la raison de la fin de partie
+     * @param mainMessage Le message principal à afficher (ex: "VICTOIRE!", "MATCH NUL")
+     * @param resultDetailsMessage Le message de détails (ex: "Le joueur X a capturé tous les drapeaux.")
+     * @param estVictoireGlobale Indique si c'est une victoire (true) ou un match nul/défaite (false)
      */
-    private void finDePartie(String message) {
+    private void finDePartie(String mainMessage, String resultDetailsMessage, boolean estVictoireGlobale) {
         if (partieTerminee) return;
         partieTerminee = true;
 
-        System.out.println("Partie terminée. " + message);
-        if (gameTimer != null) {
-            gameTimer.stop();
-        }
+        System.out.println("Partie terminée."); // Log de base
+
+        arreterJeu(); // Arrête le timer et autres processus du jeu
+
+        // Délégue l'affichage à configurerAffichageFinDePartie
         Platform.runLater(() -> {
-            messageFinPartieLabel.setText(message);
+            configurerAffichageFinDePartie(mainMessage, resultDetailsMessage, estVictoireGlobale);
+
+            // Rendre le conteneur du menu de fin visible
             finMenuContainer.setVisible(true);
             finMenuContainer.setManaged(true);
         });
+    }
+
+    /** Arrête le jeu immédiatement */
+    private void arreterJeu() {
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+    }
+
+
+    // MÉTHODE Accepte les messages et le statut de victoire (cette méthode est bonne)
+
+    /**
+     * La fonction personalise le menu de fin en fonction du vaincueur.
+     *
+     * @param mainMessage
+     * @param resultDetailsMessage
+     * @param estVictoireGlobale
+     */
+    private void configurerAffichageFinDePartie(String mainMessage, String resultDetailsMessage, boolean estVictoireGlobale) {
+        if (messageFinPartieLabel != null) {
+            messageFinPartieLabel.setText(mainMessage);
+            messageFinPartieLabel.setVisible(true);
+            messageFinPartieLabel.setManaged(true);
+
+            messageFinPartieLabel.getStyleClass().add("game-status-label");
+            messageFinPartieLabel.getStyleClass().remove("victoire");
+            messageFinPartieLabel.getStyleClass().remove("defaite");
+
+            if (estVictoireGlobale) {
+                messageFinPartieLabel.getStyleClass().add("victoire");
+            } else {
+                messageFinPartieLabel.getStyleClass().add("defaite");
+            }
+        }
+
+        if (resultLabel != null) {
+            resultLabel.setText(resultDetailsMessage);
+            resultLabel.getStyleClass().add("result-label");
+            resultLabel.getStyleClass().remove("victoire");
+            resultLabel.getStyleClass().remove("defaite");
+
+            if (estVictoireGlobale) {
+                resultLabel.getStyleClass().add("victoire");
+            } else {
+                resultLabel.getStyleClass().add("defaite");
+            }
+        }
+    }
+
+    /**
+     * Vérifie quels joueurs sont encore en vie.
+     * Termine la partie si tous les joueurs sont morts.
+     */
+    private void verifierJoueursVivants() {
+        int joueursVivants = 0;
+        Joueur_Personnage dernierJoueurVivant = null;
+        for (Joueur_Personnage p : joueurs) {
+            if (p.estVivant()) {
+                joueursVivants++;
+                dernierJoueurVivant = p;
+            }
+        }
+    }
+    /**
+     * Nouveau: Vérifie si tous les drapeaux de la partie ont été capturés.
+     *
+     * @return true si tous les drapeaux sont capturés, false sinon.
+     */
+    private boolean verifierTousDrapeauxCaptures() {
+        for (Drapeau drapeau : listeDrapeaux) {
+            if (!drapeau.isCaptured()) {
+                return false; // Au moins un drapeau n'est pas encore capturé
+            }
+        }
+        return true; // Tous les drapeaux sont capturés
+    }
+
+    /**
+     * Nouveau: Détermine le gagnant du mode CTF en se basant sur le nombre de drapeaux capturés.
+     * En cas d'égalité, le score peut être utilisé comme critère secondaire.
+     *
+     * @return Le Joueur_Personnage qui a capturé le plus de drapeaux, ou null en cas d'égalité parfaite.
+     */
+    private Joueur_Personnage determineCTFWinner() {
+        Joueur_Personnage ctfWinner = null;
+        int maxDrapeauxCaptures = -1;
+
+        for (Joueur_Personnage joueur : joueurs) {
+            if (joueur.getDrapeauxCaptures() > maxDrapeauxCaptures) {
+                maxDrapeauxCaptures = joueur.getDrapeauxCaptures();
+                ctfWinner = joueur;
+            } else if (joueur.getDrapeauxCaptures() == maxDrapeauxCaptures && ctfWinner != null) {
+                // Gérer les égalités : par exemple, le joueur avec le score le plus élevé gagne
+                if (joueur.getScore() > ctfWinner.getScore()) {
+                    ctfWinner = joueur;
+                } else if (joueur.getScore() == ctfWinner.getScore()) {
+                    // Égalité parfaite, peut-être retourner null pour un match nul ou définir d'autres critères
+                    ctfWinner = null; // Ou laisser le premier trouvé si aucune autre règle n'est définie
+                }
+            }
+        }
+        return ctfWinner;
     }
 
     /**
