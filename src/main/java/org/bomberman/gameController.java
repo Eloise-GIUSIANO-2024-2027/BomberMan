@@ -520,11 +520,11 @@ public class gameController {
             }
             case H -> {
                 j1.deplacerADroite(k.getWidth());
-                checkBonusCollision(j1); // ← AJOUTER
+                checkBonusCollision(j1);
             }
             case F -> {
                 j1.deplacerAGauche();
-                checkBonusCollision(j1); // ← AJOUTER
+                checkBonusCollision(j1);
             }
             case U -> {
                 int px = j1.getGridX();
@@ -532,13 +532,12 @@ public class gameController {
 
                 if (game.getGrid()[px][py] == 0 && j1.peutPlacerBombe()) {
                     System.out.println("Bombe");
-                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                     int rayon = j1.aBonusRayon() ? 2 : 1;
                     if (j1.aBonusRayon()) {
-                        j1.consommerBonusRayon(); // Consommer le bonus
+                        j1.consommerBonusRayon();
                     }
                     Bombe bomb = new Bombe( px, py, rayon, game, gameGridDisplay, joueurs, bot, j1, listeBombes); // Création de la bombe
-                    startTimer(bomb, 1); // Traitement des cores de la bombe
+                    startTimer(bomb, 1);
                     j1.marquerBombePlacee();
                     gameGridDisplay.refresh();
                 }
@@ -547,20 +546,20 @@ public class gameController {
             //Joueur 2
             case Z -> {
                 j2.deplacerEnHaut();
-                checkBonusCollision(j2); // ← AJOUTER
+                checkBonusCollision(j2);
             }
 
             case S -> {
                 j2.deplacerEnBas(k.getHeight());
-                checkBonusCollision(j2); // ← AJOUTER
+                checkBonusCollision(j2);
             }
             case D -> {
                 j2.deplacerADroite(k.getWidth());
-                checkBonusCollision(j2); // ← AJOUTER
+                checkBonusCollision(j2);
             }
             case Q -> {
                 j2.deplacerAGauche();
-                checkBonusCollision(j2); // ← AJOUTER
+                checkBonusCollision(j2);
             }
             case A -> {
                 int px2 = j2.getGridX();
@@ -568,13 +567,12 @@ public class gameController {
 
                 if (game.getGrid()[py2][px2] == 0 && j2.peutPlacerBombe()) {
                     System.out.println("Bombe");
-                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                     int rayon = j2.aBonusRayon() ? 2 : 1;
                     if (j2.aBonusRayon()) {
                         j2.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes); // Création de la bombe
-                    startTimer(bomb, 2); // Traitement des cores de la bombe
+                    Bombe bomb = new Bombe(px2, py2, rayon, game, gameGridDisplay, joueurs, bot, j2, listeBombes);
+                    startTimer(bomb, 2);
                     j2.marquerBombePlacee();
                     gameGridDisplay.refresh();
                 }
@@ -583,19 +581,19 @@ public class gameController {
             //Joueur 3
             case O -> {
                 j3.deplacerEnHaut();
-                checkBonusCollision(j3); // ← AJOUTER
+                checkBonusCollision(j3);
             }
             case L -> {
                 j3.deplacerEnBas(k.getHeight());
-                checkBonusCollision(j3); // ← AJOUTER
+                checkBonusCollision(j3);
             }
             case M -> {
                 j3.deplacerADroite(k.getWidth());
-                checkBonusCollision(j3); // ← AJOUTER
+                checkBonusCollision(j3);
             }
             case K -> {
                 j3.deplacerAGauche();
-                checkBonusCollision(j3); // ← AJOUTER
+                checkBonusCollision(j3);
             }
             case P -> {
                 int px3 = j3.getGridX();
@@ -603,13 +601,12 @@ public class gameController {
 
                 if (game.getGrid()[py3][px3] == 0 && j3.peutPlacerBombe()) {
                     System.out.println("Bombe");
-                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                     int rayon = j3.aBonusRayon() ? 2 : 1;
                     if (j3.aBonusRayon()) {
                         j3.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes); // Création de la bombe
-                    startTimer(bomb, 3); // Traitement des cores de la bombe
+                    Bombe bomb = new Bombe(px3, py3, rayon, game, gameGridDisplay, joueurs, bot, j3, listeBombes);
+                    startTimer(bomb, 3);
                     j3.marquerBombePlacee();
                     gameGridDisplay.refresh();
                 }
@@ -618,19 +615,19 @@ public class gameController {
             //Joueur 4
             case NUMPAD5 -> {
                 j4.deplacerEnHaut();
-                checkBonusCollision(j4); // ← AJOUTER
+                checkBonusCollision(j4);
             }
             case NUMPAD2 -> {
                 j4.deplacerEnBas(k.getHeight());
-                checkBonusCollision(j4); // ← AJOUTER
+                checkBonusCollision(j4);
             }
             case NUMPAD3 -> {
                 j4.deplacerADroite(k.getWidth());
-                checkBonusCollision(j4); // ← AJOUTER
+                checkBonusCollision(j4);
             }
             case NUMPAD1 -> {
                 j4.deplacerAGauche();
-                checkBonusCollision(j4); // ← AJOUTER
+                checkBonusCollision(j4);
             }
             case NUMPAD4 -> {
                 int px4 = j4.getGridX();
@@ -638,13 +635,12 @@ public class gameController {
 
                 if (game.getGrid()[py4][px4] == 0 && j4.peutPlacerBombe()) {
                     System.out.println("Bombe");
-                    // ← MODIFIER : Vérifier si le joueur a le bonus rayon
                     int rayon = j4.aBonusRayon() ? 2 : 1;
                     if (j4.aBonusRayon()) {
                         j4.consommerBonusRayon();
                     }
-                    Bombe bomb = new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes); // Création de la bombe
-                    startTimer(bomb, 4); // Traitement des cores de la bombe
+                    Bombe bomb = new Bombe(px4, py4, rayon, game, gameGridDisplay, joueurs, bot, j4, listeBombes);
+                    startTimer(bomb, 4);
                     j4.marquerBombePlacee();
                     gameGridDisplay.refresh();
                 }
@@ -720,7 +716,6 @@ public class gameController {
             });
         }
 
-        // Redémarrer le timer
         lancerTimer();
     }
 
