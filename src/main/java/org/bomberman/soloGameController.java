@@ -82,7 +82,7 @@ public class soloGameController {
     // Obtention des scoresSolo.txt
     private List<String> scores;
     private int derID;
-    private Timer timer;
+    private Timer timer; // Timer pour mettre à jour le score lors de l'explosion de la bombe
 
     public soloGameController() throws IOException {
     }
@@ -565,6 +565,7 @@ public class soloGameController {
 
     private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
         scoreJoueur += bomb.getScoreJoueur();  // Ajout des scores de la bombe à scoreZ
+        joueurs.get(0).score = scoreJoueur;           // Maj du score de pacman1 dans la classe PacMan_Personnage
         ajouterScore(nomJoueur, scoreJoueur, ligneJoueur);    // Maj de la variable scores
         updateFile(scores);     // sauvegarde du nouveau score
         //System.out.println(scoreJoueur + " " + bomb.getScoreJoueur());

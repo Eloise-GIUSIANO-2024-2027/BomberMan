@@ -111,7 +111,7 @@ public class gameController {
     @FXML
     private Label timerLabel;
 
-    private Timer timer;
+    private Timer timer; // Timer pour mettre à jour le score lors de l'explosion de la bombe
 
     @FXML
     public void startGame() throws IOException, URISyntaxException {
@@ -545,7 +545,7 @@ public class gameController {
         finMenuContainer.setVisible(false);
         finMenuContainer.setManaged(false);
 
-        // Recréer le jeu
+        // Recréer le jeu-
         game = new Game(); // recrée la logique de jeu (grille, états, etc.)
         gameGridDisplay = new GameGrid(game);
         gameArea.getChildren().clear();
