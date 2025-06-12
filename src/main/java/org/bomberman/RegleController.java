@@ -6,11 +6,25 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * Le contrôleur {@code RegleController} gère les interactions de l'utilisateur
+ * sur la page des règles du jeu.
+ * Il permet notamment de revenir au menu principal.
+ */
 public class RegleController {
+    /**
+     * Gère l'action de retour au menu principal.
+     * Cette méthode est appelée lorsqu'un événement (par exemple, un clic sur un bouton)
+     * est déclenché sur l'élément FXML associé.
+     * Elle charge la scène du menu, y applique une feuille de style CSS,
+     * puis affiche cette nouvelle scène dans la fenêtre principale du jeu.
+     *
+     * @param event L'événement d'action qui a déclenché cet appel de méthode.
+     * Il est utilisé pour récupérer la fenêtre (Stage) actuelle.
+     */
     @FXML
     public void retourMenu(ActionEvent event) {
         try {
