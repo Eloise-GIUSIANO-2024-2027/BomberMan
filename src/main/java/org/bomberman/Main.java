@@ -1,3 +1,6 @@
+/**
+ * Package principal de l'application Bomberman.
+ */
 package org.bomberman;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -9,8 +12,20 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Classe principale du Jeu Bomberman.
+ * Point d'entrée de l'application JavaFX.
+ * Charge le menu principal et initialise la scène principale.
+ */
 public class Main extends Application {
 
+    /**
+     * Méthode start() de l'application JavaFX.
+     * C'est la méthode principale où l'interface utilisateur est construite et affichée.
+     *
+     * @param primaryStage Le Stage principal de l'application.
+     * @throws Exception Si une erreur survient lors du chargement du FXML ou du CSS.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -35,6 +50,12 @@ public class Main extends Application {
         scene.getRoot().requestFocus();
     }
 
+    /**
+     * Méthode main() de l'application.
+     * Point de départ de l'exécution du programme.
+     *
+     * @param args Les arguments de la ligne de commande.
+     */
     public static void main(String[] args) {
         launch(args);
     }
