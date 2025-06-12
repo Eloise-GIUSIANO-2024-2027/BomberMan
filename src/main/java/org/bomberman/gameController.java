@@ -36,82 +36,147 @@ import java.util.stream.Collectors;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Contrôleur principal du jeu Bomberman gérant l'interface utilisateur,
+ * la logique de jeu, les déplacements des joueurs et la gestion des scores.
+ *
+ * Cette classe utilise JavaFX FXML pour l'interface utilisateur et gère :
+ * - Le démarrage et l'arrêt du jeu
+ * - Les déplacements des 4 joueurs
+ * - Le système de scores et de pseudos
+ * - Les menus de pause et de fin de partie
+ * - Le timer de jeu
+ * - Les bombes et bonus
+ *
+ * @author Lou, Eloïse, Gustin
+ * @version 1.0
+ * @since 1.0
+ */
 public class gameController {
-
+    /** Conteneur du menu de pause */
     @FXML
     private VBox pauseMenuContainer;
+    /** Conteneur du menu de fin de partie */
     @FXML
     private VBox finMenuContainer;
+    /** Label affichant le message de fin de partie */
     @FXML
     private Label messageFinPartieLabel;
-    @FXML
-    private Label gameStatusLabel;
+    /** Timeline gérant le timer de jeu */
     private Timeline gameTimer;
+    /** Temps restant en secondes (initialisé à 120 secondes / 2 minutes) */
     private int tempsRestant = 120;
+    /** Liste des joueurs humains */
     private List<Joueur_Personnage> joueurs = new ArrayList<>();
+    /** Liste des bots (non utilisée dans cette version) */
     private List<Bot_Personnage> bot = new ArrayList<>();
+    /** Liste des bombes actives sur le terrain */
     private List<Bombe> listeBombes = new ArrayList<>();
+    /** Indicateur de l'état de pause du jeu */
     private boolean paused = false;
+    /** Zone de jeu principale */
     @FXML
     private VBox gameArea;
+    /** Instance de la logique de jeu */
     Game game = new Game();
 
+    /** Indicateur de fin de partie */
     private boolean partieTerminee = false;
 
+    /** Affichage de la grille de jeu */
     private GameGrid gameGridDisplay;
+    /** Bouton de démarrage du jeu */
     @FXML
     private Button startButton; // Référence au bouton démarrer
 
 
-    // affichge des scores :
+    // Labels d'affichage des scores
+    /** Label du score du joueur 1 */
     @FXML
     private Label labelJ1;
+    /** Label du score du joueur 2 */
     @FXML
     private Label labelJ2;
+    /** Label du score du joueur 3 */
     @FXML
     private Label labelJ3;
+    /** Label du score du joueur 4 */
     @FXML
     private Label labelJ4;
 
 
     // Zone de saisi des pseudo
+    /** Champ de saisie du pseudo du joueur 1 */
     @FXML
     private TextField saisiJ1;
+    /** Nom du joueur 1 */
     private String nomJ1;
+    /** Ligne du joueur 1 dans le fichier de scores */
     private int ligneJ1;
+    /** Score actuel du joueur 1 */
     private int scoreJ1 = 0;
+
+    /** Champ de saisie du pseudo du joueur 2 */
     @FXML
     private TextField saisiJ2;
+    /** Nom du joueur 2 */
     private String nomJ2;
+    /** Ligne du joueur 2 dans le fichier de scores */
     private int ligneJ2;
+    /** Score actuel du joueur 2 */
     private int scoreJ2 = 0;
+
+    /** Champ de saisie du pseudo du joueur 3 */
     @FXML
     private TextField saisiJ3;
+    /** Nom du joueur 3 */
     private String nomJ3;
+    /** Ligne du joueur 3 dans le fichier de scores */
     private int ligneJ3;
+    /** Score actuel du joueur 3 */
     private int scoreJ3 = 0;
+
+    /** Champ de saisie du pseudo du joueur 4 */
     @FXML
     private TextField saisiJ4;
+    /** Nom du joueur 4 */
     private String nomJ4;
+    /** Ligne du joueur 4 dans le fichier de scores */
     private int ligneJ4;
+    /** Score actuel du joueur 4 */
     private int scoreJ4 = 0;
 
-
+    /** Lable qui contient le résultat de la partie */
     @FXML
     private Label resultLabel;
 
+    /** Boolean qui dit si la partie est terminé ou non */
     private boolean partieEstTerminee = false;
+
+
     // Obtention des scoresMulti.txt
+    /** Liste des scores chargés depuis le fichier */
     private List<String> scores;
+    /** Dernier ID utilisé pour générer des noms automatiques */
     private int derID;
 
 
     // Partie modifiée de gameController.java
+    /** Label affichant le timer */
     @FXML
     private Label timerLabel;
 
+    /** Timer pour la gestion des bombes */
     private Timer timer; // Timer pour mettre à jour le score lors de l'explosion de la bombe
 
+    /**
+     * Démarre une nouvelle partie.
+     * Initialise la grille de jeu, crée les joueurs, configure les événements
+     * et traite les pseudos des joueurs.
+     *
+     * @throws IOException Si une erreur survient lors de la lecture/écriture des fichiers
+     * @throws URISyntaxException Si l'URI du fichier de scores est invalide
+     */
     @FXML
     public void startGame() throws IOException, URISyntaxException {
         arreterJeu();
@@ -246,6 +311,11 @@ public class gameController {
     }
 
 
+    /**
+     * Vérifie si un joueur entre en collision avec un bonus et l'applique.
+     *
+     * @param joueur Le joueur à vérifier pour les collisions avec les bonus
+     */
     private void checkBonusCollision(Joueur_Personnage joueur) {
         List<Bonus> activeBonuses = game.getActiveBonuses();
         for (int i = activeBonuses.size() - 1; i >= 0; i--) {
@@ -260,6 +330,12 @@ public class gameController {
 
 
 
+    /**
+     * Recherche le numéro de ligne d'un nom dans le fichier de scores.
+     *
+     * @param nom Le nom à rechercher
+     * @return Le numéro de ligne du nom, ou la dernière ligne si non trouvé
+     */
     public int getLigneNom(String nom){
         String nomLigne;
         for (int i = 0; i < scores.size(); i++) {
@@ -275,6 +351,12 @@ public class gameController {
         return scores.size()-1;
     }
 
+    /**
+     * Extrait le score d'une ligne spécifique du fichier de scores.
+     *
+     * @param numLigne Le numéro de ligne à analyser
+     * @return Le score extrait de la ligne
+     */
     public int getScoreLigne(int numLigne) {
         String ligne = scores.get(numLigne);
         String scoresLigne = "";
@@ -284,6 +366,13 @@ public class gameController {
         return Integer.parseInt(scoresLigne);
     }
 
+    /**
+     * Ajoute ou met à jour un score pour un joueur.
+     *
+     * @param nom Le nom du joueur
+     * @param score Le nouveau score
+     * @param ligne La ligne dans le fichier de scores
+     */
     public void ajouterScore(String nom, int score, int ligne) {
         System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
         if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
@@ -293,6 +382,12 @@ public class gameController {
         System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
     }
 
+    /**
+     * Met à jour le fichier de scores avec les nouvelles données.
+     *
+     * @param lignes La liste des lignes à écrire dans le fichier
+     * @throws IOException Si une erreur survient lors de l'écriture du fichier
+     */
     public void updateFile(List<String> lignes) throws IOException {
         Path cheminFichier = Paths.get("src/main/resources/scoresMulti.txt");
 
@@ -303,6 +398,9 @@ public class gameController {
         Files.write(cheminFichier, lignes);
     }
 
+    /**
+     * Met à jour l'affichage des scores dans l'interface utilisateur.
+     */
     public void refreshScores() {
         // Maj des pseudos
         labelJ1.setText(nomJ1 + " : " + scoreJ1);
@@ -311,6 +409,12 @@ public class gameController {
         labelJ4.setText(nomJ4 + " : " + scoreJ4);
     }
 
+    /**
+     * Lance un timer pour traiter l'explosion d'une bombe après 2 secondes.
+     *
+     * @param bomb La bombe à traiter
+     * @param joueur Le numéro du joueur qui a placé la bombe
+     */
     private void startTimer(Bombe bomb, int joueur) {
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -327,6 +431,13 @@ public class gameController {
         }, 2010); // 2.01 secondes
     }
 
+    /**
+     * Ajoute les points obtenus par l'explosion d'une bombe au score du joueur.
+     *
+     * @param bomb La bombe qui a explosé
+     * @param Joueur Le numéro du joueur (1, 2, 3 ou 4)
+     * @throws IOException Si une erreur survient lors de la sauvegarde des scores
+     */
     private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
         switch (Joueur){
             case 1:
@@ -357,6 +468,10 @@ public class gameController {
         refreshScores();    // Maj du bandeau des scores
     }
 
+    /**
+     * Active ou désactive la pause du jeu.
+     * Affiche/masque le menu de pause et gère le timer.
+     */
     private void togglePause() {
         paused = !paused;
 
@@ -375,6 +490,21 @@ public class gameController {
     }
 
 
+    /**
+     * Gère les déplacements et actions des 4 joueurs en fonction des touches pressées.
+     *
+     * Contrôles :
+     * - Joueur 1 : T/G/F/H pour se déplacer, U pour poser une bombe
+     * - Joueur 2 : Z/S/Q/D pour se déplacer, A pour poser une bombe
+     * - Joueur 3 : O/L/K/M pour se déplacer, P pour poser une bombe
+     * - Joueur 4 : Pavé numérique 5/2/1/3 pour se déplacer, 4 pour poser une bombe
+     *
+     * @param event L'événement de pression de touche
+     * @param j1 Le joueur 1
+     * @param j2 Le joueur 2
+     * @param j3 Le joueur 3
+     * @param j4 Le joueur 4
+     */
     private void handlePlayerMovement(KeyEvent event, Joueur_Personnage j1, Joueur_Personnage j2, Joueur_Personnage j3, Joueur_Personnage j4) {
         GameGrid k = gameGridDisplay;
 
@@ -524,6 +654,12 @@ public class gameController {
 
 
 
+    /**
+     * Relance une nouvelle partie.
+     * Réinitialise tous les éléments du jeu et recrée les joueurs.
+     *
+     * @throws IOException Si une erreur survient lors de la création de la partie
+     */
     @FXML
     public void replayGame() throws IOException {
         // Réinitialiser les listes de joueurs
@@ -588,6 +724,12 @@ public class gameController {
         lancerTimer();
     }
 
+    /**
+     * Retourne au menu principal.
+     * Charge le FXML du menu et applique les styles CSS.
+     *
+     * @param event L'événement déclenché par le clic sur le bouton
+     */
     @FXML
     public void retourMenu(ActionEvent event) {
         try {
@@ -614,6 +756,10 @@ public class gameController {
         }
     }
 
+    /**
+     * Reprend le jeu après une pause.
+     * Masque le menu de pause et relance le timer.
+     */
     @FXML
     public void resumeGame() {
         paused = false;
@@ -624,6 +770,10 @@ public class gameController {
         }
     }
 
+    /**
+     * Quitte complètement l'application.
+     * Ferme JavaFX et termine la JVM.
+     */
     @FXML
     public void quittertout() {
         Platform.exit(); // Fait sortir l'application JavaFX
@@ -632,6 +782,10 @@ public class gameController {
     }
 
 
+    /**
+     * Lance le timer de jeu avec un décompte de 2 minutes.
+     * Met à jour l'affichage chaque seconde et vérifie les conditions de fin de partie.
+     */
     private void lancerTimer() {
         gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             // Ne pas décrémenter ni vérifier si la partie est déjà terminée pour éviter des appels multiples
@@ -662,6 +816,12 @@ public class gameController {
 
 
     // NOUVELLE MÉTHODE: Vérification de l'état des joueurs pendant le jeu (fin par élimination)
+
+    /**
+     * La fonction vérifie si la partie est terminé en vérifiant le nombre de joueur encore en vie,
+     * puis si elle l'est, met à jour partieEstTermine
+     * et affiche le menu de fin.
+     */
     private void verifierFinDePartieParElimination() {
         if (partieEstTerminee) { // S'assurer que la logique ne s'exécute pas si déjà terminé
             return;
@@ -703,6 +863,11 @@ public class gameController {
         // Si plus d'un joueur est en vie, la partie continue.
     }
 
+    /**
+     * La fonction vérifie si la partie est terminé en vérifiant si le temps max a été atteind,
+     * puis si elle l'est, met à jour partieEstTermine
+     * et affiche le menu de fin.
+     */
     private void finDePartieParTemps() {
         if (partieEstTerminee) {
             return;
@@ -756,6 +921,7 @@ public class gameController {
 
 
     // MÉTHODE Arrêter le jeu immédiatement
+    /** Attête le jeu */
     private void arreterJeu() {
         if (gameTimer != null) {
             gameTimer.stop();
@@ -763,8 +929,15 @@ public class gameController {
     }
 
     // MÉTHODE Accepte les messages et le statut de victoire (cette méthode est bonne)
+
+    /**
+     * La fonction personalise le menu de fin en fonction du vaincueur.
+     *
+     * @param mainMessage
+     * @param resultDetailsMessage
+     * @param estVictoireGlobale
+     */
     private void configurerAffichageFinDePartie(String mainMessage, String resultDetailsMessage, boolean estVictoireGlobale) {
-        // ... (votre code existant pour configurer les labels)
         if (messageFinPartieLabel != null) {
             messageFinPartieLabel.setText(mainMessage);
             messageFinPartieLabel.setVisible(true);
