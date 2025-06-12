@@ -63,10 +63,10 @@
             </padding>
             <Label alignment="TOP_LEFT" prefWidth="699.0"  styleClass="titre" text="SOLO :" />
             <Label wrapText="true" prefWidth="760.0" >
-                <text>Ici le joueur joue contre l’ordinateur, c’est un duel. L’objectif est de tuer l’autre tout en gagnant le plus de points possible. Pour cela, ils pourront placer des bombes leur permettant de casser des murs et de tuer leurs adversaires. Casser un mur fait rapporter 100 points, et tuer un autre joueur fait rapporter 250 points.</text>
+                <text>Ici le joueur joue contre l’ordinateur, c’est un 1vs3. L’objectif est de tuer tout les bots, tout en gagnant le plus de points possible. Pour cela, ils pourront placer des bombes leur permettant de casser des murs et de tuer leurs adversaires. Casser un mur fait rapporter 100 points, et tuer un autre joueur fait rapporter 250 points.</text>
             </Label>
             <Label wrapText="true" prefWidth="760.0" >
-                <text>Si le joueur réussit à tuer le bot avant la fin du temps, il gagne.</text>
+                <text>Si le joueur réussit à tuer les bots avant la fin du temps, il gagne.</text>
             </Label>
             <Label wrapText="true" prefWidth="760.0" >
                 <text>Si le joueur meurt avant la fin du temps, il perd.</text>

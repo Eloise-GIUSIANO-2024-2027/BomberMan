@@ -14,24 +14,66 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.bomberman.entite.Bonus;
 
+
+/**
+ * Classe représentant une bombe dans le jeu Bomberman.
+ * Une bombe hérite d'ImageView pour l'affichage graphique et gère son explosion
+ * avec un rayon d'effet, pouvant détruire des murs, tuer des joueurs/bots,
+ * détruire des bonus existants et générer de nouveaux bonus.
+ *
+ * <p>La bombe explose automatiquement après 2 secondes ou peut exploser
+ * immédiatement si touchée par une autre explosion (réaction en chaîne).</p>
+ *
+ * @author Lou Contrucci, Eloïse Giusiano, Gustin Mailhe
+ */
 public class Bombe extends ImageView {
+
+    /** Position X de la bombe sur la grille de jeu */
     private int x, y;
+    /** Rayon d'explosion de la bombe (nombre de cases affectées dans chaque direction) */
     private int rayon;
+    /** Référence vers l'instance principale du jeu */
     private Game game;
+    /** Référence vers la grille de jeu pour l'affichage */
     private GameGrid gameGrid;
+    /** Liste des joueurs présents dans le jeu */
     private List<PacMan_Personnage> joueurs;
+    /** Liste des bots présents dans le jeu */
     private List<Bot_Personnage> botList;
-    // SUPPRIMÉ : List<int[]> positionsBonusPotentiels = new ArrayList<>();
+    /** Joueur qui a posé cette bombe (peut être null si posée par un bot) */
     private PacMan_Personnage poseurJoueur;
+    /** Bot qui a posé cette bombe (peut être null si posée par un joueur) */
     private Bot_Personnage poseurBot;
+    /** Liste de toutes les bombes actives dans le jeu */
     private List<Bombe> bombes;
+    /** Indique si la bombe est encore présente sur le terrain */
     private boolean estPresent = true;
+    /** Indique si la bombe a déjà explosé (évite les explosions multiples) */
     private boolean aExplose = false;
+    /** Timer gérant le délai d'explosion automatique */
     private Timer timer;
+    /** Score accumulé par cette bombe (destruction de murs, élimination d'entités) */
     private int scoreJoueur;
 
+    /**
+     * Constructeur de la classe Bombe.
+     * Crée une nouvelle bombe à la position spécifiée avec le rayon d'explosion donné.
+     * La bombe est automatiquement ajoutée à la grille et programmée pour exploser après 2 secondes.
+     *
+     * @param x position X de la bombe sur la grille (coordonnée de colonne)
+     * @param y position Y de la bombe sur la grille (coordonnée de ligne)
+     * @param rayon rayon d'explosion de la bombe (nombre de cases affectées dans chaque direction)
+     * @param game référence vers l'instance principale du jeu
+     * @param gameGrid référence vers la grille de jeu pour l'affichage
+     * @param joueurs liste des joueurs présents dans le jeu
+     * @param botList liste des bots présents dans le jeu
+     * @param poseurJoueur joueur qui pose cette bombe (null si posée par un bot)
+     * @param bombes liste de toutes les bombes actives dans le jeu
+     *
+     * @throws RuntimeException si le chargement de l'image de la bombe échoue
+     * @throws IllegalArgumentException si la position spécifiée est hors des limites de la grille
+     */
     public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> botList, PacMan_Personnage poseurJoueur, List<Bombe> bombes) {
         this.x = x;
         this.y = y;
@@ -44,7 +86,6 @@ public class Bombe extends ImageView {
         this.poseurBot = poseurBot;
         this.bombes = bombes;
 
-        // Charger l'image de la bombe
         try {
             Image bombeImage = new Image(Objects.requireNonNull(
                     getClass().getResourceAsStream("/fxs/imgBombe.gif")), 48, 48, false, false);
@@ -75,6 +116,14 @@ public class Bombe extends ImageView {
         }
     }
 
+    /**
+     * Démarre le timer d'explosion automatique de la bombe.
+     * La bombe explosera automatiquement après 2 secondes si elle n'est pas
+     * déclenchée plus tôt par une explosion en chaîne.
+     *
+     * @implNote Utilise un Timer Java avec une TimerTask pour gérer le délai.
+     *           L'explosion s'exécute sur le thread JavaFX via Platform.runLater().
+     */
     private void startTimer() {
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -85,6 +134,13 @@ public class Bombe extends ImageView {
         }, 2000); // 2 secondes
     }
 
+    /**
+     * Force l'explosion immédiate de la bombe.
+     * Cette méthode est utilisée pour les explosions en chaîne lorsqu'une bombe
+     * est touchée par l'explosion d'une autre bombe.
+     *
+     * @implNote Annule le timer d'explosion automatique avant de déclencher l'explosion.
+     */
     public void exploserImmediatement() {
         if (timer != null) {
             timer.cancel(); // Annuler le timer normal
@@ -92,6 +148,24 @@ public class Bombe extends ImageView {
         Platform.runLater(() -> explode());
     }
 
+    /**
+     * Gère l'explosion de la bombe et tous ses effets.
+     *
+     * <p>Cette méthode complexe gère les aspects suivants de l'explosion :</p>
+     * <ul>
+     *   <li>Propagation de l'explosion dans les 4 directions selon le rayon</li>
+     *   <li>Destruction des murs cassables et attribution de points</li>
+     *   <li>Affichage des effets visuels d'explosion</li>
+     *   <li>Vérification et application des dégâts aux joueurs et bots</li>
+     *   <li>Destruction des bonus existants dans la zone d'explosion</li>
+     *   <li>Déclenchement des explosions en chaîne sur les autres bombes</li>
+     *   <li>Génération aléatoire de nouveaux bonus sur les murs détruits</li>
+     * </ul>
+     *
+     * @implNote L'explosion se propage jusqu'à rencontrer un mur incassable ou
+     *           détruire un mur cassable. Les effets visuels sont gérés avec des
+     *           timers séparés pour leur suppression après 300ms.
+     */
     private void explode() {
         int[][] grid = game.getGrid();
         aExplose = true;
@@ -139,12 +213,10 @@ public class Bombe extends ImageView {
             }
         }
 
-        // CORRECTION : Une seule boucle pour afficher les explosions
         for (int[] cell : affectedCells) {
             int currentY = cell[0];
             int currentX = cell[1];
 
-            // Créer une nouvelle ImageView pour l'explosion
 
             ImageView explosionFx = new ImageView( new Image(Objects.requireNonNull(
                     getClass().getResourceAsStream("/fxs/explosion.gif")), 48, 48, false, false));
@@ -298,24 +370,53 @@ public class Bombe extends ImageView {
         }
     }
 
+    /**
+     * Marque la bombe comme disparue et la rend invisible.
+     * Cette méthode est utilisée pour désactiver une bombe sans déclencher son explosion.
+     */
     public void disparait() {
         this.estPresent = false;
         this.setVisible(false);
     }
 
+    /**
+     * Vérifie si la bombe est encore présente sur le terrain.
+     *
+     * @return true si la bombe est présente, false sinon
+     */
     public boolean estPresent() {
         return this.estPresent;
     }
 
+    /**
+     * Retourne la position X de la bombe sur la grille.
+     *
+     * @return la coordonnée X (colonne) de la bombe
+     */
     public int getGridX() {
         return x;
     }
 
+    /**
+     * Retourne la position Y de la bombe sur la grille.
+     *
+     * @return la coordonnée Y (ligne) de la bombe
+     */
     public int getGridY() {
         return y;
     }
 
-    //  CORRECTION : Méthode generateBonusChance avec debug
+    /**
+     * Génère aléatoirement un bonus à la position spécifiée.
+     * Il y a 25% de chance (1/4) qu'un bonus soit généré à chaque appel.
+     * Le type de bonus (VITESSE ou RAYON) est choisi aléatoirement avec une probabilité égale.
+     *
+     * @param bonusX position X où générer le bonus potentiel
+     * @param bonusY position Y où générer le bonus potentiel
+     *
+     * @implNote Cette méthode affiche des messages de debug pour tracer la génération des bonus.
+     *           Le bonus généré est automatiquement ajouté à la grille et à la liste des bonus actifs.
+     */
     private void generateBonusChance(int bonusX, int bonusY) {
         double randomValue = Math.random();
         System.out.println("Tentative de génération de bonus à (" + bonusX + ", " + bonusY + ") - Valeur aléatoire: " + randomValue);
@@ -340,6 +441,13 @@ public class Bombe extends ImageView {
         }
     }
 
+    /**
+     * Retourne le score total accumulé par cette bombe.
+     * Le score inclut les points pour la destruction de murs (100 points chacun)
+     * et l'élimination de joueurs/bots (250 points chacun).
+     *
+     * @return le score total accumulé par cette bombe
+     */
     public int getScoreJoueur() {
         return scoreJoueur;
     }
