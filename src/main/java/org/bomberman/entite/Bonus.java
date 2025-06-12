@@ -15,48 +15,104 @@ import org.bomberman.Bot_Personnage;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Classe représentant un bonus dans le jeu Bomberman.
+ * Un bonus peut être de type VITESSE ou RAYON et peut être collecté par les joueurs
+ * pour obtenir des améliorations temporaires ou permanentes.
+ *
+ * @author Eloïse Giusiano
+ */
 public class Bonus {
+
+    /** Position X du bonus sur la grille de jeu */
     private int bonusX;
+    /** Position Y du bonus sur la grille de jeu */
     private int bonusY;
+    /** Référence vers l'instance principale du jeu */
     private Game game;
+    /** Référence vers la grille de jeu */
     private GameGrid gameGrid;
+    /** Vue graphique du bonus affiché à l'écran */
     private ImageView imageView;
+    /** Représentation textuelle du type de bonus */
     private String typeBonusString;
+    /** Type énuméré du bonus */
     private TypeBonus type;
 
+    /**
+     * Retourne la position X du bonus sur la grille.
+     *
+     * @return la coordonnée X du bonus
+     */
     public int getBonusX() {
         return bonusX;
     }
 
+    /**
+     * Retourne la position Y du bonus sur la grille.
+     *
+     * @return la coordonnée Y du bonus
+     */
     public int getBonusY() {
         return bonusY;
     }
 
+    /**
+     * Retourne la vue graphique du bonus.
+     *
+     * @return l'ImageView représentant le bonus à l'écran
+     */
     public ImageView getImageView() {
         return imageView;
     }
 
+    /**
+     * Retourne le type énuméré du bonus.
+     *
+     * @return le type de bonus (VITESSE ou RAYON)
+     */
     public TypeBonus getType() {
         return type;
     }
 
+    /**
+     * Retourne la représentation textuelle du type de bonus.
+     *
+     * @return une chaîne représentant le type de bonus ("VITESSE" ou "RAYON")
+     */
     public String getTypeBonusString() {
         return typeBonusString;
     }
 
+    /**
+     * Énumération définissant les types de bonus disponibles dans le jeu.
+     */
     public enum TypeBonus {
+        /** Bonus qui augmente temporairement la vitesse du joueur */
         VITESSE,
+        /** Bonus qui augmente le rayon d'explosion des bombes */
         RAYON
     }
 
+    /**
+     * Constructeur de la classe Bonus.
+     * Crée un nouveau bonus à la position spécifiée avec le type donné.
+     * Si aucun type n'est spécifié (null), un type aléatoire est généré.
+     *
+     * @param game référence vers l'instance principale du jeu
+     * @param bonusX position X du bonus sur la grille (en coordonnées de grille)
+     * @param bonusY position Y du bonus sur la grille (en coordonnées de grille)
+     * @param gameGrid référence vers la grille de jeu
+     * @param type type de bonus à créer, ou null pour génération aléatoire
+     *
+     * @throws RuntimeException si le chargement de l'image du bonus échoue
+     */
     public Bonus(Game game, int bonusX, int bonusY, GameGrid gameGrid, TypeBonus type) {
         this.bonusX = bonusX;
         this.bonusY = bonusY;
         this.game = game;
         this.gameGrid = gameGrid;
 
-        // CORRECTION : Utiliser le paramètre 'type' passé au constructeur
-        // Si type est null, alors générer aléatoirement
         if (type != null) {
             this.type = type;
         } else {
@@ -91,9 +147,22 @@ public class Bonus {
         System.out.println("Bonus " + typeBonusString + " créé à la position (" + bonusX + ", " + bonusY + ")");
     }
 
-    // Méthode spécifique pour PacMan_Personnage
-// Dans la classe Bonus, méthode appliquerBonus(PacMan_Personnage joueur)
-    
+
+    /**
+     * Applique l'effet du bonus au joueur spécifié.
+     * Cette méthode gère l'application des différents types de bonus :
+     * - VITESSE : augmente temporairement la vitesse du joueur pour 15 secondes
+     * - RAYON : active le bonus de rayon d'explosion des bombes
+     *
+     * Après application, le bonus est automatiquement supprimé du jeu.
+     *
+     * @param joueur le joueur PacMan_Personnage qui collecte le bonus
+     *
+     * @throws RuntimeException si une erreur survient lors de l'activation du bonus rayon
+     *
+     * @see #appliquerBonusVitesse(PacMan_Personnage)
+     * @see #supprimerBonus()
+     */
     public void appliquerBonus(PacMan_Personnage joueur) {
         System.out.println("=== DÉBUT APPLICATION BONUS ===");
         System.out.println("Type de bonus : " + typeBonusString);
@@ -118,6 +187,16 @@ public class Bonus {
         System.out.println("=== FIN APPLICATION BONUS ===");
     }
 
+    /**
+     * Applique l'effet du bonus de vitesse au joueur.
+     * Divise par 2 la vitesse du joueur (ce qui augmente sa rapidité de déplacement)
+     * pendant une durée de 15 secondes, puis restaure la vitesse initiale.
+     *
+     * @param joueur le joueur auquel appliquer le bonus de vitesse
+     *
+     * @implNote Utilise une PauseTransition pour gérer la durée temporaire du bonus.
+     *           La restauration de la vitesse s'effectue sur le thread JavaFX.
+     */
     private void appliquerBonusVitesse(PacMan_Personnage joueur) {
         System.out.println("Bonus de vitesse activé pour le joueur ! Vitesse augmentée pour 15 secondes.");
         double vitesseInitiale = joueur.vitesse;
@@ -133,16 +212,22 @@ public class Bonus {
         pause.play();
     }
 
-
+    /**
+     * Supprime le bonus du jeu et de l'affichage.
+     * Cette méthode retire l'ImageView du bonus de son conteneur parent
+     * et supprime le bonus de la liste des bonus actifs dans le jeu.
+     *
+     * @implNote L'opération de suppression de l'interface graphique s'effectue
+     *           sur le thread JavaFX via Platform.runLater() pour assurer
+     *           la synchronisation des threads.
+     */
     private void supprimerBonus() {
-        // Supprimer l'affichage du bonus
         Platform.runLater(() -> {
             if (imageView.getParent() != null) {
                 ((Pane) imageView.getParent()).getChildren().remove(imageView);
             }
         });
 
-        // Retirer le bonus de la liste des bonus actifs
         game.removeBonus(this);
     }
 }
