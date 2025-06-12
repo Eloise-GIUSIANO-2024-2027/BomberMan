@@ -1,3 +1,6 @@
+/**
+ * Package principal de l'application Bomberman.
+ */
 package org.bomberman;
 
 import javafx.application.Platform;
@@ -14,16 +17,34 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+/**
+ * Contrôleur JavaFX pour le menu principal du jeu Bomberman.
+ * Gère les interactions utilisateur et la navigation entre les différentes scènes (modes de jeu, sélection de thème, règles).
+ */
 public class MenuController {
-
+    /**
+     * Le thème actuel de l'application, lu depuis un fichier.
+     * Peut être "default" ou "wix".
+     */
     private String theme = "default";
 
+    /**
+     * Constructeur de la classe MenuController.
+     * Initialise le thème de l'application en lisant le contenu du fichier "data.txt" situé dans les ressources.
+     *
+     * @throws IOException Si une erreur d'entrée/sortie survient lors de la lecture du fichier de thème.
+     */
     public MenuController() throws IOException {
         Path path = Paths.get("src/main/resources/data.txt");
         this.theme = Files.readString(path);
     }
 
+    /**
+     * Méthode appelée lorsque le bouton "MULTIJOUER GAME" est cliqué.
+     * Charge la scène du jeu principal (game.fxml) et applique le thème CSS approprié.
+     *
+     * @param event L'événement d'action déclenché par le clic sur le bouton.
+     */
     // Méthode appelée lorsque le bouton "NORMAL GAME" est cliqué
     @FXML
     private void startMultiGame(ActionEvent event) {
@@ -58,7 +79,12 @@ public class MenuController {
         }
     }
 
-        // Méthode appelée lorsque le bouton "BATTLE MODE" est cliqué
+    /**
+     * Méthode appelée lorsque le bouton "SOLO MODE" est cliqué.
+     * Charge la scène du jeu en mode solo (soloGame.fxml) et applique le thème CSS approprié.
+     *
+     * @param event L'événement d'action déclenché par le clic sur le bouton.
+     */
     @FXML
     private void startSoloMode(ActionEvent event) {
         System.out.println("Démarrer le mode Solo !");
@@ -91,6 +117,12 @@ public class MenuController {
         }
     }
 
+    /**
+     * Méthode appelée lorsque le bouton "CAPTURE THE FLAG" est cliqué.
+     * Charge la scène du jeu en mode Capture The Flag (CTFgame.fxml) et applique le thème CSS approprié.
+     *
+     * @param event L'événement d'action déclenché par le clic sur le bouton.
+     */
     @FXML
     private void startCTF(ActionEvent event) {
         System.out.println("Démarrer le mode Solo !");
@@ -123,7 +155,12 @@ public class MenuController {
         }
     }
 
-    // Méthode appelée lorsque le bouton "PASSWORD" est cliqué
+    /**
+     * Méthode appelée lorsque le bouton "THEME" est cliqué.
+     * Charge la scène de sélection de thème (theme.fxml).
+     *
+     * @param event L'événement d'action déclenché par le clic sur le bouton.
+     */
     @FXML
     private void changementTheme(ActionEvent event) {
         try {
@@ -141,6 +178,12 @@ public class MenuController {
         }
     }
 
+    /**
+     * Méthode appelée lorsque le bouton pour les règles du jeu est cliqué.
+     * Charge la scène affichant les règles du jeu (regle.fxml).
+     *
+     * @param event L'événement d'action déclenché par le clic sur le bouton.
+     */
     @FXML
     public void regleCommande(ActionEvent event) {
             try {
@@ -159,19 +202,16 @@ public class MenuController {
 
     }
 
-
+    /**
+     * Méthode appelée pour quitter l'application Bomberman
+     * Quand on appuis sur "EXIT".
+     * Ferme l'application JavaFX et termine le processus JVM.
+     */
     @FXML
     public void quittertout() {
         Platform.exit(); // Fait sortir l'application JavaFX
         System.exit(0); // Optionnel: Assure la terminaison complète de la JVM (utile si des threads tournent en arrière-plan)
 
-    }
-
-
-    // Méthode d'initialisation du contrôleur (optionnel pour ce menu simple)
-    @FXML
-    public void initialize() {
-        // Tu peux y ajouter du code d'initialisation pour le menu si nécessaire
     }
 
 }
