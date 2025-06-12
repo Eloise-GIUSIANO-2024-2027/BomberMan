@@ -1,3 +1,6 @@
+/**
+ * Package principal de l'application Bomberman.
+ */
 package org.bomberman;
 
 import javafx.scene.Group;
@@ -14,69 +17,136 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
+/**
+ * Classe de base pour un personnage joueur dans le jeu Bomberman.
+ * Gère les propriétés communes aux joueurs, y compris la position, le mouvement,
+ * la capacité à poser des bombes et les interactions avec les bonus et les drapeaux.
+ */
 public class Joueur_Personnage extends Group  {
+    /**Direction actuelle du personnage ("haut", "bas", "gauche", "droite")*/
     private String direction = "bas";
+    /**Taille d'une case (48x48 comme dans GameGrid)*/
     protected Rectangle rectangle = new Rectangle(48, 48);
-    private int gridX = 0; // Position X dans la grille (colonne)
-    private int gridY = 0; // Position Y dans la grille (ligne)
-    private static final int CELL_SIZE = 50; // Taille d'une case (48x48 comme dans GameGrid)
+    /**Position X dans la grille (colonne)*/
+    private int gridX = 0;
+    /**Position Y dans la grille (ligne)*/
+    private int gridY = 0;
+    /**Taille d'une case de la grille en pixels*/
+    private static final int CELL_SIZE = 50;
+    /**Référence au modèle de jeu*/
     protected Game game;
+    /**Indique si le personnage est vivant*/
     private boolean estVivant = true;
 
-    protected int playerNumber =1;// Initialise le joueur comme vivant par défaut
+    /**Numéro du joueur (1, 2, etc.)*/
+    protected int playerNumber =1;
+    /**Thème actuel pour les textures du personnage*/
     private String theme = "default";
+    /**Vitesse de déplacement du personnage*/
     public double vitesse = 0.1;
-    public boolean bonusRayonActif = false;
 
+    /**Timestamp du dernier placement de bombe*/
     private long dernierePlacementBombe = 0;
+    /**Temps de rechargement entre deux placements de bombes (en ms)*/
     private static final long COOLDOWN_BOMBE = 350;
 
-    private boolean aBonusRayon = false; // Pour le bonus de rayon
+    /**Vrai si le joueur a le bonus de rayon d'explosion étendu*/
+    private boolean aBonusRayon = false;
+    /**Indique si le joueur peut placer une bombe (hors cooldown)*/
     private boolean canPlaceBomb = true;
 
+    /**nom du joueur*/
     public String nom;
+    /**score du joueur*/
     public int score;
 
+    // Pour le mode Capture The Flag
+    /**Le drapeau appartenant à ce joueur*/
+    private Drapeau monDrapeau;
+    /**Vrai si le drapeau de ce joueur a été capturé*/
+    private boolean aEteCapture = false;
+    /**Compteur des drapeaux ennemis capturés par ce joueur*/
+    private int drapeauxCaptures = 0;
+
+
+    /**
+     * Retourne le score actuel du joueur.
+     *
+     * @return Le score du joueur.
+     */
     public int getScore() {return this.score;}
 
-    // ← AJOUTER ces méthodes
+    /**
+     * Définit la vitesse de déplacement du joueur.
+     *
+     * @param vitesse La nouvelle vitesse du joueur.
+     */
     public void setVitesse(double vitesse) {
         this.vitesse = vitesse;
     }
 
+    /**
+     * Retourne la vitesse de déplacement actuelle du joueur.
+     *
+     * @return La vitesse du joueur.
+     */
     public double getVitesse() {
         return vitesse;
     }
 
-
-    // Pour le mode Capture The Flag
-    private Drapeau monDrapeau; // Le drapeau appartenant à ce joueur
-    private boolean aEteCapture = false; // Vrai si le drapeau de ce joueur a été capturé
-    private int drapeauxCaptures = 0; // Compteur des drapeaux ennemis capturés par ce joueur
-
+    /**
+     * Vérifie si le joueur peut placer une bombe.
+     *
+     * @return true si le joueur peut placer une bombe, false sinon.
+     */
     public boolean canPlaceBomb() {
         return canPlaceBomb;
     }
 
+    /**
+     * Définit la capacité du joueur à placer une bombe.
+     *
+     * @param canPlaceBomb true pour autoriser le placement de bombe, false pour le désactiver.
+     */
     public void setCanPlaceBomb(boolean canPlaceBomb) {
         this.canPlaceBomb = canPlaceBomb;
     }
 
+    /**
+     * Active le bonus de rayon pour les bombes du joueur.
+     */
     public void activerBonusRayon() {
         this.aBonusRayon = true;
         System.out.println("Joueur a reçu le bonus Rayon !");
     }
 
+    /**
+     * Vérifie si le joueur a le bonus de rayon de bombe actif.
+     *
+     * @return true si le bonus de rayon est actif, false sinon.
+     */
     public boolean aBonusRayon() {
         return aBonusRayon;
     }
 
+    /**
+     * Consomme le bonus de rayon, le rendant inactif.
+     */
     public void consommerBonusRayon() {
         this.aBonusRayon = false;
         System.out.println("Bonus Rayon consommé.");
     }
 
+    /**
+     * Constructeur de la classe Joueur_Personnage.
+     * Initialise un nouveau personnage joueur avec sa position de départ, son numéro de joueur et son thème.
+     *
+     * @param game L'instance du modèle de jeu.
+     * @param startX La position X (colonne) de départ sur la grille.
+     * @param startY La position Y (ligne) de départ sur la grille.
+     * @param playerNumber Le numéro identifiant ce joueur.
+     * @throws IOException Si une erreur d'entrée/sortie survient lors de la lecture du fichier de thème.
+     */
     public Joueur_Personnage(Game game, int startX, int startY, int playerNumber) throws IOException {
         this.game = game;
         this.gridX = startX;
@@ -92,6 +162,10 @@ public class Joueur_Personnage extends Group  {
         updatePixelPosition();
     }
 
+    /**
+     * Met à jour la position visuelle du personnage en pixels sur la scène JavaFX
+     * en fonction de sa position sur la grille.
+     */
     public void updatePixelPosition() {
         double newX = gridX * CELL_SIZE;
         double newY = gridY * CELL_SIZE;
@@ -102,6 +176,13 @@ public class Joueur_Personnage extends Group  {
 
     }
 
+    /**
+     * Vérifie si une position donnée sur la grille est valide pour le déplacement (c'est-à-dire vide).
+     *
+     * @param x La colonne (X) de la position à vérifier.
+     * @param y La ligne (Y) de la position à vérifier.
+     * @return true si la position est valide et vide, false sinon.
+     */
     private boolean isValidGridPosition(int x, int y) {
         int[][] grid = game.getGrid();
 
@@ -110,6 +191,10 @@ public class Joueur_Personnage extends Group  {
         return grid[y][x] == 0;
     }
 
+    /**
+     * Déplace le personnage d'une case vers la gauche s'il est vivant et si la destination est valide.
+     * Met à jour l'image du personnage pour refléter la nouvelle direction.
+     */
     public void deplacerAGauche() {
         if (!estVivant) return;
         int nouvellePositionX = gridX - 1;
@@ -125,6 +210,12 @@ public class Joueur_Personnage extends Group  {
         }
     }
 
+    /**
+     * Déplace le personnage d'une case vers la droite s'il est vivant et si la destination est valide.
+     * Met à jour l'image du personnage pour refléter la nouvelle direction.
+     *
+     * @param largeurJeu La largeur totale du jeu (non utilisée directement dans cette implémentation).
+     */
     public void deplacerADroite(double largeurJeu) {
         if (!estVivant) return;
         int nouvellePositionX = gridX + 1;
@@ -140,6 +231,12 @@ public class Joueur_Personnage extends Group  {
         }
     }
 
+    /**
+     * Déplace le personnage d'une case vers le bas s'il est vivant et si la destination est valide.
+     * Met à jour l'image du personnage pour refléter la nouvelle direction.
+     *
+     * @param hauteurJeu La hauteur totale du jeu (non utilisée directement dans cette implémentation).
+     */
     public void deplacerEnBas(double hauteurJeu) {
         if (!estVivant) return;
         int nouvellePositionY = gridY + 1;
@@ -154,6 +251,10 @@ public class Joueur_Personnage extends Group  {
         }
     }
 
+    /**
+     * Déplace le personnage d'une case vers le haut s'il est vivant et si la destination est valide.
+     * Met à jour l'image du personnage pour refléter la nouvelle direction.
+     */
     public void deplacerEnHaut() {
         if (!estVivant) return;
         int nouvellePositionY = gridY - 1;
@@ -169,12 +270,20 @@ public class Joueur_Personnage extends Group  {
         }
     }
 
+    /**
+     * Vérifie si le joueur peut placer une bombe en tenant compte du cooldown et de son état de vie.
+     *
+     * @return true si le joueur peut placer une bombe, false sinon.
+     */
     public boolean peutPlacerBombe() {
         long maintenant = System.currentTimeMillis();
         boolean cooldownOK = (maintenant - dernierePlacementBombe) >= COOLDOWN_BOMBE;
         return canPlaceBomb && cooldownOK && estVivant;
     }
 
+    /**
+     * Marque qu'une bombe a été placée par le joueur, activant le cooldown.
+     */
     public void marquerBombePlacee() {
         this.dernierePlacementBombe = System.currentTimeMillis();
         this.canPlaceBomb = false;
@@ -183,6 +292,10 @@ public class Joueur_Personnage extends Group  {
     }
 
 
+    /**
+     * Active le cooldown pour le placement de bombes. Une fois le cooldown écoulé,
+     * la capacité de placer des bombes est réactivée.
+     */
     public void activerCooldownBombe() {
         this.canPlaceBomb = false;
         this.dernierePlacementBombe = System.currentTimeMillis();
@@ -200,28 +313,44 @@ public class Joueur_Personnage extends Group  {
         }, COOLDOWN_BOMBE);
     }
 
-    public long getTempsRestantCooldown() {
-        long maintenant = System.currentTimeMillis();
-        long tempsEcoule = maintenant - dernierePlacementBombe;
-        return Math.max(0, COOLDOWN_BOMBE - tempsEcoule);
-    }
-
+    /**
+     * Marque le personnage comme non vivant et le rend invisible.
+     */
     public void disparait() {
         this.estVivant = false;
         this.setVisible(false);
     }
 
+    /**
+     * Vérifie si le personnage est vivant.
+     *
+     * @return true si le personnage est vivant, false sinon.
+     */
     public boolean estVivant() {
         return this.estVivant;
     }
 
+    /**
+     * Retourne le numéro du joueur.
+     *
+     * @return Le numéro du joueur.
+     */
     public int getPlayerNumber() {return this.playerNumber;}
 
-    // Getters pour la position de grille (utiles pour debug)
+    /**
+     * Retourne la position X (colonne) du personnage sur la grille.
+     *
+     * @return La position X sur la grille.
+     */
     public int getGridX() {
         return gridX;
     }
 
+    /**
+     * Retourne la position Y (ligne) du personnage sur la grille.
+     *
+     * @return La position Y sur la grille.
+     */
     public int getGridY() {
         return gridY;
     }
@@ -232,35 +361,64 @@ public class Joueur_Personnage extends Group  {
         double getVitesse();
     }
 
-    //Pour le catch the flagh
-    // --- Pour le mode Capture The Flag ---
 
+    // --- Pour le mode Capture The Flag ---
+    /**
+     * Définit le drapeau appartenant à ce joueur pour le mode Capture The Flag.
+     *
+     * @param d Le drapeau du joueur.
+     */
     public void setMonDrapeau(Drapeau d) {
         this.monDrapeau = d;
     }
 
+    /**
+     * Retourne le drapeau appartenant à ce joueur.
+     *
+     * @return L'objet Drapeau du joueur.
+     */
     public Drapeau getMonDrapeau() {
         return monDrapeau;
     }
 
+    /**
+     * Vérifie si le drapeau de ce joueur a été capturé par un ennemi.
+     *
+     * @return true si le drapeau du joueur a été capturé, false sinon.
+     */
     public boolean aEteCapture() {
         return aEteCapture;
     }
 
+    /**
+     * Définit si le drapeau de ce joueur a été capturé.
+     *
+     * @param aEteCapture true si le drapeau a été capturé, false sinon.
+     */
     public void setAEteCapture(boolean aEteCapture) {
         this.aEteCapture = aEteCapture;
     }
 
+    /**
+     * Retourne le nombre de drapeaux ennemis capturés par ce joueur.
+     *
+     * @return Le nombre de drapeaux capturés.
+     */
     public int getDrapeauxCaptures() {
         return drapeauxCaptures;
     }
 
+    /**
+     * Incrémente le compteur de drapeaux ennemis capturés par ce joueur.
+     */
     public void incrementerDrapeauxCaptures() {
         this.drapeauxCaptures++;
     }
 
     /**
      * Vérifie si ce joueur est sur un drapeau ennemi et le capture si c'est le cas.
+     * Un joueur ne peut pas capturer son propre drapeau ni un drapeau déjà capturé.
+     *
      * @param tousLesDrapeaux La liste de tous les drapeaux présents sur la carte.
      * @return true si un drapeau ennemi a été capturé, false sinon.
      */
