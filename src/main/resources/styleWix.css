@@ -86,3 +86,57 @@ Button:hover {
     -fx-font-size: 10;
     -fx-text-fill: #AAAAAA;
 }
+
+/* Styles pour le label principal de fin de partie (gameStatusLabel) */
+.game-status-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-font-family: "Press Start 2P Regular";
+    -fx-effect: dropshadow(gaussian, black, 20, 0, 0, 0);
+}
+
+.game-status-label.victoire {
+    -fx-text-fill: #7CFC70;
+    -fx-font-family: "Press Start 2P Regular";
+    -fx-effect: dropshadow(gaussian, green, 5, 0, 0, 0);
+}
+
+.game-status-label.defaite {
+    -fx-text-fill: #B22222;
+    -fx-font-family: "Press Start 2P Regular";
+    -fx-effect: dropshadow(gaussian, darkred, 5, 0, 0, 0);
+}
+
+/* Styles pour le label de résultat dans le menu de fin (resultLabel) */
+.result-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Press Start 2P Regular";
+}
+
+.result-label.victoire {
+    -fx-text-fill: gold;
+
+    -fx-font-family: "Press Start 2P Regular";
+    -fx-effect: dropshadow(gaussian, green, 5, 0, 0, 0);
+}
+
+.result-label.defaite {
+    -fx-text-fill: red;
+    -fx-font-family: "Press Start 2P Regular";
+    -fx-effect: dropshadow(gaussian, darkred, 5, 0, 0, 0);
+}
+
+.text-field {
+    -fx-background-color: #AAAAAA; /* Couleur de fond sombre */
+    -fx-text-fill: #BBBBBB;       /* Couleur du texte gris clair */
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #808080; /* Couleur du texte d'aide */
+    -fx-border-color: #616161;    /* Couleur de la bordure */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
