@@ -28,12 +28,4 @@ public abstract class Entite {
     public boolean estVivant() {
         return this.estVivant;
     }
-
-
-
-
-    // Dans votre boucle de jeu :
-//    public void mettreAJour() {
-//        entites.removeIf(entite -> !entite.estVivant());
-//    }
 }

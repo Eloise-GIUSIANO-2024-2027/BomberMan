@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
 
 public class CTFcontroller {
 
@@ -47,7 +45,7 @@ public class CTFcontroller {
     private Timeline gameTimer;
     private int tempsRestant = 120;
 
-    private List<PacMan_Personnage> joueurs = new ArrayList<>();
+    private List<Joueur_Personnage> joueurs = new ArrayList<>();
     private List<Bot_Personnage> bot = new ArrayList<>();
     private List<Bombe> listeBombes = new ArrayList<>();
     private List<Drapeau> listeDrapeaux = new ArrayList<>();
@@ -139,10 +137,10 @@ public class CTFcontroller {
         int player4StartY = 10;
 
         // Créer les personnages AVEC LEURS POSITIONS DE DÉPART
-        PacMan_Personnage pacman = new Pacman(game, player1StartX, player1StartY, 1);
-        PacMan_Personnage fantome = new Pacman(game, player2StartX, player2StartY, 2);
-        PacMan_Personnage pacman2 = new Pacman(game, player3StartX, player3StartY, 3);
-        PacMan_Personnage pacman3 = new Pacman(game, player4StartX, player4StartY, 4);
+        Joueur_Personnage pacman = new Joueur(game, player1StartX, player1StartY, 1);
+        Joueur_Personnage fantome = new Joueur(game, player2StartX, player2StartY, 2);
+        Joueur_Personnage pacman2 = new Joueur(game, player3StartX, player3StartY, 3);
+        Joueur_Personnage pacman3 = new Joueur(game, player4StartX, player4StartY, 4);
 
         // Créer les drapeaux avec les positions de DÉPART des joueurs et des couleurs différentes
         // Et les assigner à leurs propriétaires
@@ -221,14 +219,14 @@ public class CTFcontroller {
         }
         if (saisiJ2.getLength() != 0) {
             nomJ2 = saisiJ2.getText();
-            joueurs.get(1).nom = nomJ1;
+            joueurs.get(1).nom = nomJ2;
             ligneJ2 = getLigneNom(nomJ2);
             scoreJ2 = getScoreLigne(ligneJ2);
             ajouterScore(nomJ2, 0, ligneJ2);
             updateFile(scores);
         } else {
             nomJ2 = "Joueur_" + derID;
-            joueurs.get(1).nom = nomJ1;
+            joueurs.get(1).nom = nomJ2;
             scores.set(1, derID + "");
             ++derID;
             ligneJ2 = getLigneNom(nomJ2);
@@ -237,14 +235,14 @@ public class CTFcontroller {
         }
         if (saisiJ3.getLength() != 0) {
             nomJ3 = saisiJ3.getText();
-            joueurs.get(2).nom = nomJ1;
+            joueurs.get(2).nom = nomJ3;
             ligneJ3 = getLigneNom(nomJ3);
             scoreJ3 = getScoreLigne(ligneJ3);
             ajouterScore(nomJ3, 0, ligneJ3);
             updateFile(scores);
         } else {
             nomJ3 = "Joueur_" + derID;
-            joueurs.get(2).nom = nomJ1;
+            joueurs.get(2).nom = nomJ3;
             scores.set(1, derID + "");
             ++derID;
             ligneJ3 = getLigneNom(nomJ3);
@@ -253,14 +251,14 @@ public class CTFcontroller {
         }
         if (saisiJ4.getLength() != 0) {
             nomJ4 = saisiJ4.getText();
-            joueurs.get(3).nom = nomJ1;
+            joueurs.get(3).nom = nomJ4;
             ligneJ4 = getLigneNom(nomJ4);
             scoreJ4 = getScoreLigne(ligneJ4);
             ajouterScore(nomJ4, 0, ligneJ4);
             updateFile(scores);
         } else {
             nomJ4 = "Joueur_" + derID;
-            joueurs.get(3).nom = nomJ1;
+            joueurs.get(3).nom = nomJ4;
             scores.set(1, derID + "");
             ++derID;
             ligneJ4 = getLigneNom(nomJ4);
@@ -273,7 +271,7 @@ public class CTFcontroller {
 
 
 
-    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
+    private void handlePlayerMovement(KeyEvent event, Joueur_Personnage j1, Joueur_Personnage j2, Joueur_Personnage j3, Joueur_Personnage j4) {
         GameGrid k = gameGridDisplay;
 
         // Sauvegarder les anciennes positions pour vérifier si le joueur a bougé
@@ -470,12 +468,10 @@ public class CTFcontroller {
     }
 
     public void ajouterScore(String nom, int score, int ligne) {
-        System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
         if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
         else if (score > getScoreLigne(ligne)){ // si le pseudo est déjà enregistré et que le score est superieur à celui enregistré
             scores.set(ligne, nom + " " + score);
         }
-        System.out.println(nom + " " + score + " " + getScoreLigne(ligne) + "   " + ligne);
     }
 
     public void updateFile(List<String> lignes) throws IOException {
@@ -632,10 +628,10 @@ public class CTFcontroller {
     private void verifierFinDePartie() {
         if (partieTerminee) return;
 
-        int nombreDeJoueursVivants = (int) joueurs.stream().filter(PacMan_Personnage::estVivant).count();
+        int nombreDeJoueursVivants = (int) joueurs.stream().filter(Joueur_Personnage::estVivant).count();
         int nombreDeDrapeauxEnnemisACapturer = joueurs.size() - 1;
 
-        for (PacMan_Personnage joueur : joueurs) {
+        for (Joueur_Personnage joueur : joueurs) {
             if (joueur.estVivant() && joueur.getDrapeauxCaptures() >= nombreDeDrapeauxEnnemisACapturer) {
                 finDePartie("Le joueur " + joueur.getPlayerNumber() + " a capturé tous les drapeaux ennemis et GAGNE LA PARTIE !");
                 return;
@@ -699,10 +695,10 @@ public class CTFcontroller {
         int player4StartX = 0;
         int player4StartY = 10;
 
-        PacMan_Personnage pacman = new Pacman(game, player1StartX, player1StartY, 1);
-        PacMan_Personnage fantome = new Pacman(game, player2StartX, player2StartY, 2);
-        PacMan_Personnage pacman2 = new Pacman(game, player3StartX, player3StartY, 3);
-        PacMan_Personnage pacman3 = new Pacman(game, player4StartX, player4StartY, 4);
+        Joueur_Personnage pacman = new Joueur(game, player1StartX, player1StartY, 1);
+        Joueur_Personnage fantome = new Joueur(game, player2StartX, player2StartY, 2);
+        Joueur_Personnage pacman2 = new Joueur(game, player3StartX, player3StartY, 3);
+        Joueur_Personnage pacman3 = new Joueur(game, player4StartX, player4StartY, 4);
 
         Drapeau drapeau1 = new Drapeau(player1StartX, player1StartY, pacman, Color.YELLOW);
         Drapeau drapeau2 = new Drapeau(player2StartX, player2StartY, fantome, Color.CYAN);
@@ -746,7 +742,7 @@ public class CTFcontroller {
         lancerTimer();
     }
 
-    private void verifierCollisionBonus(PacMan_Personnage joueur) {
+    private void verifierCollisionBonus(Joueur_Personnage joueur) {
         System.out.println("Vérification collision pour joueur " + joueur.getPlayerNumber() +
                 " à (" + joueur.getGridX() + ", " + joueur.getGridY() + ")");
 

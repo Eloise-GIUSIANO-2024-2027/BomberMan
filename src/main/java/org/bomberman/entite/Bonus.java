@@ -3,16 +3,13 @@ package org.bomberman.entite;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.animation.PauseTransition;
-import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
-import org.bomberman.PacMan_Personnage;
-import org.bomberman.Bot_Personnage;
+import org.bomberman.Joueur_Personnage;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -160,10 +157,10 @@ public class Bonus {
      *
      * @throws RuntimeException si une erreur survient lors de l'activation du bonus rayon
      *
-     * @see #appliquerBonusVitesse(PacMan_Personnage)
+     * @see #appliquerBonusVitesse(Joueur_Personnage)
      * @see #supprimerBonus()
      */
-    public void appliquerBonus(PacMan_Personnage joueur) {
+    public void appliquerBonus(Joueur_Personnage joueur) {
         System.out.println("=== DÉBUT APPLICATION BONUS ===");
         System.out.println("Type de bonus : " + typeBonusString);
         System.out.println("Joueur : " + joueur.getPlayerNumber());
@@ -197,7 +194,7 @@ public class Bonus {
      * @implNote Utilise une PauseTransition pour gérer la durée temporaire du bonus.
      *           La restauration de la vitesse s'effectue sur le thread JavaFX.
      */
-    private void appliquerBonusVitesse(PacMan_Personnage joueur) {
+    private void appliquerBonusVitesse(Joueur_Personnage joueur) {
         System.out.println("Bonus de vitesse activé pour le joueur ! Vitesse augmentée pour 15 secondes.");
         double vitesseInitiale = joueur.vitesse;
         joueur.vitesse = vitesseInitiale / 2.0;

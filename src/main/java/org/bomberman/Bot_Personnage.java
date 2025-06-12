@@ -1,6 +1,5 @@
 package org.bomberman;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -15,9 +14,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 
-public class Bot_Personnage extends PacMan_Personnage {
+public class Bot_Personnage extends Joueur_Personnage {
     private String direction = "bas";
     private Rectangle rectangle = new Rectangle(48, 48);
     private int gridX;
@@ -37,7 +35,7 @@ public class Bot_Personnage extends PacMan_Personnage {
     private long derniereCollecteBonus = 0;
     private static final long COOLDOWN_BOMBE_BOT = 1000; // 2 secondes
     private static final long COOLDOWN_BONUS = 1000; // 1 seconde
-    private PacMan_Personnage joueur;
+    private Joueur_Personnage joueur;
     private int scoreBot = 0;
 
     public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) throws IOException {
@@ -57,7 +55,7 @@ public class Bot_Personnage extends PacMan_Personnage {
     }
 
 
-    public void agir(PacMan_Personnage joueurPrincipal, List<PacMan_Personnage> tousJoueurs,
+    public void agir(Joueur_Personnage joueurPrincipal, List<Joueur_Personnage> tousJoueurs,
                      GameGrid gameGrid, List<Bot_Personnage> autresBots) {
 
 
@@ -88,7 +86,7 @@ public class Bot_Personnage extends PacMan_Personnage {
 
     }
 
-    private boolean tentativeAttaqueJoueur(PacMan_Personnage joueur, GameGrid gameGrid) {
+    private boolean tentativeAttaqueJoueur(Joueur_Personnage joueur, GameGrid gameGrid) {
         int distanceX = Math.abs(this.getGridX() - joueur.getGridX());
         int distanceY = Math.abs(this.getGridY() - joueur.getGridY());
         int distanceTotale = distanceX + distanceY; // Distance de Manhattan
@@ -192,7 +190,7 @@ public class Bot_Personnage extends PacMan_Personnage {
         return false;
     }
 
-    private boolean seRapprocherDuJoueur(PacMan_Personnage joueur) {
+    private boolean seRapprocherDuJoueur(Joueur_Personnage joueur) {
         int deltaX = joueur.getGridX() - this.getGridX();
         int deltaY = joueur.getGridY() - this.getGridY();
 

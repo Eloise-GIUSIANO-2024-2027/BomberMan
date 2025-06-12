@@ -8,7 +8,7 @@ import javafx.application.Platform;
 import org.bomberman.Bot_Personnage;
 import org.bomberman.Game;
 import org.bomberman.GameGrid;
-import org.bomberman.PacMan_Personnage;
+import org.bomberman.Joueur_Personnage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,11 +38,11 @@ public class Bombe extends ImageView {
     /** Référence vers la grille de jeu pour l'affichage */
     private GameGrid gameGrid;
     /** Liste des joueurs présents dans le jeu */
-    private List<PacMan_Personnage> joueurs;
+    private List<Joueur_Personnage> joueurs;
     /** Liste des bots présents dans le jeu */
     private List<Bot_Personnage> botList;
     /** Joueur qui a posé cette bombe (peut être null si posée par un bot) */
-    private PacMan_Personnage poseurJoueur;
+    private Joueur_Personnage poseurJoueur;
     /** Bot qui a posé cette bombe (peut être null si posée par un joueur) */
     private Bot_Personnage poseurBot;
     /** Liste de toutes les bombes actives dans le jeu */
@@ -74,7 +74,7 @@ public class Bombe extends ImageView {
      * @throws RuntimeException si le chargement de l'image de la bombe échoue
      * @throws IllegalArgumentException si la position spécifiée est hors des limites de la grille
      */
-    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<PacMan_Personnage> joueurs, List<Bot_Personnage> botList, PacMan_Personnage poseurJoueur, List<Bombe> bombes) {
+    public Bombe(int x, int y, int rayon, Game game, GameGrid gameGrid, List<Joueur_Personnage> joueurs, List<Bot_Personnage> botList, Joueur_Personnage poseurJoueur, List<Bombe> bombes) {
         this.x = x;
         this.y = y;
         this.rayon = rayon;
@@ -245,7 +245,7 @@ public class Bombe extends ImageView {
         }
 
         // Vérifier les dégâts sur les joueurs
-        for (PacMan_Personnage joueur : joueurs) {
+        for (Joueur_Personnage joueur : joueurs) {
             // Vérifier si le joueur est toujours vivant
             if (joueur.estVivant()) {
                 int joueurGridX = joueur.getGridX(); // Colonne du joueur

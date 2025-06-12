@@ -3,16 +3,15 @@ package org.bomberman;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.bomberman.entite.Joueur;
 
 public class Drapeau extends Group {
     private int gridX;
     private int gridY;
     private static final int CELL_SIZE = 50;
-    private PacMan_Personnage proprietaire;
+    private Joueur_Personnage proprietaire;
     private boolean isCaptured = false;
 
-    public Drapeau(int x, int y, PacMan_Personnage joueur, Color couleurDrapeau) { //
+    public Drapeau(int x, int y, Joueur_Personnage joueur, Color couleurDrapeau) { //
         this.gridX = x ;
         this.gridY = y;
         this.proprietaire = joueur;
@@ -28,7 +27,7 @@ public class Drapeau extends Group {
     public int getGridX() { return gridX; }
     public int getGridY() { return gridY; }
 
-    public PacMan_Personnage getProprietaire() {
+    public Joueur_Personnage getProprietaire() {
         return proprietaire;
     }
 

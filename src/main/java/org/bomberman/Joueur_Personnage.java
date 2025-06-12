@@ -2,13 +2,8 @@ package org.bomberman;
 
 import javafx.scene.Group;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.Group;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.application.Platform;
 import java.util.Objects;
 import java.util.Timer;
@@ -18,11 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
-import java.util.Objects;
 import java.util.List;
 
-public class PacMan_Personnage extends Group  {
+public class Joueur_Personnage extends Group  {
     private String direction = "bas";
     protected Rectangle rectangle = new Rectangle(48, 48);
     private int gridX = 0; // Position X dans la grille (colonne)
@@ -84,7 +77,7 @@ public class PacMan_Personnage extends Group  {
         System.out.println("Bonus Rayon consommé.");
     }
 
-    public PacMan_Personnage(Game game, int startX, int startY,int playerNumber) throws IOException {
+    public Joueur_Personnage(Game game, int startX, int startY, int playerNumber) throws IOException {
         this.game = game;
         this.gridX = startX;
         this.gridY = startY;

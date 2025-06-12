@@ -31,7 +31,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Timer;
@@ -49,7 +48,7 @@ public class gameController {
     private Label gameStatusLabel;
     private Timeline gameTimer;
     private int tempsRestant = 120;
-    private List<PacMan_Personnage> joueurs = new ArrayList<>();
+    private List<Joueur_Personnage> joueurs = new ArrayList<>();
     private List<Bot_Personnage> bot = new ArrayList<>();
     private List<Bombe> listeBombes = new ArrayList<>();
     private boolean paused = false;
@@ -136,10 +135,10 @@ public class gameController {
         gameArea.getChildren().add(gameContainer);
 
         // Créer les personnages
-        PacMan_Personnage pacman1 = new Pacman(game, 0, 0,1);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 10,2);
-        PacMan_Personnage pacman3 = new Pacman(game, 12, 0,3);
-        PacMan_Personnage pacman4 = new Pacman(game, 0, 10,4);
+        Joueur_Personnage pacman1 = new Joueur(game, 0, 0,1);
+        Joueur_Personnage pacman2 = new Joueur(game, 12, 10,2);
+        Joueur_Personnage pacman3 = new Joueur(game, 12, 0,3);
+        Joueur_Personnage pacman4 = new Joueur(game, 0, 10,4);
 
         joueurs.add(pacman1);
         joueurs.add(pacman2);
@@ -247,7 +246,7 @@ public class gameController {
     }
 
 
-    private void checkBonusCollision(PacMan_Personnage joueur) {
+    private void checkBonusCollision(Joueur_Personnage joueur) {
         List<Bonus> activeBonuses = game.getActiveBonuses();
         for (int i = activeBonuses.size() - 1; i >= 0; i--) {
             Bonus bonus = activeBonuses.get(i);
@@ -376,7 +375,7 @@ public class gameController {
     }
 
 
-    private void handlePlayerMovement(KeyEvent event, PacMan_Personnage j1, PacMan_Personnage j2, PacMan_Personnage j3, PacMan_Personnage j4) {
+    private void handlePlayerMovement(KeyEvent event, Joueur_Personnage j1, Joueur_Personnage j2, Joueur_Personnage j3, Joueur_Personnage j4) {
         GameGrid k = gameGridDisplay;
 
         switch (event.getCode()) {
@@ -555,10 +554,10 @@ public class gameController {
         gameArea.getChildren().add(gameContainer);
 
         // Recréer les joueurs
-        PacMan_Personnage pacman = new Pacman(game, 0, 0,1);
-        PacMan_Personnage fantome = new Pacman(game, 12, 10,2);
-        PacMan_Personnage pacman2 = new Pacman(game, 12, 0,3);
-        PacMan_Personnage pacman3 = new Pacman(game, 0, 10,4);
+        Joueur_Personnage pacman = new Joueur(game, 0, 0,1);
+        Joueur_Personnage fantome = new Joueur(game, 12, 10,2);
+        Joueur_Personnage pacman2 = new Joueur(game, 12, 0,3);
+        Joueur_Personnage pacman3 = new Joueur(game, 0, 10,4);
 
         joueurs.add(pacman);
         joueurs.add(fantome);
@@ -668,8 +667,8 @@ public class gameController {
             return;
         }
 
-        List<PacMan_Personnage> joueursHumainsEnVie = joueurs.stream()
-                .filter(PacMan_Personnage::estVivant)
+        List<Joueur_Personnage> joueursHumainsEnVie = joueurs.stream()
+                .filter(Joueur_Personnage::estVivant)
                 .collect(Collectors.toList());
 
         if (joueursHumainsEnVie.size() <= 1) { // Il ne reste plus qu'un ou aucun joueur humain
@@ -682,7 +681,7 @@ public class gameController {
 
             if (joueursHumainsEnVie.size() == 1) {
                 // Un seul joueur est vivant : c'est le vainqueur par élimination
-                PacMan_Personnage vainqueur = joueursHumainsEnVie.get(0);
+                Joueur_Personnage vainqueur = joueursHumainsEnVie.get(0);
                 mainMessage = vainqueur.nom + " GAGNE !";
                 resultDetailsMessage = "FÉLICITATIONS " + vainqueur.nom + " !";
                 victoireGlobale = true;
@@ -710,8 +709,8 @@ public class gameController {
         }
         partieEstTerminee = true;
         arreterJeu();
-        List<PacMan_Personnage> joueursVivants = joueurs.stream()
-                .filter(PacMan_Personnage::estVivant)
+        List<Joueur_Personnage> joueursVivants = joueurs.stream()
+                .filter(Joueur_Personnage::estVivant)
                 .collect(Collectors.toList());
 
         String mainMessage;
@@ -725,17 +724,17 @@ public class gameController {
             victoireGlobale = false; // Considéré comme une défaite générale
         } else if (joueursVivants.size() == 1) {
             // Un seul joueur a survécu jusqu'à la fin du temps
-            PacMan_Personnage vainqueur = joueursVivants.get(0);
+            Joueur_Personnage vainqueur = joueursVivants.get(0);
             mainMessage = "TEMPS ÉCOULÉ ! " + vainqueur.nom + " EST LE DERNIER SURVIVANT !";
             resultMenuMessage = "FÉLICITATIONS " + vainqueur.nom + " !";
             victoireGlobale = true;
         } else {
             // Plusieurs joueurs sont encore vivants à la fin du temps : CLASSEMENT !
-            joueursVivants.sort(Comparator.comparingInt(PacMan_Personnage::getScore).reversed());
+            joueursVivants.sort(Comparator.comparingInt(Joueur_Personnage::getScore).reversed());
 
             StringBuilder classement = new StringBuilder("TEMPS ÉCOULÉ ! CLASSEMENT FINAL :\n");
             for (int i = 0; i < joueursVivants.size(); i++) {
-                PacMan_Personnage j = joueursVivants.get(i);
+                Joueur_Personnage j = joueursVivants.get(i);
                 classement.append((i + 1)).append(".").append(j.nom);
                 if (j.getScore() != 0) { // Vérifiez si getScore() est pertinent
                     classement.append(" (Score: ").append(j.getScore()).append(")");
