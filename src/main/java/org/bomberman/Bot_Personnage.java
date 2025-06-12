@@ -15,29 +15,86 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * La classe {@code Bot_Personnage} représente un personnage contrôlé par l'ordinateur
+ * dans le jeu Bomberman. Elle étend la classe abstraite {@code Joueur_Personnage}
+ * et implémente des logiques de comportement pour l'IA, incluant la recherche de bonus,
+ * l'attaque du joueur, et le mouvement aléatoire.
+ */
 public class Bot_Personnage extends Joueur_Personnage {
-    private String direction = "bas";
-    private Rectangle rectangle = new Rectangle(48, 48);
-    private int gridX;
-    private int gridY;
-    private static final int CELL_SIZE = 50;
-    private Game game;
-    private boolean estVivant = true;
-    private int botId;
-    private int botNumber;// Identifiant unique pour chaque bot
-    private List<Bombe> listeBombesBot = new ArrayList<>();
-    private String theme = "default";
-    private Random random = new Random();
-    private String strategie = "AGGRESSIVE"; // AGGRESSIVE, DEFENSIVE, MIXED
-    private int rayonDetection = 3; // Distance à laquelle le bot détecte le joueur
-    private boolean enModePoursuiteJoueur = false;
-    private long dernierePlacementBombe = 0;
-    private long derniereCollecteBonus = 0;
-    private static final long COOLDOWN_BOMBE_BOT = 1000; // 2 secondes
-    private static final long COOLDOWN_BONUS = 1000; // 1 seconde
-    private Joueur_Personnage joueur;
-    private int scoreBot = 0;
 
+    /**
+     * Le rectangle visuel représentant le bot sur l'écran, avec une taille de 48x48 pixels.
+     */
+    private Rectangle rectangle = new Rectangle(48, 48);
+    /**
+     * La position X du bot sur la grille de jeu.
+     */
+    private int gridX;
+    /**
+     * La position Y du bot sur la grille de jeu.
+     */
+    private int gridY;
+    /**
+     * * Une référence à l'instance principale du jeu.
+     */
+    private Game game;
+    /**
+     * L'identifiant unique de ce bot.
+     */
+    private int botId;
+    /**
+     * Le numéro du bot, utilisé pour différencier les apparences ou les comportements.
+     */
+    private int botNumber;
+    /**
+     * Le thème graphique actuel utilisé pour le bot, chargé depuis un fichier.
+     */
+    private String theme = "default";
+    /**
+     * Un générateur de nombres aléatoires utilisé pour les mouvements aléatoires du bot.
+     */
+    private Random random = new Random();
+    /**
+     * La stratégie de comportement actuelle du bot (par exemple, "AGGRESSIVE", "DEFENSIVE", "MIXED").
+     */
+    private String strategie = "AGGRESSIVE";
+    /**
+     * Le rayon de détection du joueur par le bot.
+     * Le bot peut détecter le joueur dans cette distance.
+     */
+    private int rayonDetection = 3;
+    /**
+     * Le timestamp du dernier placement de bombe par le bot.
+     * Utilisé pour gérer le cooldown des bombes.
+     */
+    private long dernierePlacementBombe = 0;
+    /**
+     * Le timestamp de la dernière collecte de bonus par le bot.
+     * Utilisé pour gérer le cooldown des bonus.
+     */
+    private long derniereCollecteBonus = 0;
+    /**
+     * La durée minimale en millisecondes entre deux placements de bombe par le bot.
+     */
+    private static final long COOLDOWN_BOMBE_BOT = 1000;
+    /**
+     * La durée minimale en millisecondes entre deux collectes de bonus par le bot.
+     */
+    private static final long COOLDOWN_BONUS = 1000; // 1 seconde
+
+    /**
+     * Construit une nouvelle instance de {@code Bot_Personnage}.
+     * Initialise le bot avec sa position de départ, son identifiant,
+     * et charge les ressources graphiques basées sur un thème.
+     *
+     * @param game L'instance du jeu à laquelle ce bot appartient.
+     * @param startX La position X initiale du bot sur la grille.
+     * @param startY La position Y initiale du bot sur la grille.
+     * @param botId L'identifiant unique de ce bot.
+     * @param botNumber Le numéro du bot, utilisé pour les ressources graphiques.
+     * @throws IOException Si une erreur survient lors de la lecture du fichier de thème.
+     */
     public Bot_Personnage(Game game, int startX, int startY, int botId,int botNumber) throws IOException {
         super(game, startX, startY, botNumber);
         this.game = game;
@@ -54,38 +111,55 @@ public class Bot_Personnage extends Joueur_Personnage {
         updatePixelPosition();
     }
 
-
+    /**
+     * Définit le comportement du bot pour un tour de jeu.
+     * Le bot priorise la collecte de bonus, l'attaque du joueur, la poursuite du joueur,
+     * et enfin un mouvement aléatoire si aucune autre action n'est possible ou nécessaire.
+     *
+     * @param joueurPrincipal Le joueur principal que le bot peut attaquer ou poursuivre.
+     * @param tousJoueurs Une liste de tous les joueurs présents dans le jeu (non utilisé dans cette implémentation).
+     * @param gameGrid La grille du jeu, utilisée pour vérifier les déplacements.
+     * @param autresBots Une liste des autres bots présents dans le jeu (non utilisé dans cette implémentation).
+     */
     public void agir(Joueur_Personnage joueurPrincipal, List<Joueur_Personnage> tousJoueurs,
                      GameGrid gameGrid, List<Bot_Personnage> autresBots) {
 
 
         if (!this.estVivant() || joueurPrincipal == null || !joueurPrincipal.estVivant()) {
-            return; // Ne rien faire si mort ou pas de joueur à attaquer
+            return;
         }
-        //  PRIORITÉ 1: Collecter des bonus si disponibles à proximité
+
         if (chercherEtCollecterBonus()) {
             System.out.println("Bot " + getPlayerNumber() + " - Collecte de bonus");
             return;
         }
 
-        //  PRIORITÉ 2: Attaquer le joueur s'il est proche
+
         if (tentativeAttaqueJoueur(joueurPrincipal, gameGrid)) {
             System.out.println("Bot " + getPlayerNumber() + " - Attaque du joueur !");
             return;
         }
 
-        // PRIORITÉ 3: Se rapprocher du joueur
+
         if (seRapprocherDuJoueur(joueurPrincipal)) {
             System.out.println("Bot " + getPlayerNumber() + " - Poursuite du joueur");
             return;}
 
-            //  PRIORITÉ 4: Mouvement aléatoire si rien d'autre à faire
             mouvementAleatoire();
         System.out.println("Bot " + getPlayerNumber() + " - Mouvement aléatoire");
 
 
     }
 
+    /**
+     * Tente d'attaquer le joueur principal en plaçant une bombe si les conditions sont remplies.
+     * Les conditions incluent la proximité du joueur, la disponibilité du cooldown de la bombe,
+     * et la possibilité de placer une bombe sur la case actuelle.
+     *
+     * @param joueur Le joueur cible de l'attaque.
+     * @param gameGrid La grille du jeu pour les vérifications de position.
+     * @return {@code true} si une bombe a été placée avec succès, {@code false} sinon.
+     */
     private boolean tentativeAttaqueJoueur(Joueur_Personnage joueur, GameGrid gameGrid) {
         int distanceX = Math.abs(this.getGridX() - joueur.getGridX());
         int distanceY = Math.abs(this.getGridY() - joueur.getGridY());
@@ -99,14 +173,12 @@ public class Bot_Personnage extends Joueur_Personnage {
         if (joueurAPortee && peutPoserBombe && caseLibre) {
             System.out.println(" Bot " + getPlayerNumber() + " ATTAQUE le joueur ! Distance: " + distanceTotale);
 
-            // Calculer le rayon optimal
             int rayon = this.aBonusRayon() ? 2 : 1;
             if (this.aBonusRayon()) {
                 this.consommerBonusRayon();
                 System.out.println("Bot " + getPlayerNumber() + " utilise son bonus rayon !");
             }
 
-            // POSER LA BOMBE
             try {
                 List<Bombe> listeBombes = new ArrayList<>(); // Vous devriez récupérer la vraie liste
                 new Bombe(this.getGridX(), this.getGridY(), rayon, game, gameGrid,
@@ -126,7 +198,10 @@ public class Bot_Personnage extends Joueur_Personnage {
         return false;
     }
 
-
+    /**
+     * Tente de faire fuir le bot d'une bombe récemment placée en se déplaçant vers une case sûre adjacente.
+     * Le bot essaie de se déplacer dans une des quatre directions cardinales.
+     */
     private void fuirDeLaBombe() {
         // Essayer de se déplacer dans une direction sûre
         int[][] directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}}; // Haut, Bas, Gauche, Droite
@@ -147,7 +222,14 @@ public class Bot_Personnage extends Joueur_Personnage {
         }
     }
 
-
+    /**
+     * Recherche et tente de collecter les bonus à proximité.
+     * Si un bonus est sur la même case, il est collecté.
+     * Si un bonus est à une case de distance, le bot se dirige vers lui.
+     * Un cooldown est appliqué pour éviter des collectes répétées trop rapides.
+     *
+     * @return {@code true} si un bonus a été collecté ou si le bot se dirige vers un bonus, {@code false} sinon.
+     */
     private boolean chercherEtCollecterBonus() {
         if (System.currentTimeMillis() - derniereCollecteBonus < COOLDOWN_BONUS) {
             return false; // Cooldown actif
@@ -190,6 +272,15 @@ public class Bot_Personnage extends Joueur_Personnage {
         return false;
     }
 
+    /**
+     * Tente de rapprocher le bot du joueur principal.
+     * Le bot se déplace soit horizontalement, soit verticalement, en priorisant
+     * la direction qui réduit le plus la distance avec le joueur,
+     * à condition que la position de destination soit valide.
+     *
+     * @param joueur Le joueur vers lequel le bot doit se rapprocher.
+     * @return {@code true} si le bot a pu se déplacer pour se rapprocher du joueur, {@code false} sinon.
+     */
     private boolean seRapprocherDuJoueur(Joueur_Personnage joueur) {
         int deltaX = joueur.getGridX() - this.getGridX();
         int deltaY = joueur.getGridY() - this.getGridY();
@@ -220,7 +311,11 @@ public class Bot_Personnage extends Joueur_Personnage {
         return false;
     }
 
-
+    /**
+     * Effectue un mouvement aléatoire pour le bot.
+     * Le bot choisit une direction aléatoire (haut, bas, gauche, droite)
+     * et se déplace s'il s'agit d'une position valide.
+     */
     private void mouvementAleatoire() {
         int direction = random.nextInt(4);
 
@@ -248,13 +343,25 @@ public class Bot_Personnage extends Joueur_Personnage {
         }
     }
 
-
+    /**
+     * Vérifie si le bot peut placer une bombe à l'instant présent,
+     * en tenant compte du cooldown de placement de bombe et de sa capacité à poser une bombe.
+     *
+     * @return {@code true} si le bot peut placer une bombe, {@code false} sinon.
+     */
     private boolean peutPlacerBombeMaintenant() {
         long maintenant = System.currentTimeMillis();
         return (maintenant - dernierePlacementBombe) >= COOLDOWN_BOMBE_BOT && this.canPlaceBomb();
     }
 
-
+    /**
+     * Vérifie si une position donnée sur la grille est valide et libre.
+     * Une position est valide si elle est dans les limites de la grille et si la case est libre (représentée par 0).
+     *
+     * @param x La coordonnée X de la position à vérifier.
+     * @param y La coordonnée Y de la position à vérifier.
+     * @return {@code true} si la position est valide et libre, {@code false} sinon.
+     */
     private boolean positionValide(int x, int y) {
         int[][] grid = game.getGrid();
 
