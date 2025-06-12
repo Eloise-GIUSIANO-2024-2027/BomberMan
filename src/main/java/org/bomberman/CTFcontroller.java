@@ -33,82 +33,143 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Contrôleur principal pour le mode de jeu Capture The Flag (CTF) du jeu Bomberman.
+ * Cette classe gère l'interface utilisateur, les interactions des joueurs, la logique de jeu et les scores.
+ * Elle hérite des fonctionnalités JavaFX pour la gestion des événements et l'affichage.
+ *
+ * @author Votre nom
+ * @version 1.0
+ */
 public class CTFcontroller {
 
+    /** Conteneur pour le menu de pause affiché lorsque le jeu est en pause. */
     @FXML
     private VBox pauseMenuContainer;
+    /** Conteneur pour le menu de fin de partie affiché à la fin du jeu. */
     @FXML
     private VBox finMenuContainer;
+    /** Label affichant le message de fin de partie (victoire, défaite, temps écoulé). */
     @FXML
     private Label messageFinPartieLabel;
 
+    /** Timeline gérant le timer principal du jeu (compte à rebours). */
     private Timeline gameTimer;
+    /** Temps restant de la partie en secondes (initialisé à 120 secondes). */
     private int tempsRestant = 120;
 
+    /** Liste des joueurs participant à la partie. */
     private List<Joueur_Personnage> joueurs = new ArrayList<>();
+    /** Liste des bots participant à la partie. */
     private List<Bot_Personnage> bot = new ArrayList<>();
+    /** Liste des bombes actives sur le terrain de jeu. */
     private List<Bombe> listeBombes = new ArrayList<>();
+    /** Liste des drapeaux présents sur le terrain de jeu. */
     private List<Drapeau> listeDrapeaux = new ArrayList<>();
+    /** Liste des bonus disponibles sur le terrain de jeu. */
     private List<Bonus> listeBonus = new ArrayList<>();
 
+    /** Indique si le jeu est actuellement en pause. */
     private boolean paused = false;
+    /** Indique si la partie est terminée. */
     private boolean partieTerminee = false;
 
+    /** Zone de jeu principale contenant la grille de jeu. */
     @FXML
     private VBox gameArea;
+    /** Instance du jeu contenant la logique principale. */
     Game game = new Game();
 
+    /** Affichage de la grille de jeu. */
     private GameGrid gameGridDisplay;
+    /** Bouton de démarrage du jeu. */
     @FXML
     private Button startButton;
 
     // affichge des scores :
+    /** Label affichant le nom et le score du joueur 1. */
     @FXML
     private Label labelJ1;
+    /** Label affichant le nom et le score du joueur 2. */
     @FXML
     private Label labelJ2;
+    /** Label affichant le nom et le score du joueur 3. */
     @FXML
     private Label labelJ3;
+    /** Label affichant le nom et le score du joueur 4. */
     @FXML
     private Label labelJ4;
 
 
     // Zone de saisi des pseudo
+    /** Champ de saisie du pseudo du joueur 1 */
     @FXML
     private TextField saisiJ1;
+    /** Nom du joueur 1 */
     private String nomJ1;
+    /** Ligne du joueur 1 dans le fichier de scores */
     private int ligneJ1;
+    /** Score actuel du joueur 1 */
     private int scoreJ1 = 0;
+
+    /** Champ de saisie du pseudo du joueur 2 */
     @FXML
     private TextField saisiJ2;
+    /** Nom du joueur 2 */
     private String nomJ2;
+    /** Ligne du joueur 2 dans le fichier de scores */
     private int ligneJ2;
+    /** Score actuel du joueur 2 */
     private int scoreJ2 = 0;
+
+    /** Champ de saisie du pseudo du joueur 3 */
     @FXML
     private TextField saisiJ3;
+    /** Nom du joueur 3 */
     private String nomJ3;
+    /** Ligne du joueur 3 dans le fichier de scores */
     private int ligneJ3;
+    /** Score actuel du joueur 3 */
     private int scoreJ3 = 0;
+
+    /** Champ de saisie du pseudo du joueur 4 */
     @FXML
     private TextField saisiJ4;
+    /** Nom du joueur 4 */
     private String nomJ4;
+    /** Ligne du joueur 4 dans le fichier de scores */
     private int ligneJ4;
+    /** Score actuel du joueur 4 */
     private int scoreJ4 = 0;
 
 
+    /** Label affichant les résultats de la partie. */
     @FXML
     private Label resultLabel;
 
+    /** Indique si la partie est terminée (doublon de partieTerminee). */
     private boolean partieEstTerminee = false;
     // Obtention des scoresCTF.txt
+    /** Liste des scores chargés depuis le fichier de scores. */
     private List<String> scores;
+    /** Timer utilisé pour la gestion des explosions de bombes. */
     private int derID;
 
+    /** Timer utilisé pour la gestion des explosions de bombes. */
     private Timer timer; // Timer pour mettre à jour le score lors de l'explosion de la bombe
 
+    /** Label affichant le temps restant de la partie. */
     @FXML
     private Label timerLabel;
 
+    /**
+     * Démarre une nouvelle partie de jeu CTF.
+     * Initialise la grille de jeu, les joueurs, les drapeaux et configure les contrôles.
+     * Gère également la lecture des pseudos et l'initialisation des scores.
+     *
+     * @throws IOException si une erreur survient lors de la lecture du fichier de scores
+     * @throws URISyntaxException si l'URI du fichier de scores est invalide
+     */
     @FXML
     public void startGame() throws IOException, URISyntaxException {
         lancerTimer();
@@ -271,6 +332,17 @@ public class CTFcontroller {
 
 
 
+    /**
+     * Gère les mouvements des joueurs et les actions de placement de bombes.
+     * Traite les événements clavier pour contrôler les 4 joueurs avec des touches différentes.
+     * Vérifie également les collisions avec les bonus et les drapeaux après chaque mouvement.
+     *
+     * @param event l'événement clavier déclenché
+     * @param j1 le joueur 1
+     * @param j2 le joueur 2
+     * @param j3 le joueur 3
+     * @param j4 le joueur 4
+     */
     private void handlePlayerMovement(KeyEvent event, Joueur_Personnage j1, Joueur_Personnage j2, Joueur_Personnage j3, Joueur_Personnage j4) {
         GameGrid k = gameGridDisplay;
 
@@ -417,20 +489,28 @@ public class CTFcontroller {
         verifierFinDePartie();
     }
 
-    public void initialiserBonusExistants() {
-        listeBonus.clear();
+//    /**
+//     * Initialise la liste des bonus existants en récupérant les bonus actifs du jeu.
+//     * Vide la liste actuelle et la remplit avec les bonus disponibles.
+//     */
+//    public void initialiserBonusExistants() {
+//        listeBonus.clear();
+//
+//        if (game != null) {
+//            listeBonus.addAll(game.getActiveBonuses());
+//            System.out.println("Nombre de bonus récupérés via Game: " + listeBonus.size());
+//            for (Bonus bonus : listeBonus) {
+//                System.out.println("Bonus trouvé à (" + bonus.getBonusX() + ", " + bonus.getBonusY() + ") - Type: " + bonus.getTypeBonusString());
+//            }
+//        } else {
+//            System.out.println("Game est null");
+//        }
+//    }
 
-        if (game != null) {
-            listeBonus.addAll(game.getActiveBonuses());
-            System.out.println("Nombre de bonus récupérés via Game: " + listeBonus.size());
-            for (Bonus bonus : listeBonus) {
-                System.out.println("Bonus trouvé à (" + bonus.getBonusX() + ", " + bonus.getBonusY() + ") - Type: " + bonus.getTypeBonusString());
-            }
-        } else {
-            System.out.println("Game est null");
-        }
-    }
-
+    /**
+     * Méthode d'initialisation appelée automatiquement lors du chargement du contrôleur FXML.
+     * Configure la visibilité des éléments d'interface utilisateur.
+     */
     public void initialize() {
         System.out.println("CTFcontroller initialisé.");
         if (startButton != null) {
@@ -443,6 +523,12 @@ public class CTFcontroller {
         }
     }
 
+    /**
+     * Trouve la ligne correspondant à un nom de joueur dans le fichier de scores.
+     *
+     * @param nom le nom du joueur à rechercher
+     * @return l'index de la ligne contenant le nom, ou la dernière ligne si non trouvé
+     */
     public int getLigneNom(String nom){
         String nomLigne;
         for (int i = 0; i < scores.size(); i++) {
@@ -458,6 +544,12 @@ public class CTFcontroller {
         return scores.size()-1;
     }
 
+    /**
+     * Extrait le score d'une ligne donnée du fichier de scores.
+     *
+     * @param numLigne le numéro de ligne à analyser
+     * @return le score contenu dans la ligne
+     */
     public int getScoreLigne(int numLigne) {
         String ligne = scores.get(numLigne);
         String scoresLigne = "";
@@ -467,6 +559,14 @@ public class CTFcontroller {
         return Integer.parseInt(scoresLigne);
     }
 
+    /**
+     * Ajoute ou met à jour un score dans la liste des scores.
+     * Si le joueur n'existe pas, l'ajoute. Si il existe et que le nouveau score est meilleur, le met à jour.
+     *
+     * @param nom le nom du joueur
+     * @param score le score à enregistrer
+     * @param ligne la ligne correspondante dans le fichier
+     */
     public void ajouterScore(String nom, int score, int ligne) {
         if (ligne == scores.size()-1) scores.add(nom + " " + score); // si le couple pseudo score n'est pas encore enregistré
         else if (score > getScoreLigne(ligne)){ // si le pseudo est déjà enregistré et que le score est superieur à celui enregistré
@@ -474,6 +574,12 @@ public class CTFcontroller {
         }
     }
 
+    /**
+     * Sauvegarde la liste des scores dans le fichier scoresCTF.txt.
+     *
+     * @param lignes la liste des lignes à sauvegarder
+     * @throws IOException si une erreur survient lors de l'écriture du fichier
+     */
     public void updateFile(List<String> lignes) throws IOException {
         Path cheminFichier = Paths.get("src/main/resources/scoresCTF.txt");
 
@@ -484,6 +590,9 @@ public class CTFcontroller {
         Files.write(cheminFichier, lignes);
     }
 
+    /**
+     * Met à jour l'affichage des scores des joueurs dans l'interface utilisateur.
+     */
     public void refreshScores() {
         // Maj des pseudos
         labelJ1.setText(nomJ1 + " : " + scoreJ1);
@@ -492,6 +601,12 @@ public class CTFcontroller {
         labelJ4.setText(nomJ4 + " : " + scoreJ4);
     }
 
+    /**
+     * Démarre un timer pour gérer l'explosion d'une bombe et la mise à jour des scores.
+     *
+     * @param bomb la bombe à surveiller
+     * @param joueur le numéro du joueur qui a placé la bombe
+     */
     private void startTimer(Bombe bomb, int joueur) {
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -508,6 +623,14 @@ public class CTFcontroller {
         }, 2010); // 2.01 secondes
     }
 
+    /**
+     * Ajoute les points obtenus par l'explosion d'une bombe au score du joueur correspondant.
+     * Met à jour le fichier de scores et l'affichage.
+     *
+     * @param bomb la bombe qui a explosé
+     * @param Joueur le numéro du joueur qui a placé la bombe
+     * @throws IOException si une erreur survient lors de la sauvegarde des scores
+     */
     private void ajoutScoreExplosion(Bombe bomb, int Joueur) throws IOException {
         switch (Joueur){
             case 1:
@@ -542,6 +665,10 @@ public class CTFcontroller {
         refreshScores();    // Maj du bandeau des scores
     }
 
+    /**
+     * Bascule entre l'état de pause et l'état de jeu normal.
+     * Affiche ou masque le menu de pause et contrôle le timer du jeu.
+     */
     private void togglePause() {
         if (partieTerminee) return;
 
@@ -561,6 +688,12 @@ public class CTFcontroller {
         }
     }
 
+    /**
+     * Retourne au menu principal du jeu.
+     * Arrête le timer de jeu et charge l'interface du menu principal.
+     *
+     * @param event l'événement qui a déclenché l'action
+     */
     @FXML
     public void retourMenu(ActionEvent event) {
         if (gameTimer != null) {
@@ -588,6 +721,10 @@ public class CTFcontroller {
         }
     }
 
+    /**
+     * Reprend le jeu après une pause.
+     * Masque le menu de pause et relance le timer de jeu.
+     */
     @FXML
     public void resumeGame() {
         paused = false;
@@ -598,12 +735,19 @@ public class CTFcontroller {
         }
     }
 
+    /**
+     * Quitte complètement l'application.
+     */
     @FXML
     public void quittertout() {
         Platform.exit();
         System.exit(0);
     }
 
+    /**
+     * Lance le timer principal du jeu avec un compte à rebours.
+     * Gère l'affichage du temps restant et déclenche la fin de partie si le temps s'écoule.
+     */
     private void lancerTimer() {
         if (gameTimer != null) {
             gameTimer.stop();
@@ -625,6 +769,10 @@ public class CTFcontroller {
         gameTimer.play();
     }
 
+    /**
+     * Vérifie les conditions de fin de partie.
+     * Contrôle si un joueur a capturé tous les drapeaux ennemis ou si le temps est écoulé.
+     */
     private void verifierFinDePartie() {
         if (partieTerminee) return;
 
@@ -644,6 +792,12 @@ public class CTFcontroller {
         }
     }
 
+    /**
+     * Termine la partie et affiche le message de fin correspondant.
+     * Arrête le timer de jeu et affiche le menu de fin de partie.
+     *
+     * @param message le message à afficher expliquant la raison de la fin de partie
+     */
     private void finDePartie(String message) {
         if (partieTerminee) return;
         partieTerminee = true;
@@ -659,8 +813,13 @@ public class CTFcontroller {
         });
     }
 
+    /**
+     * Relance une nouvelle partie avec les mêmes paramètres.
+     * Réinitialise tous les éléments de jeu et redémarre le timer.
+     *
+     * @throws IOException si une erreur survient lors de la réinitialisation
+     */
     @FXML
-
     public void replayGame() throws IOException {
 
         joueurs.clear();
@@ -742,6 +901,12 @@ public class CTFcontroller {
         lancerTimer();
     }
 
+    /**
+     * Vérifie si un joueur entre en collision avec un bonus sur le terrain.
+     * Récupère les bonus actifs depuis le jeu et applique leurs effets si une collision est détectée.
+     *
+     * @param joueur le joueur dont il faut vérifier les collisions
+     */
     private void verifierCollisionBonus(Joueur_Personnage joueur) {
         System.out.println("Vérification collision pour joueur " + joueur.getPlayerNumber() +
                 " à (" + joueur.getGridX() + ", " + joueur.getGridY() + ")");
